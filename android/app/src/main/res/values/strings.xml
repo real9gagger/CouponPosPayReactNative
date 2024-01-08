@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">PosPay</string>
+    <string name="launch_screen_pic_content_description">启动屏封面</string>
+    <string name="launch_screen_copyright_content">powered by xcarbon.cc</string>
+</resources>

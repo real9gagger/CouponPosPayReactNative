@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 2024年01月04日 安卓12以下，启动屏制作。参见：https://developer.android.com/guide/topics/ui/splash-screen/migrate?hl=zh-cn -->
+    <!-- 2024年01月04日 安卓12及以上，启动屏制作。参见：https://developer.android.com/develop/ui/views/launch/splash-screen -->
+    <style name="AppThemeStarting" parent="Theme.SplashScreen">
+        <!-- Set the splash screen background, animated icon, and animation duration. -->
+        <item name="android:windowSplashScreenBackground">@color/app_main_color</item>
+        <!-- Use windowSplashScreenAnimatedIcon to add either a drawable or an animated drawable. One of these is required. -->
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/launch_screen_logo</item>
+        <!-- Required for animated icons -->
+        <item name="android:windowSplashScreenAnimationDuration">500</item>
+    </style>
+</resources>

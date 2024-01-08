@@ -1,0 +1,15 @@
+// 配置路径别名
+{
+  "presets": ["module:metro-react-native-babel-preset"],
+  "plugins": [
+    [
+      "module-resolver",
+      {
+        "root": ["./src"],
+        "alias": {
+          "@": "./src" // 添加其他的别名映射
+        }
+      }
+    ]
+  ]
+}

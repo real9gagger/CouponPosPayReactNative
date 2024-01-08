@@ -3,6 +3,11 @@
  */
 import { Dimensions, Platform, StatusBar, PixelRatio, ToastAndroid } from "react-native";
 
+//防抖定时器ID
+let debounceTimer = 0;
+//节流开关
+let isThrottled = false;
+
 // 获取设备宽高
 const dimensionsInfo = Dimensions.get("window");
 // 苹果
@@ -52,5 +57,18 @@ global.$toast = (msg, number) => {
             number || 2000,
             ToastAndroid.CENTER
         );
+    }
+}
+// 防抖
+global.$debounce = (func, delay, ...args) => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(func, delay, ...args);
+}
+// 节流
+global.$throttle = (func, delay, ...args) => {
+    if (!isThrottled) {
+        isThrottled = true;
+        func(...args);
+        setTimeout(() => isThrottled=false, delay);
     }
 }

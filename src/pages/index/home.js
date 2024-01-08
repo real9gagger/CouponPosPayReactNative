@@ -11,6 +11,12 @@ export default function MineIndex(props){
         dispatchChangeLanguage(rrr.current%2===0?"en_US":"zh_CN");
         rrr.current++;
     }
+    const sendMsgCode = () => {
+        console.log("准备发送短信验证码")
+        $request("sendValidCode", {phone: "18249941545"})
+        .then(res => console.log(res))
+        .catch(err => console.warn(err))
+    }
     
     useEffect(() => {
         //console.log(i18n);
@@ -22,7 +28,7 @@ export default function MineIndex(props){
             <Text style={fs20}>{i18n["$copyright.info"].cloze("1.0.0", 2025)}</Text>
             <Text style={fs20}>{i18n["$development.test"].cloze(2023, 1, 7)}</Text>
             <Button title="切换语言" onPress={hhhh} style={{height: 40}} />
-            <TextualButton>{i18n["btn.ok"]}</TextualButton>
+            <TextualButton style={mgTX} onPress={sendMsgCode}>测试发送短信验证码</TextualButton>
         </ScrollView>
     )
 }

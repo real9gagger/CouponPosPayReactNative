@@ -20,3 +20,8 @@ export function useI18N() {
 export function getI18N(){
     return store.getState().localesSetting.i18n;
 }
+
+//获取登录令牌
+export function getAuthToken(){
+    return ""; //store.getState().userInfo.authToken; //具体值待定
+}

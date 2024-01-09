@@ -5,6 +5,7 @@
 import '@/common/Global';
 import {AppRegistry} from 'react-native';
 import {FastCss} from '@/common/FastCss';
+import {showAlert,showConfirm} from '@/common/Modals';
 import {name as AppName} from './app.json';
 import App from './App';
 import commonRequest from '@/request/index';
@@ -14,5 +15,9 @@ Object.assign(global, FastCss);
 
 //通用 api 接口请求，全局使用。
 global.$request = commonRequest;
+
+//通用弹窗函数。$toast 已在 @/common/Global 里定义
+global.$alert = showAlert;
+global.$confirm = showConfirm;
 
 AppRegistry.registerComponent(AppName, () => App);

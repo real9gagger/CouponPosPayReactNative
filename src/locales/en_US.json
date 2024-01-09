@@ -8,5 +8,6 @@
     "tabbar.mine": "Mine",
     "btn.ok": "OK",
     "btn.confirm": "Confirm",
-    "btn.cancel": "Cancel"
+    "btn.cancel": "Cancel",
+    "alert.title": "Tip"
 }

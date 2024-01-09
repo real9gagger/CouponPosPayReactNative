@@ -16,5 +16,6 @@
     "tabbar.mine": "个人中心",
     "btn.ok": "好",
     "btn.confirm": "确定",
-    "btn.cancel": "取消"
+    "btn.cancel": "取消",
+    "alert.title": "提示"
 }

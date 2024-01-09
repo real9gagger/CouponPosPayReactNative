@@ -17,7 +17,7 @@ function clozeHandler(...args){
     
     let output = "";
     
-    for(vx of this.slices){
+    for(let vx of this.slices){
         if(vx[1] >= 1){
             output += this.content.substr(vx[0], vx[1]);
         }

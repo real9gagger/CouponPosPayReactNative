@@ -17,8 +17,12 @@ export function useI18N() {
     return useSelector(state => state.localesSetting.i18n);
 }
 //类组件中使用
-export function getI18N(){
-    return store.getState().localesSetting.i18n;
+export function getI18N(key){
+    if(key){
+        return store.getState().localesSetting.i18n[key];
+    } else {
+        return store.getState().localesSetting.i18n;
+    }
 }
 
 //获取登录令牌

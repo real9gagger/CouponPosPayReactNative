@@ -4,7 +4,6 @@
 import { TouchableOpacity, View, Text, StyleSheet, Vibration } from "react-native";
 import { createNavigatorFactory, useNavigationBuilder, TabRouter, TabActions } from "@react-navigation/native";
 import { TabIconHome, TabIconMine } from "@/components/TabBarIcon";
-import { useSelector } from "react-redux";
 import { useI18N } from "@/store/getter";
 
 const styles = StyleSheet.create({

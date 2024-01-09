@@ -1,5 +1,4 @@
 import { createPosPayNavigator } from "@/routers/tabs";
-import { useSelector } from "react-redux";
 
 //底部标签栏
 const PosPayTab = createPosPayNavigator();

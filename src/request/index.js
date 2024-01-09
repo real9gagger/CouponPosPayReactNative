@@ -14,7 +14,7 @@ const instance = axios.create({
 
 //请求拦截处理
 instance.interceptors.request.use(function (config) {
-    console.log("请求数据", config);
+    //console.log("请求数据", config);
     return config;
 }, function (err) {
     //console.log("请求失败", err)
@@ -38,6 +38,7 @@ instance.interceptors.response.use(function (response) {
 });
 
 //通用请求: 集 GET/POST/PUT/DELETE/HEAD 于一体
+//使用方式：$request(api, data);
 export default function commonRequest(apiName, postData){
     const reqUrl = apis[apiName];
     const matchList = reqUrl?.match(regexpRM); //提取请求方式

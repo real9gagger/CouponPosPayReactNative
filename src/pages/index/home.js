@@ -25,8 +25,8 @@ export default function MineIndex(props){
     return (
         <ScrollView style={pdX}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
-            <Text style={fs20}>{i18n["$copyright.info"].cloze("1.0.0", 2025)}</Text>
-            <Text style={fs20}>{i18n["$development.test"].cloze(2023, 1, 7)}</Text>
+            <Text style={fs20}>{i18n["copyright.info"].cloze("1.0.0", 2025)}</Text>
+            <Text style={fs20}>{i18n["development.test"].cloze(2023, 1, 7)}</Text>
             <Button title="切换语言" onPress={hhhh} style={{height: 40}} />
             <TextualButton style={mgTX} onPress={sendMsgCode}>测试发送短信验证码</TextualButton>
         </ScrollView>

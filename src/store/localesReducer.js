@@ -2,7 +2,7 @@ import { CHANGE_LANGUAGE } from "./types";
 
 const isProduction = (process.env.NODE_ENV === "production");
 const regDigits = /\$\[\d+\]/; //用于检查翻译内容是否有占位标记
-const regKey = /^\$?([a-z0-9_]+\.)*[a-z0-9_]+$/; //用于检查键名是否规范
+const regKey = /^([a-z0-9_]+\.)*[a-z0-9_]+$/; //用于检查键名是否规范
 const initialState = changeLanguage().payload;
 
 //占位填充器，填充 “今天是$[0]年$[1]月$[2]日，星期$[3]，天气晴” 这种格式的多语言文本
@@ -86,12 +86,12 @@ export function changeLanguage(name){
             if(!isProduction && !regKey.test(kk)){
                 throw new Error(`多语言键名“${kk}”不规范，请参考 /src/locales/zh_CN.json 规范化说明。`);
             }
-            if(kk[0] === "$"){
-                const txtc = lange.i18n[kk];
+            const txtc = lange.i18n[kk];
+            if(txtc.startsWith("\\\\")){
                 if(isProduction || regDigits.test(txtc)){
-                    lange.i18n[kk] = { content:txtc, slices:null, cloze:clozeHandler }; //由字符串转成对象，调用方式：i18n[kk].cloze(12,34,56);
+                    lange.i18n[kk] = { content:txtc.substr(2), slices:null, cloze:clozeHandler }; //由字符串转成对象，调用方式：i18n[kk].cloze(12,34,56);
                 } else {
-                    throw new Error(`多语言键名“${kk}”以 $ 开头，但内容没有 $[xx] 的占位标记！`);
+                    throw new Error(`多语言 ${kk} 的内容以“\\\\”开头，但内容里没有 $[xx] 的占位标记！`);
                 }
             }
         }

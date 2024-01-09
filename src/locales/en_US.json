@@ -2,8 +2,8 @@
     多语言配置请阅读：./zh_CN.json
 */
 {
-    "$development.test": "This is a test: Today is $[0]/$[1]/$[2].",
-    "$copyright.info": "v$[0] powered by xcarbon.cc@$[1]",
+    "development.test": "\\\\This is a test: Today is $[0]/$[1]/$[2].",
+    "copyright.info": "\\\\v$[0] powered by xcarbon.cc@$[1]",
     "tabbar.home": "Home",
     "tabbar.mine": "Mine",
     "btn.ok": "OK",

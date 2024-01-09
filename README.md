@@ -1,6 +1,6 @@
 ## 项目名称
 > POS机付款APP -- 2024年1月4日
-*logo艺术字体生成：https://font.chinaz.com/diy/971022.html
+* logo艺术字体生成：https://font.chinaz.com/diy/971022.html
 
 ## 运行条件
 > 列出运行该项目所必须的条件和相关依赖  

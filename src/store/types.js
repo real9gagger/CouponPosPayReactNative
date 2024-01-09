@@ -1,2 +1,6 @@
 //多语言
 export const CHANGE_LANGUAGE = "CHANGE_LANGUAGE";
+
+//用户信息
+export const UPDATE_USERINFO = "UPDATE_USERINFO";
+export const RESET_USERINFO = "RESET_USERINFO";

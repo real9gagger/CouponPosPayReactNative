@@ -19,6 +19,7 @@ public class AppPackageInfoPackage implements ReactPackage {
         List<NativeModule> modules = new ArrayList<>();
         modules.add(new AppPackageInfoModule(reactContext));
         modules.add(new AppPackagePermissionModule(reactContext));
+        modules.add(new AppNavigationInfoModule(reactContext));
         return modules;
     }
 

@@ -11,6 +11,7 @@ import {
     NativeEventEmitter } from "react-native"
 import { Component } from "react"
 import { getI18N } from "@/store/getter"
+//import AppNavigationInfo from "@/modules/AppNavigationInfo"
 
 const EVENT_ADD_DIALOG = "EVENT_ADD_DIALOG" //添加对话框
 const EVENT_REMOVE_DIALOG = "EVENT_REMOVE_DIALOG" //移除对话框
@@ -183,6 +184,7 @@ export default class ModalProvider extends Component {
                 dialogComponent: children,
                 isShow: true
             })
+            //AppNavigationInfo.setColor(0xFF999999);
         }
     }
     //移除对话框
@@ -195,6 +197,7 @@ export default class ModalProvider extends Component {
                 dialogComponent: null,
                 isShow: false
             })
+            //AppNavigationInfo.resetColor();
         }
     }
     

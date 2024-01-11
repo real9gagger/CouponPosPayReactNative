@@ -95,7 +95,8 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: "#000",
         flex: 1,
-        paddingLeft: 10
+        paddingLeft: 10,
+        paddingRight: 5
     }
 })
 
@@ -172,7 +173,7 @@ export function showConfirm(msg, title, notxt, yestxt){
     })
 }
 
-export function showNotify(msg, type, duration){
+export function showNotify(msg, duration, type){
     return new Promise(function (resolve, reject) {
         if((!msg) || (typeof msg !== "string")){
             reject(0)
@@ -206,6 +207,8 @@ export function showNotify(msg, type, duration){
                 break
         }
         
+        const ulColor = `${iconInfo.color}25`
+        
         const onDialogPress = () => {
             eventEmitter.emit(EVENT_REMOVE_DIALOG, 1) //0-表示确认，1-点取消按钮关闭的，2-点返回键或者遮罩层关闭的
         }
@@ -213,7 +216,7 @@ export function showNotify(msg, type, duration){
         const notifyDialog = (
             <TouchableHighlight 
                 dialogName="notify"
-                underlayColor="#fff"
+                underlayColor={ulColor}
                 onClose={resolve} 
                 iconColor={iconInfo.color} 
                 bgColor={iconInfo.bgcol}
@@ -222,6 +225,7 @@ export function showNotify(msg, type, duration){
                 <View style={styles.notifyBox}>
                     <PosPayIcon name={iconInfo.name} color={iconInfo.color} size={30} />
                     <Text style={styles.notifyText}>{msg}</Text>
+                    <PosPayIcon name="close-x" color={iconInfo.color} size={20} />
                 </View>
             </TouchableHighlight>
         )
@@ -271,6 +275,10 @@ export default class ModalProvider extends Component {
     //添加对话框
     __addDialog(children){
         if(!this.state.isShow){
+            if(this.timerID){
+                clearTimeout(this.timerID)
+                this.timerID = 0
+            }
             this.setState({
                 dialogComponent: children,
                 isShow: true
@@ -313,7 +321,8 @@ export default class ModalProvider extends Component {
             Animated.timing(slideDown, {
                 toValue: 0,
                 duration: 400, 
-                useNativeDriver: true
+                useNativeDriver: true,
+                easing: Easing.elastic(0.8)
             }).start(() => {
                 this.timerID = setTimeout(this.__setHide.bind(this), drt) //几秒后自动关闭
             })
@@ -322,7 +331,8 @@ export default class ModalProvider extends Component {
             Animated.timing(slideDown, {
                 toValue: -300,
                 duration: 400, 
-                useNativeDriver: true
+                useNativeDriver: true,
+                easing: Easing.elastic(0.8)
             }).start(() => {
                 this.__removeDialog(1)
             })

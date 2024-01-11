@@ -19,6 +19,10 @@ global.$request = commonRequest;
 //通用弹窗函数。$toast 已在 @/common/Global 里定义
 global.$alert = showAlert;
 global.$confirm = showConfirm;
-global.$notify = showNotify;
-
+global.$notify = {
+    info: (msg,drt) => showNotify(msg, drt, "info"),
+    error: (msg,drt) => showNotify(msg, drt, "error"),
+    success: (msg,drt) => showNotify(msg, drt, "success"),
+    warning: (msg,drt) => showNotify(msg, drt, "warning"),
+}
 AppRegistry.registerComponent(AppName, () => App);

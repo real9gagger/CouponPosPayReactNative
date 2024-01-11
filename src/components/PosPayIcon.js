@@ -91,6 +91,14 @@ const IconInfoSolid = (props) => {
         </Svg>
     )
 }
+//像字母 X 一样的关闭按钮：https://www.iconfont.cn/collections/detail?spm=a313x.user_detail.i1.dc64b3430.43bc3a81A8JWbc&cid=4491
+const IconCloseX = (props) => {
+    return (
+        <Svg {...props}>
+            <Path d="M544.448 499.2l284.576-284.576a32 32 0 0 0-45.248-45.248L499.2 453.952 214.624 169.376a32 32 0 0 0-45.248 45.248l284.576 284.576-284.576 284.576a32 32 0 0 0 45.248 45.248l284.576-284.576 284.576 284.576a31.904 31.904 0 0 0 45.248 0 32 32 0 0 0 0-45.248L544.448 499.2z" />
+        </Svg>
+    )
+}
 
 //转换成 svg 的属性
 function getSvgProps(props){
@@ -129,6 +137,7 @@ class PosPayIcon extends Component {
             case "error-solid": return IconErrorSolid(svgProps)
             case "warning-solid": return IconWarningSolid(svgProps)
             case "info-solid": return IconInfoSolid(svgProps)
+            case "close-x": return IconCloseX(svgProps)
             default: return null
         }
     }

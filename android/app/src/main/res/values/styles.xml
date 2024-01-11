@@ -4,9 +4,11 @@
     <style name="AppThemeDefault" parent="Theme.AppCompat.DayNight.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
+        <item name="android:textColor">@color/app_text_color</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowBackground">@color/app_main_color</item>
+        <!--<item name="android:navigationBarColor">@android:color/transparent</item>-->
     </style>
     
     <!-- 2024年1月4日 安卓12以下，启动屏制作。参见：https://developer.android.com/guide/topics/ui/splash-screen/migrate?hl=zh-cn -->

@@ -9,8 +9,10 @@ export default function MineIndex(props){
     const i18n = useI18N();
     const rrr = useRef(0);
     const hhhh = () => {
-        dispatchChangeLanguage(rrr.current%2===0?"en_US":"zh_CN");
+        //dispatchChangeLanguage(rrr.current%2===0?"en_US":"zh_CN");
         rrr.current++;
+        
+        props.navigation.navigate("语言设置")
     }
     const sendMsgCode = () => {
         $confirm("发送验证码").then(() => {
@@ -23,10 +25,12 @@ export default function MineIndex(props){
     }
     
     const testModal = () => {
-        $confirm("准备发送短信验证码准备发送短信验证码").then(res => {
+        $notify.warning("已提交").then(res => {
             console.log("xxxxxxx关闭了", res);
         });
     }
+    
+    
     useEffect(() => {
         //console.log();
     }, []);

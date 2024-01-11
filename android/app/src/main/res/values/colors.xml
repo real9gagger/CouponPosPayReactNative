@@ -2,6 +2,5 @@
 <resources>
     <color name="primary_dark">#000000</color>
     <color name="app_main_color">#30a3fc</color>
-    <color name="app_dark_color">#048cf5</color>
     <color name="app_text_color">#333333</color>
 </resources>

@@ -5,7 +5,7 @@
 import '@/common/Global';
 import {AppRegistry} from 'react-native';
 import {FastCss} from '@/common/FastCss';
-import {showAlert,showConfirm} from '@/common/Modals';
+import {showAlert,showConfirm,showNotify} from '@/common/Modals';
 import {name as AppName} from './app.json';
 import App from './App';
 import commonRequest from '@/request/index';
@@ -19,5 +19,6 @@ global.$request = commonRequest;
 //通用弹窗函数。$toast 已在 @/common/Global 里定义
 global.$alert = showAlert;
 global.$confirm = showConfirm;
+global.$notify = showNotify;
 
 AppRegistry.registerComponent(AppName, () => App);

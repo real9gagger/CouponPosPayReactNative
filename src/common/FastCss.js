@@ -76,7 +76,7 @@ const FastCss = StyleSheet.create({
     tcR0: { color: "#ff8989" }, /* text color red 0 */
     tcR1: { color: "#ff6161" }, /* text color red 1 */
     tcB0: { color: "#1ba4f0" }, /* text color blue 0 */
-    tcG0: { color: "#45A979" }, /* text color green 0 */
+    tcG0: { color: "#03C988" }, /* text color green 0 */
     tcMC: { color: appMainColor },
     
     bgMC: { backgroundColor: appMainColor },

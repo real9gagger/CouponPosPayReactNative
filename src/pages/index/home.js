@@ -23,7 +23,7 @@ export default function MineIndex(props){
     }
     
     const testModal = () => {
-        $confirm("准备发送短信验证码准备发送短信验证码").then(res => {
+        $notify("由于项目需求", "success", 6000).then(res => {
             console.log("xxxxxxx关闭了", res);
         });
     }

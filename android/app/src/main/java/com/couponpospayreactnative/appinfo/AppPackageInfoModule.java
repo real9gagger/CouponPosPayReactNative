@@ -9,6 +9,8 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
+import java.util.Locale;
+
 public class AppPackageInfoModule extends ReactContextBaseJavaModule {
 
     private final String mAppVersionName;
@@ -65,5 +67,10 @@ public class AppPackageInfoModule extends ReactContextBaseJavaModule {
     @ReactMethod(isBlockingSynchronousMethod = true)
     public double getLastUpdateTime() {
         return ((double) mLastUpdateTime);
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String getLocaleLanguage() {
+        return (Locale.getDefault().getLanguage() + "_" + Locale.getDefault().getCountry());
     }
 }

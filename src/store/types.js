@@ -1,5 +1,6 @@
 //多语言
 export const CHANGE_LANGUAGE = "CHANGE_LANGUAGE";
+export const INITI_LANGUAGE = "INITI_LANGUAGE";
 
 //用户信息
 export const UPDATE_USERINFO = "UPDATE_USERINFO";

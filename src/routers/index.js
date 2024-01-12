@@ -1,5 +1,6 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import { useI18N } from "@/store/getter";
 
 import IndexIndex from "@/pages/index/index";
 import IndexSplash from "@/pages/index/splash";
@@ -10,7 +11,7 @@ import MineLanguage from "@/pages/mine/language";
 const PosPayStack = createStackNavigator();
 
 //非Tabs页面的顶部导航栏全局配置
-const screenOptions = {
+const defaultScreenOptions = {
 	// 自定义标题栏的样式。
 	headerStyle: {
 		// 背景颜色
@@ -23,7 +24,9 @@ const screenOptions = {
 	// 设置标题栏文本颜色。
 	headerTintColor: "#000",
 	// 设置标题文本的对齐方式
-	headerTitleAlign: "left"
+	headerTitleAlign: "left",
+    // 页面标题（如果显示 Header，则会显示此标题）
+    title: "标题"
 }
 
 //无标题页样式选项
@@ -32,6 +35,7 @@ const noHeaderOptions = {
     animationEnabled: false
 }
 
+//首页底部标签栏列表
 const PosPayTabs = [
     {
         title: "主页",
@@ -48,34 +52,39 @@ const PosPayTabs = [
 //路由页面列表
 const PosPayRouters = [
     {
-        key: "启动屏",
-        title: "启动屏",
+        name: "启动屏",
         component: IndexSplash,
         options: noHeaderOptions
     },
     {
-        key: "语言设置",
-        title: "语言",
+        name: "语言设置",
         component: MineLanguage,
-        options: screenOptions
+        i18nTitle: "language.header",
+        options: defaultScreenOptions
     },
     {
-        key: "应用首页",
-        title: "应用首页",
+        name: "应用首页",
         component: IndexIndex.initTabBar(PosPayTabs),
         options: noHeaderOptions
     }
 ]
 
 export default function Routers(){
+    const i18n = useI18N();
+    
+    PosPayRouters.forEach(vx => {
+        if(vx.i18nTitle){
+            vx.options.title = i18n[vx.i18nTitle]
+        }
+    });
+    
     return (
         <NavigationContainer>
-            <PosPayStack.Navigator initialRouteName="启动屏" screenOptions={screenOptions}>
+            <PosPayStack.Navigator initialRouteName="启动屏" screenOptions={defaultScreenOptions}>
                 {PosPayRouters.map(vxo => (
                 	<PosPayStack.Screen
-                		key={vxo.key}
-                		name={vxo.key}
-                        title={vxo.title}
+                		key={vxo.name}
+                		name={vxo.name}
                 		component={vxo.component}
                 		options={vxo.options}
                 	/>

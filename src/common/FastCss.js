@@ -18,6 +18,9 @@ const FastCss = StyleSheet.create({
     fxJE: { justifyContent: "flex-end" },
     fxJC: { justifyContent: "center" },
     
+    dpN: { display: "none" },
+    dpF: { display: "flex" },
+    
     taC: { textAlign: "center" },
     taR: { textAlign: "right" },
     taL: { textAlign: "left" },

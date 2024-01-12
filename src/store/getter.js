@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
 import { store } from "./index";
+import { supportLanguageList } from "./localesReducer";
 
 /* export function useGetter(...names) {
     const output = {};
@@ -28,6 +29,10 @@ export function getI18N(key){
 //获取语言对应的代码
 export function getLanguageCode(){
     return store.getState().localesSetting.code;
+}
+//获取目前支持的语言列表
+export function getLanguageList(){
+    return supportLanguageList;
 }
 
 /* ================ 用户信息相关 ================ */

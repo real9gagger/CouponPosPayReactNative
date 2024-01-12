@@ -17,5 +17,9 @@
     "btn.ok": "好",
     "btn.confirm": "确定",
     "btn.cancel": "取消",
-    "alert.title": "提示"
+    "alert.title": "提示",
+    "language.disabled.tip": "抱歉，语言包暂未翻译~",
+    "language.header": "语言设置",
+    "restart": "重启",
+    "goback": "返回"
 }

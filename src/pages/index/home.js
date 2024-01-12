@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react";
 import { ScrollView, View, Text, Button, StatusBar } from "react-native";
-import { dispatchChangeLanguage } from "@/store/setter";
 import { useI18N } from "@/store/getter";
 import TextualButton from "@/components/TextualButton";
 import { showConfirm } from "@/common/Modals";
@@ -9,7 +8,6 @@ export default function MineIndex(props){
     const i18n = useI18N();
     const rrr = useRef(0);
     const hhhh = () => {
-        //dispatchChangeLanguage(rrr.current%2===0?"en_US":"zh_CN");
         rrr.current++;
         
         props.navigation.navigate("语言设置")

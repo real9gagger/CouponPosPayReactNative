@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
         padding: 15,
     },
     notifyText: {
-        fontSize: 18,
+        fontSize: 16,
         color: "#000",
         flex: 1,
         paddingLeft: 10,
@@ -223,7 +223,7 @@ export function showNotify(msg, duration, type){
                 duration={duration}
                 onPress={onDialogPress}>
                 <View style={styles.notifyBox}>
-                    <PosPayIcon name={iconInfo.name} color={iconInfo.color} size={30} />
+                    <PosPayIcon name={iconInfo.name} color={iconInfo.color} size={24} />
                     <Text style={styles.notifyText}>{msg}</Text>
                     <PosPayIcon name="close-x" color={iconInfo.color} size={20} />
                 </View>

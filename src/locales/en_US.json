@@ -9,5 +9,9 @@
     "btn.ok": "OK",
     "btn.confirm": "Confirm",
     "btn.cancel": "Cancel",
-    "alert.title": "Tip"
+    "alert.title": "Tip",
+    "language.disabled.tip": "Sorry, the language pack has not been translated yet!",
+    "language.header": "Language Setting",
+    "restart": "Restart",
+    "goback": "Go back"
 }

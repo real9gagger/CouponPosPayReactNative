@@ -1,9 +1,11 @@
-import { CHANGE_LANGUAGE } from "./types";
+import AppPackageInfo from "@/modules/AppPackageInfo";
+import { CHANGE_LANGUAGE, INITI_LANGUAGE } from "./types";
+import { setData, getData } from "./storage";
 
+const codeKey = "LocalesSettingLanguageCode";
 const isProduction = (process.env.NODE_ENV === "production");
 const regDigits = /\$\[\d+\]/; //用于检查翻译内容是否有占位标记
 const regKey = /^([a-z0-9_]+\.)*[a-z0-9_]+$/; //用于检查键名是否规范
-const initialState = changeLanguage().payload;
 
 //占位填充器，填充 “今天是$[0]年$[1]月$[2]日，星期$[3]，天气晴” 这种格式的多语言文本
 function clozeHandler(...args){
@@ -68,10 +70,35 @@ function contentParser(txt){
     return output;
 }
 
-export function changeLanguage(name){
-    const lange = { i18n: null, code: name };
+//目前支持的语言列表
+export const supportLanguageList = [
+    {
+        name: "日本語",
+        code: "ja_JP",
+        disabled: true //语言包是否已经翻译好了，true-否，false-是
+    },
+    {
+        name: "简体中文",
+        code: "zh_CN",
+        disabled: false
+    },
+    {
+        name: "正體中文",
+        code: "zh_TW",
+        disabled: true
+    },
+    {
+        name: "English",
+        code: "en_US",
+        disabled: false
+    }
+];
 
-    switch(name){
+//更改语言设置
+export function changeLanguage(lgcode){
+    const lange = { i18n: null, code: lgcode };
+
+    switch(lgcode){
         case "zh_TW": lange.i18n = require("@/locales/zh_TW.json"); break;
         case "ja_JP": lange.i18n = require("@/locales/ja_JP.json"); break;
         case "en_US": lange.i18n = require("@/locales/en_US.json"); break;
@@ -97,6 +124,8 @@ export function changeLanguage(name){
         }
         lange.i18n["i.have.been.parsed"] = "1"; //标记为 “我已被解析过”
     }
+
+    setData(codeKey, lange.code); //保存在本地
     
     return {
         type: CHANGE_LANGUAGE,
@@ -104,9 +133,23 @@ export function changeLanguage(name){
     };
 }
 
-export default localesReducer = (state = initialState, action) => {
+//根据用户所在国家初始化语言设置
+export function initiLanguage(){
+    return getData(codeKey).then(val => {        
+        if(!val){//获取 APP 系统语言
+            val = AppPackageInfo.getLocaleLanguage()
+        }
+        
+        return Object.assign(changeLanguage(val), {
+            type: INITI_LANGUAGE
+        });
+    });
+}
+
+export default localesReducer = (state = {}, action) => {
     switch(action.type){
         case CHANGE_LANGUAGE: return action.payload;
+        case INITI_LANGUAGE: return action.payload;
     }
     
     return state;

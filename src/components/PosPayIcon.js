@@ -91,11 +91,19 @@ const IconInfoSolid = (props) => {
         </Svg>
     )
 }
-//像字母 X 一样的关闭按钮：https://www.iconfont.cn/collections/detail?spm=a313x.user_detail.i1.dc64b3430.43bc3a81A8JWbc&cid=4491
+//像字母 X 一样的关闭图标：https://www.iconfont.cn/collections/detail?spm=a313x.user_detail.i1.dc64b3430.43bc3a81A8JWbc&cid=4491
 const IconCloseX = (props) => {
     return (
         <Svg {...props}>
             <Path d="M544.448 499.2l284.576-284.576a32 32 0 0 0-45.248-45.248L499.2 453.952 214.624 169.376a32 32 0 0 0-45.248 45.248l284.576 284.576-284.576 284.576a32 32 0 0 0 45.248 45.248l284.576-284.576 284.576 284.576a31.904 31.904 0 0 0 45.248 0 32 32 0 0 0 0-45.248L544.448 499.2z" />
+        </Svg>
+    )
+}
+//像字母 V 一样的勾选图标：https://www.iconfont.cn/collections/detail?spm=a313x.user_detail.i1.dc64b3430.5c553a81OQl1JC&cid=2825
+const IconCheckV = (props) => {
+    return (
+        <Svg {...props}>
+            <Path d="M1002.81 144.43a64 64 0 0 0-90.38 4.76L381.56 739l-272.3-272.3a64 64 0 0 0-90.51 90.51l320 320A64 64 0 0 0 384 896h1.68a64 64 0 0 0 45.89-21.16l576-640a64 64 0 0 0-4.76-90.41z" />
         </Svg>
     )
 }
@@ -124,6 +132,10 @@ function getSvgProps(props){
 //请到 【https://www.iconfont.cn】 搜索需要的图标
 class PosPayIcon extends Component {
     render(){
+        if(this.props.visible === false){
+            return null
+        }
+        
         const svgProps = getSvgProps(this.props)
         
         switch(this.props.name){
@@ -138,6 +150,7 @@ class PosPayIcon extends Component {
             case "warning-solid": return IconWarningSolid(svgProps)
             case "info-solid": return IconInfoSolid(svgProps)
             case "close-x": return IconCloseX(svgProps)
+            case "check-v": return IconCheckV(svgProps)
             default: return null
         }
     }

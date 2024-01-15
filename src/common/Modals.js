@@ -311,7 +311,7 @@ export default class ModalProvider extends Component {
             })
         }
     }
-    //通知滑入滑出动画
+    //通知提示框滑入滑出动画
     __startSlideAni(){
         let slideDown = null
         let drt = +this.state.dialogComponent.props.duration || 120000

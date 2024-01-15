@@ -117,6 +117,9 @@ const FastCss = StyleSheet.create({
     brX: { borderRadius: 8, overflow: "hidden" }, /* X 结尾表示默认框的圆角 */
     
     bdW0: { borderWidth: 0 },
+    
+    pgFF: { backgroundColor: "#fff", flex: 1 }, /* page container box #fff */
+    pgEE: { backgroundColor: "#eee", flex: 1 } /* page container box #eee */
 });
 
 export { FastCss };

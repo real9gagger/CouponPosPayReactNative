@@ -4,7 +4,7 @@ import { useI18N } from "@/store/getter";
 import TextualButton from "@/components/TextualButton";
 import { showConfirm } from "@/common/Modals";
 
-export default function MineIndex(props){
+export default function IndexHome(props){
     const i18n = useI18N();
     const rrr = useRef(0);
     const hhhh = () => {
@@ -23,7 +23,7 @@ export default function MineIndex(props){
     }
     
     const testModal = () => {
-        $notify.warning("已提交").then(res => {
+        $notify.success("已提交").then(res => {
             console.log("xxxxxxx关闭了", res);
         });
     }

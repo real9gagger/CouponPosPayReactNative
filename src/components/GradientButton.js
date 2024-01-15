@@ -11,7 +11,8 @@ class GradientButton extends Component {
     constructor(props) {
         super(props)
         this.loadingStyle = {
-            marginRight: 8
+            marginRight: 8,
+            marginLeft: -28
         }
     }
     

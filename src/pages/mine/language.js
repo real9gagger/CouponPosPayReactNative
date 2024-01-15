@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { TouchableHighlight, View, Text, StatusBar, StyleSheet, DevSettings } from "react-native";
+import { TouchableHighlight, ScrollView, View, Text, StatusBar, StyleSheet, DevSettings } from "react-native";
 import { dispatchChangeLanguage } from "@/store/setter";
 import { useI18N, getLanguageCode, getLanguageList } from "@/store/getter";
 import PosPayIcon from "@/components/PosPayIcon";
@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
 
 const lgList = getLanguageList();
 
-export default function MineIndex(props){
+export default function MineLanguage(props){
     const initCode = useRef(getLanguageCode());
     const [lgCode, setLgCode] = useState(initCode.current);
     const i18n = useI18N();
@@ -37,7 +37,7 @@ export default function MineIndex(props){
     }
     
     return (
-        <View style={[fxG1, bgFF]}>
+        <ScrollView style={pgFF}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
             {lgList.map(vx => (
                 <TouchableHighlight key={vx.code} underlayColor="#f0f0f0" style={pdHX} onPress={() => setLanguage(vx)}>
@@ -48,8 +48,8 @@ export default function MineIndex(props){
                 </TouchableHighlight>
             ))}
             <View style={[pdX, styles.bthBox]}>
-                <GradientButton disable={initCode.current===lgCode} onPress={restartAPP}>{i18n["restart"]}</GradientButton>
+                <GradientButton disable={initCode.current===lgCode} onPress={restartAPP}>{i18n["btn.confirm"]}</GradientButton>
             </View>
-        </View>
+        </ScrollView>
     )
 }

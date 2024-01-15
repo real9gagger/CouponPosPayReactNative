@@ -27,6 +27,8 @@ global.deviceDimensions = {
     statusBarHeight: (isIOS ? (isIPhoneX ? 44 : 20) : StatusBar.currentHeight),
     // 像素比
     onePixelRatio: 1.0 / PixelRatio.get(),
+    // 是否是横屏
+    isLandscape: (dimensionsInfo.width > dimensionsInfo.height)
 };
 // 运行时环境
 global.runtimeEnvironment = {

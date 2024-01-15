@@ -4,22 +4,31 @@
     ## 为了快速输入，一律小写。
     ## 为了避免混淆和冗余，建议2~5个单词内。
     ## 小数点（.）表示从属关系、或代表空格，类似于 JS 中的 a.b.c。
-    ## 如果翻译内容是可变的，需要填充的。则内容必须以双反斜杠（\\）开始，
+    ## 如果翻译内容是可变的，需要填充的。则内容必须以双反斜杠（\\）开始（这样做可以加快检索哪些内容是可填充的），
         !! 如果内容以双反斜杠开始，则内容必须要有 $[xx] 的占位标记，否则报错；
         !! 如果内容有 $[xx] 的占位标记，但没有以双反斜杠开始，则 $[xx] 不被视为占位标记。
     ## $[xx] 格式表示占位标记，xx 是参数数组的索引
 */
 {
     "development.test": "\\\\这是个测试：今天是$[0]年$[1]月$[2]日。",
-    "copyright.info": "\\\\v$[0] 由 xcarbon.cc@$[1] 提供技术支持",
+    "copyright.info": "\\\\由 xcarbon.cc@$[0] 提供技术支持 v$[1]",
+    "app.alias": "旅游商户营销平台",
     "tabbar.home": "主页",
     "tabbar.mine": "个人中心",
     "btn.ok": "好",
     "btn.confirm": "确定",
     "btn.cancel": "取消",
+    "btn.login": "登录",
+    "btn.logout": "退出登录",
     "alert.title": "提示",
     "language.disabled.tip": "抱歉，语言包暂未翻译~",
     "language.header": "语言设置",
     "restart": "重启",
-    "goback": "返回"
+    "goback": "返回",
+    "login.username": "用户名",
+    "login.password": "密码",
+    "login.errmsg1": "用户名不能为空",
+    "login.errmsg2": "密码不能为空，且长度不能小于4",
+    "account.header": "我的账户",
+    "account.logout.tip": "是否退出登录？"
 }

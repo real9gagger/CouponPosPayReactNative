@@ -140,9 +140,11 @@ export function initiLanguage(){
             val = AppPackageInfo.getLocaleLanguage()
         }
         
-        return Object.assign(changeLanguage(val), {
-            type: INITI_LANGUAGE
-        });
+        const output = changeLanguage(val);
+        
+        output.type = INITI_LANGUAGE;
+        
+        return output;
     });
 }
 

@@ -20,7 +20,9 @@
 
 ## 第三方插件修改说明
 > 说明如何修改第三方项目，建议给出具体的步骤说明
-    
+> 【以下修改可以改善第三方组件的体验】
+* 【图片预览点击空白无法关闭问题】打开 /node_modules/react-native-image-viewing/ImageViewing.js。转到第42行，将 View 改为 TouchableOpacity（需要 import），并添加两个属性 “ activeOpacity={1} onPress={onRequestCloseEnhanced} ”。
+
 ## 测试说明
 > 如果有测试相关内容需要说明，请填写在这里  
 

@@ -3,15 +3,24 @@
 */
 {
     "development.test": "\\\\This is a test: Today is $[0]/$[1]/$[2].",
-    "copyright.info": "\\\\v$[0] powered by xcarbon.cc@$[1]",
+    "copyright.info": "\\\\Powered by xcarbon.cc@$[0] v$[1]",
+    "app.alias": "Tourism Merchant Marketing Platform",
     "tabbar.home": "Home",
     "tabbar.mine": "Mine",
     "btn.ok": "OK",
     "btn.confirm": "Confirm",
     "btn.cancel": "Cancel",
+    "btn.login": "Login",
+    "btn.logout": "Logout",
     "alert.title": "Tip",
     "language.disabled.tip": "Sorry, the language pack has not been translated yet!",
     "language.header": "Language Setting",
     "restart": "Restart",
-    "goback": "Go back"
+    "goback": "Go back",
+    "login.username": "Username",
+    "login.password": "Password",
+    "login.errmsg1": "The username cannot be empty",
+    "login.errmsg2": "The password cannot be empty and at less 4 characters",
+    "account.header": "My Account",
+    "account.logout.tip": "Are you sure to log out?"
 }

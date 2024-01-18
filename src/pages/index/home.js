@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
 import { ScrollView, View, Text, Button, StatusBar } from "react-native";
 import { useI18N } from "@/store/getter";
-import TextualButton from "@/components/TextualButton";
 import { showConfirm } from "@/common/Modals";
+import TextualButton from "@/components/TextualButton";
+import PayKeyboard from "@/components/PayKeyboard";
 
 export default function IndexHome(props){
     const i18n = useI18N();
@@ -29,18 +30,25 @@ export default function IndexHome(props){
     }
     
     
+    const openDrawer = () => {
+        props.navigation.openDrawer();
+    }
+    
     useEffect(() => {
         //console.log();
     }, []);
     
-    return (
+    return (<>
         <ScrollView style={pdX}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
             <Text style={fs20}>{i18n["copyright.info"].cloze("1.0.0", 2025)}</Text>
             <Text style={fs20}>{i18n["development.test"].cloze(2023, 1, 7)}</Text>
             <Button title="切换语言" onPress={hhhh} style={{height: 40}} />
             <TextualButton style={mgVX} onPress={sendMsgCode}>测试发送短信验证码</TextualButton>
-            <Button title="测试弹窗" onPress={testModal} style={{height: 40}} />
+            <Button title="测试弹窗" onPress={testModal} />
+            <View style={{height: 40}}></View>
+            <Button title="打开抽屉" onPress={openDrawer} />
         </ScrollView>
-    )
+        <PayKeyboard precision={0} />
+    </>)
 }

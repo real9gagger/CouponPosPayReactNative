@@ -5,10 +5,18 @@
 ## 运行条件
 > 列出运行该项目所必须的条件和相关依赖  
 * npm install
-* Android Studio 打开项目下的 android 文件夹，等 Gradle 构建好后【建议C盘预留 10GB 空间】，Rebuild。不出错然后把APP运行到AVD或者手机
+* Android Studio 打开项目下的 android 文件夹，等 Gradle 构建好后【建议C盘预留 20GB 空间】，Rebuild。不出错然后把APP运行到AVD或者手机
 * npm start
+
 * 【如果手机不是USB调试，摇动手机四下，弹出的框选 “Settings” >> “Debug server host & port for device” 然后输入电脑IP地址和端口号：8081】
 * 【后续如果新增了第三方插件，可能需要重新运行 Android Studio 的 Rebuild Project】
+* 【如果用 Android Studio 编译 react-native-reanimated 失败：出现 react-native-reanimated:downloadXXX FAILED 的情况】
+*  打开 /node_modules/react-native-reanimated/android/build.gradle 搜索：
+*  https://github.com/react-native-community/boost-for-react-native、
+*  https://github.com/google/glog/archive、
+*  https://github.com/facebook/folly/archive、
+*  https://github.com/google/double-conversion/archive 
+*  将上述四个链接中的 “github.com” 换成 “kkgithub.com”（或者其他镜像网站也可以）
 
 ## 打包条件
 > 列出打包该项目所必须的条件和相关依赖 

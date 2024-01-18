@@ -17,6 +17,7 @@ const FastCss = StyleSheet.create({
     fxAC: { alignItems: "center" },
     fxJE: { justifyContent: "flex-end" },
     fxJC: { justifyContent: "center" },
+    fxJA: { justifyContent: "space-around" },
     
     dpN: { display: "none" },
     dpF: { display: "flex" },

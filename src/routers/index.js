@@ -79,7 +79,12 @@ const PosPayRouters = [
         name: "应用首页",
         component: IndexIndex.initTabBar(PosPayTabs),
         options: noHeaderOptions
-    }
+    },
+    /* {
+        name: "抽屉列表",
+        component: IndexIndex.initDrawer(PosPayTabs),
+        options: noHeaderOptions
+    } */
 ]
 
 export default function Routers(){
@@ -90,7 +95,7 @@ export default function Routers(){
             vx.options.title = i18n[vx.i18nTitle]
         }
     });
-    
+
     return (
         <NavigationContainer>
             <PosPayStack.Navigator initialRouteName="启动屏" screenOptions={defaultScreenOptions}>

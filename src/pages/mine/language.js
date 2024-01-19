@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { TouchableHighlight, ScrollView, View, Text, StatusBar, StyleSheet, DevSettings } from "react-native";
+import { TouchableHighlight, ScrollView, View, Text, StatusBar, StyleSheet } from "react-native";
 import { dispatchChangeLanguage } from "@/store/setter";
 import { useI18N, getLanguageCode, getLanguageList } from "@/store/getter";
 import PosPayIcon from "@/components/PosPayIcon";
@@ -33,7 +33,7 @@ export default function MineLanguage(props){
     }
     
     const restartAPP = function(){
-        DevSettings.reload();
+        props.navigation.goBack();
     }
     
     return (

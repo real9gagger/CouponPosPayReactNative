@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { ScrollView, View, Text, StatusBar, StyleSheet } from "react-native";
 import { dispatchUpdateUserInfo } from "@/store/setter";
-import { useI18N, getUserInfo } from "@/store/getter";
+import { useI18N, useUserInfo } from "@/store/getter";
 import GradientButton from "@/components/GradientButton";
 import ImageButton from "@/components/ImageButton";
 import LocalPictures from "@/common/Pictures";
@@ -35,11 +35,11 @@ const styles = StyleSheet.create({
 
 export default function MineAccount(props){
     const i18n = useI18N();
-    const userInfo = useRef(getUserInfo());
-    const userAvatar = useRef($osspath(userInfo.current.avatarUrl) || LocalPictures.defaultUserAvatar);
+    const userInfo = useUserInfo();
+    const userAvatar = useRef(userInfo.posLogo ? { uri: userInfo.posLogo } : LocalPictures.defaultUserAvatar);
     const [isLogout, setIsLogout] = useState(false);
     const [showImageView, setShowImageView] = useState(false);
-
+        
     const onLogout = () => {
         if(isLogout){
             return; //正在退出，请耐心等待
@@ -55,7 +55,7 @@ export default function MineAccount(props){
                 });
             }, 1000);
         }).catch(err => {
-            console.log("已取消登出");
+            console.log("用户已取消登出");
         });
     }
     
@@ -68,7 +68,7 @@ export default function MineAccount(props){
                     onPress={() => setShowImageView(true)} 
                     style={styles.accountAvatar} 
                     source={userAvatar.current} />
-                <Text style={styles.accountName}>{userInfo.current.nickName}</Text>
+                <Text style={styles.accountName}>{userInfo.posName}</Text>
             </View>
             <View style={fxG1}>{/*占位用*/}</View>
             <View style={styles.logoutBox}>

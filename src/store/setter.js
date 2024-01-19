@@ -1,6 +1,6 @@
 import { store } from "./index"; //使用 useDispatch 报错，因此直接使用 store.dispatch，但官方不推荐：https://github.com/reduxjs/react-redux/discussions/1789
 import { changeLanguage, initiLanguage } from "./localesReducer";
-import { updateUserInfo, setAuthToken } from "./userReducer";
+import { updateUserInfo, setAccessToken } from "./userReducer";
 
 /* ================ 本地语言相关 ================ */
 export function dispatchChangeLanguage(lgcode){
@@ -14,6 +14,6 @@ export function dispatchInitiLanguage(){
 export function dispatchUpdateUserInfo(infos){
     store.dispatch(updateUserInfo(infos));
 }
-export function dispatchSetAuthToken(token){
-    store.dispatch(setAuthToken(token));
+export function dispatchSetAccessToken(token, expiresIn){
+    store.dispatch(setAccessToken(token, expiresIn));
 }

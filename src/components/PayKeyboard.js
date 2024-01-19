@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
     pkContainer: {
         display: "flex",
         flexDirection: "row",
-        backgroundColor: "#eee",
+        backgroundColor: "#e9e9e9",
         padding: 9
     },
     pkFixed: {

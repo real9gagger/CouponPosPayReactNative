@@ -5,4 +5,4 @@ export const INITI_LANGUAGE = "INITI_LANGUAGE";
 //用户信息
 export const UPDATE_USERINFO = "UPDATE_USERINFO";
 export const RESET_USERINFO = "RESET_USERINFO";
-export const SET_AUTHTOKEN = "SET_AUTHTOKEN";//set auth token
+export const SET_ACCESSTOKEN = "SET_ACCESSTOKEN";//set access token

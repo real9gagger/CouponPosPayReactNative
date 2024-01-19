@@ -37,8 +37,8 @@ export function getLanguageList(){
 
 /* ================ 用户信息相关 ================ */
 //获取登录令牌
-export function getAuthToken(){
-    return store.getState().userInfo.authToken; //具体值待定
+export function getAccessToken(){
+    return store.getState().userInfo.accessToken; //具体值待定
 }
 //使用用户信息，函数组件中使用
 export function useUserInfo(){

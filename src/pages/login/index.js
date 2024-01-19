@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ScrollView, View, Text, TextInput, StatusBar, StyleSheet } from "react-native";
-import { dispatchSetAuthToken } from "@/store/setter";
+import { dispatchSetAccessToken } from "@/store/setter";
 import { useI18N } from "@/store/getter";
 import GradientButton from "@/components/GradientButton";
 import PosPayIcon from "@/components/PosPayIcon";
@@ -60,14 +60,16 @@ export default function LoginIndex(props){
             return !$notify.error(i18n["login.errmsg2"]);
         }
         
-        console.log("用户输入的账户密码：", username, password);
-        
         setIsSubmiting(true);
         
-        setTimeout(() => {
-            dispatchSetAuthToken("1234567890");
+        //console.log("用户输入的账户密码：", username, password);
+        $request("loginWithPassword", {username, password}).then(res => {
+            //console.log("登录成功::::", res);
+            dispatchSetAccessToken(res.access_token, res.expires_in);
             props.navigation.replace("应用首页");
-        }, 1000)
+        }).catch(err => {
+            setIsSubmiting(false);
+        });
     }
     
     return (

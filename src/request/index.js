@@ -1,13 +1,13 @@
 import axios from "axios";
 import apis from "./apis";
-import { getAuthToken } from "@/store/getter";
+import { getAccessToken } from "@/store/getter";
 
 //用于检查是那种请求方式
 const regexpRM = /\?__RM__=([A-Z_]+)\b/;
 
 //参考文档 https://github.com/axios/axios
 const instance = axios.create({
-    baseURL: "https://api.jpcoupon.net", //请求基地址
+    baseURL: "https://api-test.jpcoupon.net", //请求基地址
     timeout: 15000, //请求超时时间 15 秒
     headers: {} //额外的请求头 例如 token
 });
@@ -43,7 +43,7 @@ export default function commonRequest(apiName, postData){
     const reqUrl = apis[apiName];
     const matchList = reqUrl?.match(regexpRM); //提取请求方式
     const reqMethod = (matchList && matchList.length >= 2 ? matchList[1] : "");
-    const authToken = getAuthToken();
+    const accessToken = getAccessToken();
     const methodType = [];
     
     switch(reqMethod){
@@ -86,7 +86,7 @@ export default function commonRequest(apiName, postData){
         method: methodType[0],
         headers: {
             "Content-Type": methodType[1],
-            "Authorization": (authToken ? `Bearer ${authToken}` : "")
+            "Authorization": (accessToken ? `Bearer ${accessToken}` : "")
         },
         data: postData
     });

@@ -10,4 +10,6 @@
 
 export default {
     sendValidCode: '/auth/sendValidCode?__RM__=POST_FU', //发送短信验证码
+    loginWithPassword: '/auth/login?__RM__=POST', //用户名 + 密码登录
+    getPostInfo: '/pos/pos/getPostInfo', //商户账户获取商户详情
 }

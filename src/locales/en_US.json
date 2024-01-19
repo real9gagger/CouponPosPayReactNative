@@ -15,13 +15,24 @@
     "alert.title": "Tip",
     "language.disabled.tip": "Sorry, the language pack has not been translated yet!",
     "language.header": "Language Setting",
-    "restart": "Restart",
-    "goback": "Go back",
-    "settlement": "Settlement",
     "login.username": "Username",
     "login.password": "Password",
     "login.errmsg1": "The username cannot be empty",
     "login.errmsg2": "The password cannot be empty and at less 4 characters",
     "account.header": "My Account",
-    "account.logout.tip": "Are you sure to log out?"
+    "account.logout.tip": "Are you sure to logout?",
+    "drawer.sale": "Sale",
+    "drawer.returns": "Sales return",
+    "drawer.reprint": "Reprint",
+    "drawer.summary": "Summary",
+    "drawer.help": "Help and feedback",
+    
+    "business": "Business",
+    "summation": "Summation",
+    "system": "System",
+    "restart": "Restart",
+    "goback": "Go back",
+    "settlement": "Settlement",
+    "exit": "Exit",
+    "setting": "Setting"
 }

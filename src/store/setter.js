@@ -14,6 +14,6 @@ export function dispatchInitiLanguage(){
 export function dispatchUpdateUserInfo(infos){
     store.dispatch(updateUserInfo(infos));
 }
-export function dispatchSetAccessToken(token, expiresIn){
-    store.dispatch(setAccessToken(token, expiresIn));
+export function dispatchSetAccessToken(token, expin, account, password){
+    store.dispatch(setAccessToken(token, expin, account, password));
 }

@@ -5,7 +5,6 @@ import { PlatformPressable } from "@react-navigation/elements";
 import { createPosPayNavigator } from "@/routers/tabsCreater";
 import { PosPayTabList, noHeaderOptions } from "@/routers/screens";
 import { useI18N } from "@/store/getter";
-import { dispatchUpdateUserInfo } from "@/store/setter";
 import PosPayIcon from "@/components/PosPayIcon"
 
 //底部标签栏
@@ -21,7 +20,8 @@ const styles = StyleSheet.create({
         color: "#000",
         fontWeight: "bold",
         marginTop: 5,
-        paddingVertical: 10
+        paddingTop: 13,
+        paddingBottom: 10
     },
     titleSpliter: {
         borderTopWidth: StyleSheet.hairlineWidth,
@@ -147,16 +147,6 @@ function onDrawerItemPress(evt){
     console.log(Object.keys(evt))
 }
 
-//获取商户信息
-function getUserInfo(){
-    $request("getPostInfo").then(res => {
-        //console.log("获取用户信息成功::::", res);
-        dispatchUpdateUserInfo(res);
-    }).catch(err => {
-        console.log("获取用户信息失败::::", err);
-    });
-}
-
 //首页标签栏组件
 export default function IndexIndex(props){
     const i18n = useI18N();
@@ -167,16 +157,12 @@ export default function IndexIndex(props){
         });
     }
     
-    useEffect(getUserInfo, []); //每次启动时更新用户信息！
-    
     useEffect(() => {
         console.log("语言类型改变了...");
         drawerItemList.forEach(vxo => {
             vxo.label = i18n[vxo.i18nLabel];
         });
     }, [i18n]);
-    
-    console.log("eeeee...");
     
     if(!!props.route.params?.enabledDrawer){//如果弃用抽屉
         return (

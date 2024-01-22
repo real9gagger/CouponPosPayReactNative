@@ -24,13 +24,15 @@ export function updateUserInfo(infos){
 }
 
 //设置登录令牌
-export function setAccessToken(token, expiresIn){
-    const realEI = (+expiresIn || 0); //单位：秒
+export function setAccessToken(accessToken, expiresIn, loginAccount, loginPassword){
+    const expiresAfterTicks = Date.now() + (+expiresIn || 0) * 1000; //单位：毫秒
     return {
         type: SET_ACCESSTOKEN,
         payload: {
-            accessToken: token,
-            expiresAfterTicks: Date.now() + realEI * 1000
+            accessToken,
+            expiresAfterTicks,
+            loginAccount,
+            loginPassword
         }
     }
 }

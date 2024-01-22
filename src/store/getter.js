@@ -45,6 +45,10 @@ export function useUserInfo(){
     return useSelector(state => state.userInfo);
 }
 //获取用户信息，类组件中使用
-export function getUserInfo(){
-    return store.getState().userInfo;
+export function getUserInfo(key){
+    if(key){
+        return store.getState().userInfo[key];
+    } else {
+        return store.getState().userInfo;
+    }
 }

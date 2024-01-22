@@ -25,16 +25,24 @@ instance.interceptors.request.use(function (config) {
 instance.interceptors.response.use(function (response) {
     //console.log("成功响应", response.data)
     const resData = response.data;
-    if (resData.code === 200) {
+    const resCode = (resData.code || 999);
+    if (resCode === 200) {
         return (resData.data || resData.rows);
     } else {
-        $toast(resData.msg);
-        return Promise.reject(resData.msg);
+        //是否显示错误提示
+        if(response.config.data){
+            const cfgDat = response.config.data;
+            const datType = (typeof cfgDat);
+            if((datType === "object" && !cfgDat.doNotToastErrMsg) || (datType === "string" && !cfgDat.includes("doNotToastErrMsg"))){
+                $toast(resData.msg);
+            }
+        }
+        return Promise.reject(resCode + ":" + resData.msg);
     }
 }, function (err) {
     //console.log("失败响应", err)
     $toast(err.message);
-    return Promise.reject(err.message);
+    return Promise.reject("000:" + err.message);
 });
 
 //通用请求: 集 GET/POST/PUT/DELETE/HEAD 于一体

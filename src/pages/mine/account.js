@@ -20,7 +20,8 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
         borderRadius: 80,
-        elevation: 5
+        elevation: 5,
+        overflow: "hidden"
     },
     accountName: {
         paddingTop: 10,
@@ -36,7 +37,7 @@ const styles = StyleSheet.create({
 export default function MineAccount(props){
     const i18n = useI18N();
     const userInfo = useUserInfo();
-    const userAvatar = useRef(userInfo.posLogo ? { uri: userInfo.posLogo } : LocalPictures.defaultUserAvatar);
+    const [userAvatar, setUserAvatar] = useState(userInfo.posLogo ? { uri: userInfo.posLogo } : LocalPictures.defaultUserAvatar);
     const [isLogout, setIsLogout] = useState(false);
     const [showImageView, setShowImageView] = useState(false);
         
@@ -66,8 +67,9 @@ export default function MineAccount(props){
                 <Text style={styles.accountTitle}>{i18n["app.alias"]}</Text>
                 <ImageButton 
                     onPress={() => setShowImageView(true)} 
+                    onError={() => setUserAvatar(LocalPictures.loadingPicError)}
                     style={styles.accountAvatar} 
-                    source={userAvatar.current} />
+                    source={userAvatar} />
                 <Text style={styles.accountName}>{userInfo.posName}</Text>
             </View>
             <View style={fxG1}>{/*占位用*/}</View>
@@ -79,7 +81,7 @@ export default function MineAccount(props){
             </View>
             <ImageView
                 visible={showImageView}
-                images={[userAvatar.current]}
+                images={[userAvatar]}
                 imageIndex={0}
                 swipeToCloseEnabled={false}
                 onRequestClose={() => setShowImageView(false)}

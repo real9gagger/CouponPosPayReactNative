@@ -155,7 +155,7 @@ class PayKeyboard extends Component {
                     <TouchableHighlight underlayColor={TAP_COLOR} activeOpacity={1} onPress={this.callKP9} style={styles.keyBox}><Text style={styles.keyText}>9</Text></TouchableHighlight>
                     <TouchableHighlight underlayColor={TAP_COLOR} activeOpacity={1} onPress={this.callKP6} style={styles.keyBox}><Text style={styles.keyText}>6</Text></TouchableHighlight>
                     <TouchableHighlight underlayColor={TAP_COLOR} activeOpacity={1} onPress={this.callKP3} style={styles.keyBox}><Text style={styles.keyText}>3</Text></TouchableHighlight>
-                    <TouchableHighlight underlayColor={isprec && TAP_COLOR} activeOpacity={1} onPress={this.callKP_} style={[styles.keyBox, !isprec && op05]}><Text style={styles.keyText}>.</Text></TouchableHighlight>
+                    <TouchableHighlight underlayColor={TAP_COLOR} activeOpacity={1} onPress={isprec ? this.callKP_ : null} style={[styles.keyBox, !isprec && op05]}><Text style={styles.keyText}>.</Text></TouchableHighlight>
                 </View>
                 <View style={styles.keyColumn}>
                     <TouchableHighlight underlayColor={TAP_COLOR} activeOpacity={1} onPress={this.callKPB} style={styles.keyBox}><PosPayIcon name="pay-backspace" size={22} /></TouchableHighlight>

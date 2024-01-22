@@ -19,11 +19,10 @@ const styles = StyleSheet.create({
     },
     contentShow: {
         display: "flex",
-        zIndex: 1
+        height: "100%"
     },
     contentHide: {
-        display: "none",
-        zIndex: -1
+        display: "none"
     },
     tabbarContaner: {
         flexDirection: "row",
@@ -92,13 +91,10 @@ function TheTabNavigator({ children, screenOptions, initialRouteName }) {
         } else {
             isTabsRendered[routeIndex] = true;
         }
-
-        return (<View key={routeInfo.key} 
-            style={[
-                StyleSheet.absoluteFill, 
-                isActiving ? styles.contentShow : styles.contentHide
-            ]}>{descriptors[routeInfo.key].render()}</View>
-        );
+        
+        return (<View 
+            key={routeInfo.key} 
+            style={isActiving ? styles.contentShow : styles.contentHide}>{descriptors[routeInfo.key].render()}</View>);
     }
     
     //底部栏图标渲染

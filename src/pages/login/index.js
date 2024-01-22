@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ScrollView, View, Text, TextInput, StatusBar, StyleSheet } from "react-native";
-import { dispatchSetAccessToken } from "@/store/setter";
-import { useI18N } from "@/store/getter";
+import { dispatchSetAccessToken, dispatchUpdateUserInfo } from "@/store/setter";
+import { useI18N, getUserInfo } from "@/store/getter";
 import GradientButton from "@/components/GradientButton";
 import PosPayIcon from "@/components/PosPayIcon";
 
@@ -45,8 +45,8 @@ export default function LoginIndex(props){
     const [isPswdFocus, setIsPswdFocus] = useState(false);
     const [isPeekPswd, setIsPeekPswd] = useState(false);
     const [isSubmiting, setIsSubmiting] = useState(false);
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
+    const [username, setUsername] = useState(getUserInfo("loginAccount"));
+    const [password, setPassword] = useState(getUserInfo("loginPassword"));
     
     const onSubmit = () => {
         if(isSubmiting){
@@ -64,13 +64,20 @@ export default function LoginIndex(props){
         
         //console.log("用户输入的账户密码：", username, password);
         $request("loginWithPassword", {username, password}).then(res => {
-            //console.log("登录成功::::", res);
-            dispatchSetAccessToken(res.access_token, res.expires_in);
+            dispatchSetAccessToken(res.access_token, res.expires_in, username, password);
+            $request("getPostInfo").then(dispatchUpdateUserInfo); //登录成功后获取用户信息
             props.navigation.replace("应用首页");
         }).catch(err => {
             setIsSubmiting(false);
         });
     }
+    
+    useEffect(() => {
+        //如果已存在账户密码则自动登录
+        if(username && password){
+            onSubmit();
+        }
+    }, []);
     
     return (
         <ScrollView style={pgEE}>
@@ -88,6 +95,7 @@ export default function LoginIndex(props){
                         style={[pdLX, fxG1, fs16]}
                         placeholder={i18n["login.username"]}
                         onChangeText={setUsername}
+                        defaultValue={username}
                         onFocus={() => setIsAccountFocus(true)}
                         onBlur={() => setIsAccountFocus(false)} />
                 </View>
@@ -103,6 +111,7 @@ export default function LoginIndex(props){
                         placeholder={i18n["login.password"]}
                         secureTextEntry={!isPeekPswd}
                         onChangeText={setPassword}
+                        defaultValue={password}
                         onFocus={() => setIsPswdFocus(true)}
                         onBlur={() => setIsPswdFocus(false)} />
                     <PosPayIcon 

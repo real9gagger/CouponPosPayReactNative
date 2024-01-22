@@ -15,23 +15,23 @@ const styles = StyleSheet.create({
         top: 13,
         height: 30,
         width: 30,
-        padding: 3
+        padding: 3,
+        overflow: "hidden"
     }
 });
 
 export default function IndexHome(props){
     const i18n = useI18N();
     const rrr = useRef(0);
-    const hhhh = () => {
-        rrr.current++;
-        
+    const hhhh = () => {        
         props.navigation.navigate("语言设置")
     }
     
     const testModal = () => {
-        $notify.success("已提交").then(res => {
-            console.log("xxxxxxx关闭了", res);
-        });
+        rrr.current++;
+        
+        $notify.success("已提交");
+        console.log("xxxxxxx关闭了", rrr.current);
     }
     
     
@@ -58,7 +58,8 @@ export default function IndexHome(props){
                 <View style={{height: 40}}></View>
                 <Button title="打开抽屉" onPress={openDrawer} />
             </ScrollView>
-            <PayKeyboard precision={0} />
+            <PayKeyboard precision={3} />
+            <View style={{height:20}}></View>
         </View>
     );
 }

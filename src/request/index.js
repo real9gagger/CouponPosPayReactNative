@@ -37,12 +37,12 @@ instance.interceptors.response.use(function (response) {
                 $toast(resData.msg);
             }
         }
-        return Promise.reject(resCode + ":" + resData.msg);
+        return Promise.reject("[" + resCode + "]" + resData.msg);
     }
 }, function (err) {
     //console.log("失败响应", err)
     $toast(err.message);
-    return Promise.reject("000:" + err.message);
+    return Promise.reject("[000]" + err.message);
 });
 
 //通用请求: 集 GET/POST/PUT/DELETE/HEAD 于一体

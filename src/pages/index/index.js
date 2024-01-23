@@ -1,11 +1,11 @@
-import { useEffect, useRef } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { useEffect } from "react";
+import { View, Text, StyleSheet, BackHandler } from "react-native";
 import { createDrawerNavigator, DrawerContentScrollView } from "@react-navigation/drawer";
 import { PlatformPressable } from "@react-navigation/elements";
 import { createPosPayNavigator } from "@/routers/tabsCreater";
 import { PosPayTabList, noHeaderOptions } from "@/routers/screens";
 import { useI18N } from "@/store/getter";
-import PosPayIcon from "@/components/PosPayIcon"
+import PosPayIcon from "@/components/PosPayIcon";
 
 //底部标签栏
 const PosPayTab = createPosPayNavigator();
@@ -59,7 +59,7 @@ const drawerItemList = [
         iconName: "return-goods"
     },
     {
-        key: "业务-重新打印",
+        key: "业务-打印",
         i18nLabel: "drawer.reprint",
         iconName: "printer-stroke"
     },
@@ -74,7 +74,7 @@ const drawerItemList = [
         iconName: "sub-total"
     },
     {
-        key: "合计-重新打印",
+        key: "合计-打印",
         i18nLabel: "drawer.reprint",
         iconName: "printer-stroke"
     },
@@ -89,8 +89,8 @@ const drawerItemList = [
         iconName: "system-setting"
     },
     {
-        key: "系统-帮助与反馈",
-        i18nLabel: "drawer.help",
+        key: "系统-帮助",
+        i18nLabel: "drawer.helps",
         iconName: "help-stroke"
     },
     {
@@ -119,9 +119,27 @@ function MyTabs(arg0){
 };
 
 //自定义抽屉内容
-function CustomDrawerContent(props) {    
+function CustomDrawerContent(props) {   
+    //console.log(props);
+    
+    //抽屉列表中的项点击
+    function onDrawerItemPress(itemKey){
+        switch(itemKey){
+            case "业务-销售": break;
+            case "业务-退货": break;
+            case "业务-打印": break;
+            case "合计-日计": break;
+            case "合计-打印": break;
+            case "系统-设置": props.navigation.navigate("设置页"); break;
+            case "系统-帮助": props.navigation.navigate("帮助页"); break;
+            case "系统-退出": BackHandler.exitApp(); break;
+        }
+        
+        props.navigation.closeDrawer();
+    }
+    
     return (
-        <DrawerContentScrollView {...props}>
+        <DrawerContentScrollView>
             {drawerItemList.map((vx, ix) => {
                 if(!vx.iconName){
                     return (
@@ -131,7 +149,7 @@ function CustomDrawerContent(props) {
                     );
                 } else {
                     return (
-                        <PlatformPressable key={vx.key} style={styles.itemBox} pressColor="#ccc" onPress={onDrawerItemPress}>
+                        <PlatformPressable key={vx.key} style={styles.itemBox} onPress={() => onDrawerItemPress(vx.key)} pressColor="#ccc">
                             <PosPayIcon name={vx.iconName} size={20} />
                             <Text style={styles.itemLabel}>{vx.label}</Text>
                         </PlatformPressable>
@@ -140,11 +158,6 @@ function CustomDrawerContent(props) {
             })}
         </DrawerContentScrollView>
     );
-}
-
-//抽屉列表中的项点击
-function onDrawerItemPress(evt){
-    console.log(Object.keys(evt))
 }
 
 //首页标签栏组件

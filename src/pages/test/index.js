@@ -24,7 +24,7 @@ export default function TestIndex(props){
     }
     
     return (
-        <ScrollView style={[pdX, bgFF]}>
+        <ScrollView style={pdX}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
             <View>
                 <Text style={[fs30, taC, pdHX]}>测试中心</Text>

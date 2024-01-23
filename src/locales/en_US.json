@@ -25,8 +25,15 @@
     "drawer.returns": "Sales return",
     "drawer.reprint": "Reprint",
     "drawer.summary": "Summary",
-    "drawer.help": "Help and feedback",
+    "drawer.helps": "Help and feedback",
+    "test.centre": "Test Centre",
+    "credit.card": "Credit Card",
+    "e.wallet": "eWallet",
+    "qrcode.pay": "QR code",
+    "qrcode.identify": "Scan to identify",
+    "input.amount.tip": "Please enter the amount",
     
+    "coupon": "Coupon",
     "business": "Business",
     "summation": "Summation",
     "system": "System",
@@ -34,5 +41,6 @@
     "goback": "Go back",
     "settlement": "Settlement",
     "exit": "Exit",
-    "setting": "Setting"
+    "setting": "Setting",
+    "nodata": "No Data"
 }

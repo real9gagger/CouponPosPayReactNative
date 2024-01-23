@@ -65,7 +65,7 @@ export default function LoginIndex(props){
         //console.log("用户输入的账户密码：", username, password);
         $request("loginWithPassword", {username, password}).then(res => {
             dispatchSetAccessToken(res.access_token, res.expires_in, username, password);
-            $request("getPostInfo").then(dispatchUpdateUserInfo); //登录成功后获取用户信息
+            $request("getPostInfo").then(res => res && dispatchUpdateUserInfo(res)); //登录成功后获取用户信息
             props.navigation.replace("应用首页");
         }).catch(err => {
             setIsSubmiting(false);

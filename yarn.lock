@@ -6058,6 +6058,11 @@ react-native-linear-gradient@^2.8.3:
   resolved "https://registry.npmmirror.com/react-native-linear-gradient/-/react-native-linear-gradient-2.8.3.tgz#9a116649f86d74747304ee13db325e20b21e564f"
   integrity sha512-KflAXZcEg54PXkLyflaSZQ3PJp4uC4whM7nT/Uot9m0e/qxFV3p6uor1983D1YOBJbJN7rrWdqIjq0T42jOJyA==
 
+react-native-pager-view@^6.2.3:
+  version "6.2.3"
+  resolved "https://registry.npmmirror.com/react-native-pager-view/-/react-native-pager-view-6.2.3.tgz#698f6387fdf06cecc3d8d4792604419cb89cb775"
+  integrity sha512-dqVpXWFtPNfD3D2QQQr8BP+ullS5MhjRJuF8Z/qml4QTILcrWaW8F5iAxKkQR3Jl0ikcEryG/+SQlNcwlo0Ggg==
+
 react-native-reanimated@^3.6.1:
   version "3.6.1"
   resolved "https://registry.npmmirror.com/react-native-reanimated/-/react-native-reanimated-3.6.1.tgz#5add41efafac6d0befd9786e752e7f26dbe903b7"

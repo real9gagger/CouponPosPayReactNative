@@ -1,3 +1,5 @@
+export const UNKNOWN_ACTION = "UNKNOWN_ACTION"; //未知的操作
+
 //多语言
 export const CHANGE_LANGUAGE = "CHANGE_LANGUAGE";
 export const INITI_LANGUAGE = "INITI_LANGUAGE";

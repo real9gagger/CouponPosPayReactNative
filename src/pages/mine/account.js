@@ -62,7 +62,7 @@ export default function MineAccount(props){
     
     return (
         <ScrollView style={pgFF} contentContainerStyle={fxG1}>
-            <StatusBar backgroundColor="#fff" barStyle="dark-content" />
+            <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
             <View style={[fxC, fxAC, pdX]}>
                 <Text style={styles.accountTitle}>{i18n["app.alias"]}</Text>
                 <ImageButton 

@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
 
 const lgList = getLanguageList();
 
-export default function MineLanguage(props){
+export default function SettingLanguage(props){
     const initCode = useRef(getLanguageCode());
     const [lgCode, setLgCode] = useState(initCode.current);
     const i18n = useI18N();

@@ -2,8 +2,10 @@ import IndexIndex from "@/pages/index/index";
 import IndexSplash from "@/pages/index/splash";
 import IndexHome from "@/pages/index/home";
 import MineIndex from "@/pages/mine/index";
-import MineLanguage from "@/pages/mine/language";
 import MineAccount from "@/pages/mine/account";
+import MineHelps from "@/pages/mine/helps";
+import SettingIndex from "@/pages/setting/index";
+import SettingLanguage from "@/pages/setting/language";
 import LoginIndex from "@/pages/login/index";
 import TestIndex from "@/pages/test/index";
 
@@ -54,6 +56,12 @@ const PosPayRouterList = [
         options: noHeaderOptions
     },
     {
+        name: "应用首页",
+        component: IndexIndex,
+        options: noHeaderOptions,
+        params: { enabledDrawer: true } //是否启用抽屉（仅 “应用首页” 有这个功能，其他页面不必设置）
+    },
+    {
         name: "登录页",
         component: LoginIndex,
         options: noHeaderOptions
@@ -65,21 +73,28 @@ const PosPayRouterList = [
         options: {...defaultScreenOptions}
     },
     {
+        name: "帮助页",
+        component: MineHelps,
+        i18nTitle: "drawer.helps",
+        options: {...defaultScreenOptions}
+    },
+    {
         name: "语言设置",
-        component: MineLanguage,
+        component: SettingLanguage,
         i18nTitle: "language.header",
         options: {...defaultScreenOptions}
     },
     {
-        name: "应用首页",
-        component: IndexIndex,
-        options: noHeaderOptions,
-        params: { enabledDrawer: true } //是否启用抽屉（仅 “应用首页” 有这个功能，其他页面不必设置）
+        name: "设置页",
+        component: SettingIndex,
+        i18nTitle: "setting",
+        options: {...defaultScreenOptions}
     },
     {
         name: "测试中心",
         component: TestIndex,
-        options: noHeaderOptions
+        i18nTitle: "test.centre",
+        options: {...defaultScreenOptions}
     }
 ];
 

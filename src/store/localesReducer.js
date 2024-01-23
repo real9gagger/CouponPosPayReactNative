@@ -3,7 +3,6 @@ import { CHANGE_LANGUAGE, INITI_LANGUAGE } from "./types";
 import { setData, getData } from "./storage";
 
 const codeKey = "LocalesSettingLanguageCode";
-const isProduction = (process.env.NODE_ENV === "production");
 const regDigits = /\$\[\d+\]/; //用于检查翻译内容是否有占位标记
 const regKey = /^([a-z0-9_]+\.)*[a-z0-9_]+$/; //用于检查键名是否规范
 
@@ -110,12 +109,12 @@ export function changeLanguage(lgcode){
         //提取哪些需要填充的翻译内容
         for(const kk in lange.i18n){
             //非正式环境才检查键名是否规范
-            if(!isProduction && !regKey.test(kk)){
+            if(!runtimeEnvironment.isProduction && !regKey.test(kk)){
                 throw new Error(`多语言键名“${kk}”不规范，请参考 /src/locales/zh_CN.json 规范化说明。`);
             }
             const txtc = lange.i18n[kk];
             if(txtc.startsWith("\\\\")){
-                if(isProduction || regDigits.test(txtc)){
+                if(runtimeEnvironment.isProduction || regDigits.test(txtc)){
                     lange.i18n[kk] = { content:txtc.substr(2), slices:null, cloze:clozeHandler }; //由字符串转成对象，调用方式：i18n[kk].cloze(12,34,56);
                 } else {
                     throw new Error(`多语言 ${kk} 的内容以“\\\\”开头，但内容里没有 $[xx] 的占位标记！`);

@@ -11,10 +11,12 @@ const i18nScreenList = PosPayRouterList.map((vxo, ixo) => (!vxo.i18nTitle ? -1 :
 export default function Routers(){
     const i18n = useI18N();
     
-    for(const ixo of i18nScreenList){
-        PosPayRouterList[ixo].options.title = i18n[PosPayRouterList[ixo].i18nTitle];
+    if(i18n){
+        for(const ixo of i18nScreenList){
+            PosPayRouterList[ixo].options.title = i18n[PosPayRouterList[ixo].i18nTitle];
+        }
     }
-
+    
     return (
         <NavigationContainer>
             <PosPayStack.Navigator initialRouteName="启动屏" screenOptions={defaultScreenOptions}>

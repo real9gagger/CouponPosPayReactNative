@@ -16,7 +16,7 @@ const settingList = [
     {
         pageName: "语言设置", //页面名称
         i18nLabel: "language.header",
-        i18nDesc: "" //描述性文本
+        i18nDesc: "app.lgname" //描述性文本
     }
 ];
 
@@ -24,7 +24,7 @@ if(!runtimeEnvironment.isProduction){
     settingList.push({
         pageName: "测试中心",
         i18nLabel: "test.centre",
-        i18nDesc: "仅开发模式下可用"
+        i18nDesc: "test.debug.available"
     });
 }
 
@@ -42,7 +42,7 @@ export default function SettingIndex(props){
                 <TouchableHighlight key={vx.pageName} style={[pdHX, bgFF]} underlayColor="#eee" onPress={() => onItemPress(vx.pageName)}>
                     <View style={[pdVX, fxHC, ix && styles.boxDivider]}>
                         <Text style={[fs18, fxG1]}>{i18n[vx.i18nLabel]}</Text>
-                        <Text style={!vx.i18nDesc ? dpN : [fs14, tc99]}>{vx.i18nDesc}</Text>
+                        <Text style={!vx.i18nDesc ? dpN : [fs14, tc99]}>{i18n[vx.i18nDesc]}</Text>
                         <PosPayIcon name="right-arrow" color="#aaa" size={22} />
                     </View>
                 </TouchableHighlight>

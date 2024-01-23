@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ScrollView, View, Text, TextInput, StatusBar, StyleSheet } from "react-native";
+import { ScrollView, View, Text, TextInput, TouchableOpacity, StatusBar, StyleSheet } from "react-native";
 import { dispatchSetAccessToken, dispatchUpdateUserInfo } from "@/store/setter";
 import { useI18N, getUserInfo } from "@/store/getter";
 import GradientButton from "@/components/GradientButton";
@@ -36,6 +36,10 @@ const styles = StyleSheet.create({
     },
     inputFocus: {
         borderColor: appMainColor
+    },
+    lgsBox: {
+        marginTop: 50,
+        padding: 10
     }
 });
 
@@ -70,6 +74,10 @@ export default function LoginIndex(props){
         }).catch(err => {
             setIsSubmiting(false);
         });
+    }
+    
+    const gotoLanguageSetting = () => {
+        props.navigation.navigate("语言设置");
     }
     
     useEffect(() => {
@@ -126,6 +134,11 @@ export default function LoginIndex(props){
                     showLoading={isSubmiting}
                     disable={isSubmiting}>{i18n["btn.login"]}</GradientButton>
             </View>
+            <TouchableOpacity style={[fxHM, styles.lgsBox]} onPress={gotoLanguageSetting}>
+                <PosPayIcon name="internationalization" color={appMainColor} size={16} offset={-6} />
+                <Text style={tc99}>{i18n["app.lgname"]}</Text>
+                <PosPayIcon name="right-arrow" color="#999" size={16} offset={3}/>
+            </TouchableOpacity>
         </ScrollView>
     );
 }

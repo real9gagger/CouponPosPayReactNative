@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { View, Text, Pressable, TextInput, StatusBar, StyleSheet } from "react-native";
+import { View, Text, TouchableWithoutFeedback, TextInput, StatusBar, StyleSheet } from "react-native";
 import { useI18N } from "@/store/getter";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
 import ImageButton from "@/components/ImageButton";
@@ -21,10 +21,10 @@ const styles = StyleSheet.create({
         overflow: "hidden"
     },
     tabBar: {
-        backgroundColor: "#fff",
+        backgroundColor: "#eee",
         elevation: 0, /* 禁用底部阴影效果 */
         borderTopColor: "#ccc",
-        borderTopWidth: StyleSheet.hairlineWidth
+        borderTopWidth: 0
     },
     tabIndicator: {
         backgroundColor: appMainColor
@@ -48,38 +48,83 @@ const styles = StyleSheet.create({
     },
     moneyLabel: {
         fontSize: 20,
-        paddingVertical: 20,
+        paddingVertical: 5
     },
     moneyInput: {
         textAlign: "right",
         borderBottomColor: "#999",
         borderBottomWidth: StyleSheet.hairlineWidth,
-        fontSize: 32,
-        paddingBottom: 5
+        fontSize: 36,
+        paddingBottom: 0,
+        paddingRight: 10,
     },
     couponLabel: {
         flex: 1,
-        fontSize: 20
+        fontSize: 20,
+        paddingVertical: 5
     },
+    couponInput: {
+        textAlign: "right",
+        borderBottomColor: "#999",
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        fontSize: 30,
+        paddingVertical: 4,
+        paddingRight: 10
+    },
+    couponEmpty: {
+        color: "#ccc"
+    },
+    InputActived: {
+        borderBottomColor: appMainColor,
+        backgroundColor: "#e5faf3"
+    }
 });
 
 //银行卡
 function tabBankCard(props){
-    const [payAmounts, setPayAmounts] = useState("");
     const i18n = useI18N();
+    const pkRef = useRef();
+    const [payAmounts, setPayAmounts] = useState("");
+    const [couponCode, setCouponCode] = useState("");
+    const [currentInputBox, setCurrentInputBox] = useState(1);
+    
+    const setInputValue = (txt) => {
+        if(currentInputBox === 1){
+            setPayAmounts(txt);
+        } else {
+            setCouponCode(txt);
+        }
+    }
+    
+    const toggleAmountInput = () => {
+        setCurrentInputBox(1);        
+        pkRef.current.initiText(payAmounts);
+    }
+    const toggleCouponInput = () => {
+        setCurrentInputBox(2);
+        pkRef.current.initiText(couponCode);
+    }
+    const togglePKHidden = () => {
+        setCurrentInputBox(0);
+    }
     
     return (<>
         <View style={pdX}>
             <Text style={styles.moneyLabel}>{i18n["input.amount.tip"]}</Text>
-            <Text style={styles.moneyInput}>{payAmounts}</Text>
+            <Text style={[styles.moneyInput, currentInputBox===1&&styles.InputActived]} onPress={toggleAmountInput}>{i18n["currency.symbol"]}{payAmounts}</Text>
         </View>
-        <Pressable style={[pdX, fxHC]} android_ripple={{color:"#ccc"}} onPress={()=>0}>
-            <Text style={styles.couponLabel}>{i18n["coupon"]}</Text>
-            <Text style={[tc99, mgRX]}>{i18n["qrcode.identify"]}</Text>
-            <PosPayIcon name="qrcode-pay" color="#000" size={24} />
-        </Pressable>
-        <View style={fxG1}>{/* 占位专用 */}</View>
-        <PayKeyboard precision={2} onChange={setPayAmounts} />
+        <View style={pdHX}>
+            <View style={fxHC}>
+                <Text style={styles.couponLabel}>{i18n["coupon"]}</Text>
+                <Text style={[tc99, mgRX]}>{i18n["qrcode.identify"]}</Text>
+                <PosPayIcon name="qrcode-pay" color="#000" size={24} />
+            </View>
+            <Text 
+                style={[styles.couponInput, !couponCode&&styles.couponEmpty, currentInputBox===2&&styles.InputActived]} 
+                onPress={toggleCouponInput}>{couponCode || i18n["coupon.code"]}</Text>
+        </View>
+        <Text style={fxG1} onPress={togglePKHidden}>{/* 点我关闭键盘 */}</Text>
+        <PayKeyboard ref={pkRef} visible={currentInputBox > 0} precision={2} onChange={setInputValue} onClose={togglePKHidden} />
     </>);
 }
 
@@ -128,11 +173,7 @@ const renderScene = SceneMap({ tabBankCard, tabEWallet, tabQRCode });
 
 export default function IndexHome(props){
     const i18n = useI18N();
-    const tabList = useRef([
-        { key: "tabBankCard", title: i18n["credit.card"] },
-        { key: "tabEWallet", title: i18n["e.wallet"] },
-        { key: "tabQRCode", title: i18n["qrcode.pay"] },
-    ]);
+    const [tabList, setTabList] = useState([]);
     const [tabIndex, setTabIndex] = useState(0);
     
     const openDrawer = () => {
@@ -140,8 +181,12 @@ export default function IndexHome(props){
     }
     
     useEffect(() => {
-        //console.log();
-    }, []);
+        setTabList([
+            { key: "tabBankCard", title: i18n["credit.card"] },
+            { key: "tabEWallet", title: i18n["e.wallet"] },
+            { key: "tabQRCode", title: i18n["qrcode.pay"] },
+        ]);
+    }, [i18n]);
     
     return (
         <View style={fxG1}>
@@ -151,7 +196,7 @@ export default function IndexHome(props){
                 <Text style={[taC,fs20]}>{i18n["tabbar.home"]}</Text>
             </View>
             <TabView
-                navigationState={{ index: tabIndex, routes: tabList.current }}
+                navigationState={{ index: tabIndex, routes: tabList }}
                 renderScene={renderScene}
                 onIndexChange={setTabIndex}
                 initialLayout={styles.tabView}

@@ -13,6 +13,7 @@
     "development.test": "\\\\这是个测试：今天是$[0]年$[1]月$[2]日。",
     "copyright.info": "\\\\由 xcarbon.cc@$[0] 提供技术支持 v$[1]",
     "app.alias": "旅游商户营销平台",
+    "app.lgname": "简体中文",
     "tabbar.home": "结算",
     "tabbar.mine": "个人中心",
     "btn.ok": "好",
@@ -35,11 +36,14 @@
     "drawer.summary": "日计",
     "drawer.helps": "帮助与反馈",
     "test.centre": "测试中心",
+    "test.debug.available": "仅开发模式下可用",
     "credit.card": "信用卡",
     "e.wallet": "电子钱包",
     "qrcode.pay": "扫码支付",
     "qrcode.identify": "扫码识别",
     "input.amount.tip": "请输入支付金额",
+    "currency.symbol": "￥",
+    "coupon.code": "优惠码",
     
     /* ==== 通用翻译 ==== */
     "coupon": "优惠券",

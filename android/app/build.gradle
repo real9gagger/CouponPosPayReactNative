@@ -228,7 +228,7 @@ android {
                 output -> {//获取ABI类型
                     def abiName = output.getFilter(OutputFile.ABI)
                     if (abiName == null) {//混合包 ABI 为空 需要命名
-                        abiName = "all-cpu"
+                        abiName = "any-cpu"
                     }
                     if (output.outputFile != null && output.outputFile.name.endsWith(".apk")) {
                         outputFileName = "PosPay_${defaultConfig.versionName}.${defaultConfig.versionCode}_${abiName}.apk"

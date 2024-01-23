@@ -1,8 +1,6 @@
 import AppPackageInfo from "@/modules/AppPackageInfo";
-import { CHANGE_LANGUAGE, INITI_LANGUAGE } from "./types";
-import { setData, getData } from "./storage";
+import { CHANGE_LANGUAGE } from "./types";
 
-const codeKey = "LocalesSettingLanguageCode";
 const regDigits = /\$\[\d+\]/; //用于检查翻译内容是否有占位标记
 const regKey = /^([a-z0-9_]+\.)*[a-z0-9_]+$/; //用于检查键名是否规范
 
@@ -123,8 +121,6 @@ export function changeLanguage(lgcode){
         }
         lange.i18n["i.have.been.parsed"] = "1"; //标记为 “我已被解析过”
     }
-
-    setData(codeKey, lange.code); //保存在本地
     
     return {
         type: CHANGE_LANGUAGE,
@@ -133,24 +129,14 @@ export function changeLanguage(lgcode){
 }
 
 //根据用户所在国家初始化语言设置
-export function initiLanguage(){
-    return getData(codeKey).then(val => {        
-        if(!val){//获取 APP 系统语言
-            val = AppPackageInfo.getLocaleLanguage()
-        }
-        
-        const output = changeLanguage(val);
-        
-        output.type = INITI_LANGUAGE;
-        
-        return output;
-    });
+export function initiLanguage(lgcode){    
+    return changeLanguage(lgcode || AppPackageInfo.getLocaleLanguage()); //如果没有语言，则获取 APP 系统语言;
 }
 
 export default localesReducer = (state = {}, action) => {
+    
     switch(action.type){
         case CHANGE_LANGUAGE: return action.payload;
-        case INITI_LANGUAGE: return action.payload;
     }
     
     return state;

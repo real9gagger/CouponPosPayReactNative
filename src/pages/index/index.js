@@ -1,7 +1,6 @@
 import { useEffect } from "react";
-import { View, Text, StyleSheet, BackHandler } from "react-native";
+import { View, Text, StyleSheet, Pressable, StatusBar, BackHandler } from "react-native";
 import { createDrawerNavigator, DrawerContentScrollView } from "@react-navigation/drawer";
-import { PlatformPressable } from "@react-navigation/elements";
 import { createPosPayNavigator } from "@/routers/tabsCreater";
 import { PosPayTabList, noHeaderOptions } from "@/routers/screens";
 import { useI18N } from "@/store/getter";
@@ -119,9 +118,7 @@ function MyTabs(arg0){
 };
 
 //自定义抽屉内容
-function CustomDrawerContent(props) {   
-    //console.log(props);
-    
+function CustomDrawerContent(props) {    
     //抽屉列表中的项点击
     function onDrawerItemPress(itemKey){
         switch(itemKey){
@@ -137,7 +134,7 @@ function CustomDrawerContent(props) {
         
         props.navigation.closeDrawer();
     }
-    
+
     return (
         <DrawerContentScrollView>
             {drawerItemList.map((vx, ix) => {
@@ -149,10 +146,10 @@ function CustomDrawerContent(props) {
                     );
                 } else {
                     return (
-                        <PlatformPressable key={vx.key} style={styles.itemBox} onPress={() => onDrawerItemPress(vx.key)} pressColor="#ccc">
+                        <Pressable key={vx.key} style={styles.itemBox} onPress={() => onDrawerItemPress(vx.key)} android_ripple={tcCC}>
                             <PosPayIcon name={vx.iconName} size={20} />
                             <Text style={styles.itemLabel}>{vx.label}</Text>
-                        </PlatformPressable>
+                        </Pressable>
                     )
                 }
             })}
@@ -164,11 +161,10 @@ function CustomDrawerContent(props) {
 export default function IndexIndex(props){
     const i18n = useI18N();
     
-    if(!drawerItemList[0].label){//初始化！
-        drawerItemList.forEach(vxo => {
-            vxo.label = i18n[vxo.i18nLabel];
-        });
-    }
+    useEffect(() => {
+        StatusBar.setBackgroundColor("#FFF", false);
+        StatusBar.setHidden(false, "none");
+    }, []);
     
     useEffect(() => {
         console.log("语言类型改变了...");

@@ -3,7 +3,7 @@ import { TouchableHighlight, View, Text, StyleSheet, Vibration } from "react-nat
 import { getI18N } from "@/store/getter"
 import PosPayIcon from "@/components/PosPayIcon"
 
-const TAP_COLOR = "#f3f3f3"
+const TAP_COLOR = "#f0f0f0"
 
 const styles = StyleSheet.create({
     pkContainer: {
@@ -88,7 +88,8 @@ class PayKeyboard extends Component {
                 } else {
                     const idot = this.inputText.lastIndexOf(".") + 1
                     const prec = (+this.props.precision || 0) //保留多少位小数
-                    if(idot > 0 && prec > 0 && this.inputText.length >= (idot + prec)){
+                    const maxlen = (+this.props.maxlength || 16) //保留多少位小数
+                    if(idot > 0 && prec > 0 && this.inputText.length >= (idot + prec) || this.inputText.length > maxlen){
                         return
                     } else {
                         this.inputText += num   
@@ -118,13 +119,15 @@ class PayKeyboard extends Component {
                 break
             case "E": //退出（exit）
                 if(this.props.onClose){
-                    this.props.onClose()
+                    this.props.onClose(false)
                 }
+                this.inputText = ""
                 return
             case "Y": //确认（yes）
                 if(this.props.onConfirm){
                     this.props.onConfirm(this.inputText)
                 }
+                this.inputText = ""
                 return
             default: return
         }
@@ -134,33 +137,45 @@ class PayKeyboard extends Component {
         }
     }
     
+    initiText(txt){
+        this.inputText = (txt ? txt.toString() : "")
+    }
+    
+    clearText(){
+        this.inputText = ""
+    }
+    
     render(){
+        if(this.props.visible === false){
+            return null
+        }
+        
         const isprec = !!this.props.precision
         const isfixed = !!this.props.fixed
         return (
             <View style={[styles.pkContainer, isfixed && styles.pkFixed]}>
                 <View style={styles.keyColumn}>
-                    <TouchableHighlight underlayColor={TAP_COLOR} activeOpacity={1} onPress={this.callKP7} style={styles.keyBox}><Text style={styles.keyText}>7</Text></TouchableHighlight>
-                    <TouchableHighlight underlayColor={TAP_COLOR} activeOpacity={1} onPress={this.callKP4} style={styles.keyBox}><Text style={styles.keyText}>4</Text></TouchableHighlight>
-                    <TouchableHighlight underlayColor={TAP_COLOR} activeOpacity={1} onPress={this.callKP1} style={styles.keyBox}><Text style={styles.keyText}>1</Text></TouchableHighlight>
-                    <TouchableHighlight underlayColor={TAP_COLOR} activeOpacity={1} onPress={this.callKPE} style={styles.keyBox}><PosPayIcon name="collapse-keyboard" size={20} /></TouchableHighlight>
+                    <TouchableHighlight underlayColor={TAP_COLOR} onPress={this.callKP7} style={styles.keyBox}><Text style={styles.keyText}>7</Text></TouchableHighlight>
+                    <TouchableHighlight underlayColor={TAP_COLOR} onPress={this.callKP4} style={styles.keyBox}><Text style={styles.keyText}>4</Text></TouchableHighlight>
+                    <TouchableHighlight underlayColor={TAP_COLOR} onPress={this.callKP1} style={styles.keyBox}><Text style={styles.keyText}>1</Text></TouchableHighlight>
+                    <TouchableHighlight underlayColor={TAP_COLOR} onPress={this.callKPE} style={styles.keyBox}><PosPayIcon name="collapse-keyboard" size={20} /></TouchableHighlight>
                 </View>
                 <View style={styles.keyColumn}>
-                    <TouchableHighlight underlayColor={TAP_COLOR} activeOpacity={1} onPress={this.callKP8} style={styles.keyBox}><Text style={styles.keyText}>8</Text></TouchableHighlight>
-                    <TouchableHighlight underlayColor={TAP_COLOR} activeOpacity={1} onPress={this.callKP5} style={styles.keyBox}><Text style={styles.keyText}>5</Text></TouchableHighlight>
-                    <TouchableHighlight underlayColor={TAP_COLOR} activeOpacity={1} onPress={this.callKP2} style={styles.keyBox}><Text style={styles.keyText}>2</Text></TouchableHighlight>
-                    <TouchableHighlight underlayColor={TAP_COLOR} activeOpacity={1} onPress={this.callKP0} style={styles.keyBox}><Text style={styles.keyText}>0</Text></TouchableHighlight>
+                    <TouchableHighlight underlayColor={TAP_COLOR} onPress={this.callKP8} style={styles.keyBox}><Text style={styles.keyText}>8</Text></TouchableHighlight>
+                    <TouchableHighlight underlayColor={TAP_COLOR} onPress={this.callKP5} style={styles.keyBox}><Text style={styles.keyText}>5</Text></TouchableHighlight>
+                    <TouchableHighlight underlayColor={TAP_COLOR} onPress={this.callKP2} style={styles.keyBox}><Text style={styles.keyText}>2</Text></TouchableHighlight>
+                    <TouchableHighlight underlayColor={TAP_COLOR} onPress={this.callKP0} style={styles.keyBox}><Text style={styles.keyText}>0</Text></TouchableHighlight>
                 </View>
                 <View style={styles.keyColumn}>
-                    <TouchableHighlight underlayColor={TAP_COLOR} activeOpacity={1} onPress={this.callKP9} style={styles.keyBox}><Text style={styles.keyText}>9</Text></TouchableHighlight>
-                    <TouchableHighlight underlayColor={TAP_COLOR} activeOpacity={1} onPress={this.callKP6} style={styles.keyBox}><Text style={styles.keyText}>6</Text></TouchableHighlight>
-                    <TouchableHighlight underlayColor={TAP_COLOR} activeOpacity={1} onPress={this.callKP3} style={styles.keyBox}><Text style={styles.keyText}>3</Text></TouchableHighlight>
-                    <TouchableHighlight underlayColor={TAP_COLOR} activeOpacity={1} onPress={isprec ? this.callKP_ : null} style={[styles.keyBox, !isprec && op05]}><Text style={styles.keyText}>.</Text></TouchableHighlight>
+                    <TouchableHighlight underlayColor={TAP_COLOR} onPress={this.callKP9} style={styles.keyBox}><Text style={styles.keyText}>9</Text></TouchableHighlight>
+                    <TouchableHighlight underlayColor={TAP_COLOR} onPress={this.callKP6} style={styles.keyBox}><Text style={styles.keyText}>6</Text></TouchableHighlight>
+                    <TouchableHighlight underlayColor={TAP_COLOR} onPress={this.callKP3} style={styles.keyBox}><Text style={styles.keyText}>3</Text></TouchableHighlight>
+                    <TouchableHighlight underlayColor={TAP_COLOR} onPress={isprec ? this.callKP_ : null} style={[styles.keyBox, !isprec && op05]}><Text style={styles.keyText}>.</Text></TouchableHighlight>
                 </View>
                 <View style={styles.keyColumn}>
-                    <TouchableHighlight underlayColor={TAP_COLOR} activeOpacity={1} onPress={this.callKPB} style={styles.keyBox}><PosPayIcon name="pay-backspace" size={22} /></TouchableHighlight>
-                    <TouchableHighlight underlayColor={TAP_COLOR} activeOpacity={1} onPress={this.callKPD} style={styles.keyBox}><PosPayIcon name="delete-x" size={22} /></TouchableHighlight>
-                    <TouchableHighlight underlayColor={appLightColor} activeOpacity={1} onPress={this.callKPY} style={[styles.keyBox, styles.confirmBtn]}><Text style={styles.confirmText}>{this.confirmText}</Text></TouchableHighlight>
+                    <TouchableHighlight underlayColor={TAP_COLOR} onPress={this.callKPB} style={styles.keyBox}><PosPayIcon name="pay-backspace" size={22} /></TouchableHighlight>
+                    <TouchableHighlight underlayColor={TAP_COLOR} onPress={this.callKPD} style={styles.keyBox}><PosPayIcon name="delete-x" size={22} /></TouchableHighlight>
+                    <TouchableHighlight underlayColor={appLightColor} onPress={this.callKPY} style={[styles.keyBox, styles.confirmBtn]}><Text style={styles.confirmText}>{this.confirmText}</Text></TouchableHighlight>
                 </View>
             </View>
         )

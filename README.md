@@ -18,6 +18,16 @@
 *  https://github.com/google/double-conversion/archive 
 *  将上述四个链接中的 “github.com” 换成 “kkgithub.com”（或者其他镜像网站也可以）
 
+## 调试 Panasonic JT-C60 开发专用POS机
+> 注意：必须是【开发专用】POS机。【商用】的无法用于开发
+* 1、APK签名详细信息参考官方 APK 签名方法：https://www.smbc-card.com/steradevelopers/develop/signature.jsp
+* 2、打包出 APK 文件后，使用 /android/app/AppStoreTestSign.bat 文件，执行命令行 AppStoreTestSign.bat zzz/yyy/xxx.apk 
+* 【注意】官方的 AppStoreTestSign.bat 是有问题的，需要修改后才能使用！放在 /android/app/ 目录下的 AppStoreTestSign.bat 是修改后的文件，可直接使用
+* 【注意】如果运行 AppStoreTestSign.bat 后仍然安装失败，请打开 AppStoreTestSign.bat 查看详细信息
+* 【注意】推荐安装 openssl 版本：1.1.1w，或者其他低于 3.0.0 的版本（已放在 /android/app/Win64OpenSSL_Light-1_1_1w-20240125.zip 中，解压安装即可）
+* 3、安装 APK 时，必须使用 adb install -r xxx.apk 命令行安装，直接复制 APK 文件到设备将无法安装！
+* 4、显示POS机调试设置界面：安装 Debug 版 APK 后，打开出行红字错误。运行 adb shell input keyevent KEYCODE_MENU 即可显示调试设置页面，设置 debug host 后，重启APP即可。
+
 ## 打包条件
 > 列出打包该项目所必须的条件和相关依赖 
 * 先运行在项目根目录下命令行 react-native bundle --entry-file index.js --bundle-output ./android/app/src/main/assets/index.android.bundle --platform android --assets-dest ./android/app/src/main/res/ --dev false

@@ -126,7 +126,7 @@ def enableHermes = project.ext.react.get("enableHermes", false);
  */
 def reactNativeArchitectures() {
     def value = project.getProperties().get("reactNativeArchitectures")
-    return value ? value.split(",") : ["armeabi-v7a", "x86_64", "arm64-v8a"]
+    return value ? value.split(",") : ["armeabi-v7a", "x86_64", "arm64-v8a", "x86"]
 }
 
 android {
@@ -138,8 +138,8 @@ android {
         applicationId "com.couponpospayreactnative"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 20240123
-        versionName "1.0.1"
+        versionCode 20240125
+        versionName "1.0.3"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
 
         if (isNewArchitectureEnabled()) {

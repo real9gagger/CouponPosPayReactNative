@@ -2,9 +2,9 @@ import { ScrollView, View, Text, Button, StatusBar, StyleSheet } from "react-nat
 
 const styles = StyleSheet.create({
     btnBox: {
-        marginTop: 40
+        marginTop: 30
     }
-})
+});
 
 export default function TestIndex(props){
     
@@ -23,14 +23,16 @@ export default function TestIndex(props){
         });
     }
     
+    const gotoDevinfo = () => {
+        props.navigation.navigate("设备信息");
+    }
+    
     return (
         <ScrollView style={pdX}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
-            <View>
-                <Text style={[fs30, taC, pdHX]}>测试中心</Text>
-                <Text style={[fs20, taC, tcMC]}>请把要测试的功能放在这里</Text>
-            </View>
+            <View><Text style={[fs20, taC, tcMC]}>请把要测试的功能放在这里</Text></View>
             <View style={styles.btnBox}><Button title="测试发送短信验证码" onPress={sendMsgCode} /></View>
+            <View style={styles.btnBox}><Button title="查看设备信息" onPress={gotoDevinfo} /></View>
         </ScrollView>
     );
 }

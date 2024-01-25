@@ -23,7 +23,7 @@ instance.interceptors.request.use(function (config) {
 
 //返回拦截处理
 instance.interceptors.response.use(function (response) {
-    //console.log("成功响应", response.data)
+    //console.log(response.config.url + " 成功响应", response.data)
     const resData = response.data;
     const resCode = (resData.code || 999);
     if (resCode === 200) {

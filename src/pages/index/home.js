@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { View, Text, TouchableWithoutFeedback, TextInput, StatusBar, StyleSheet } from "react-native";
+import { ScrollView, View, Text, TouchableWithoutFeedback, TextInput, StatusBar, StyleSheet } from "react-native";
 import { useI18N } from "@/store/getter";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
 import ImageButton from "@/components/ImageButton";
@@ -31,13 +31,13 @@ const styles = StyleSheet.create({
     },
     tabActived: {
         color: appMainColor,
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: "bold",
         paddingLeft: 5
     },
     tabInactived: {
         color: "#666",
-        fontSize: 16,
+        fontSize: 14,
         paddingLeft: 5
     },
     tabView: {
@@ -47,20 +47,20 @@ const styles = StyleSheet.create({
         width: deviceDimensions.screenWidth / 3
     },
     moneyLabel: {
-        fontSize: 20,
+        fontSize: 16,
         paddingVertical: 5
     },
     moneyInput: {
         textAlign: "right",
         borderBottomColor: "#999",
         borderBottomWidth: StyleSheet.hairlineWidth,
-        fontSize: 36,
+        fontSize: 30,
         paddingBottom: 0,
         paddingRight: 10,
     },
     couponLabel: {
         flex: 1,
-        fontSize: 20,
+        fontSize: 16,
         paddingVertical: 5
     },
     couponInput: {
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
         borderBottomColor: "#999",
         borderBottomWidth: StyleSheet.hairlineWidth,
         fontSize: 30,
-        paddingVertical: 4,
+        paddingVertical: 0,
         paddingRight: 10
     },
     couponEmpty: {
@@ -189,11 +189,11 @@ export default function IndexHome(props){
     }, [i18n]);
     
     return (
-        <View style={fxG1}>
+        <View style={pgFF}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
             <View style={[fxVM, styles.headerBox]}>
                 <ImageButton source={LocalPictures.iconToggleDrawer} style={styles.toggleIcon} onPress={openDrawer} />
-                <Text style={[taC,fs20]}>{i18n["tabbar.home"]}</Text>
+                <Text style={[taC,fs18]}>{i18n["tabbar.home"]}</Text>
             </View>
             <TabView
                 navigationState={{ index: tabIndex, routes: tabList }}

@@ -11,7 +11,7 @@ const COLOR_GREY = "#aaa";
 const styles = StyleSheet.create({
     loginBox: {
         width: LOGIN_BOX_WIDTH,
-        marginTop: (deviceDimensions.isLandscape ? 30 : deviceDimensions.screenHeight * 0.25), //需要处理横屏的情况
+        marginTop: (deviceDimensions.isLandscape ? 30 : deviceDimensions.screenHeight * 0.2), //需要处理横屏的情况
         marginLeft: (deviceDimensions.screenWidth - LOGIN_BOX_WIDTH) / 2
     },
     loginTitle: {
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
         borderColor: appMainColor
     },
     lgsBox: {
-        marginTop: 50,
+        marginTop: 40,
         padding: 10
     }
 });
@@ -49,7 +49,7 @@ export default function LoginIndex(props){
     const [isPswdFocus, setIsPswdFocus] = useState(false);
     const [isPeekPswd, setIsPeekPswd] = useState(false);
     const [isSubmiting, setIsSubmiting] = useState(false);
-    const [username, setUsername] = useState(getUserInfo("loginAccount"));
+    const [username, setUsername] = useState(getUserInfo("loginAccount") || "商户");
     const [password, setPassword] = useState(getUserInfo("loginPassword"));
     
     const onSubmit = () => {

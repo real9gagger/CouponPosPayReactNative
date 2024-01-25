@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         backgroundColor: "#fff",
         height: (deviceDimensions.isLandscape ? 40 : 55),
-        margin: 3,
+        margin: 2,
         borderRadius: 8,
         elevation: 0
     },

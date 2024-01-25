@@ -2,9 +2,10 @@ import { useEffect } from "react";
 import { View, Text, StyleSheet, Pressable, StatusBar, BackHandler } from "react-native";
 import { createDrawerNavigator, DrawerContentScrollView } from "@react-navigation/drawer";
 import { createPosPayNavigator } from "@/routers/tabsCreater";
-import { PosPayTabList, noHeaderOptions } from "@/routers/screens";
 import { useI18N } from "@/store/getter";
 import PosPayIcon from "@/components/PosPayIcon";
+import IndexHome from "@/pages/index/home";
+import MineIndex from "@/pages/mine/index";
 
 //底部标签栏
 const PosPayTab = createPosPayNavigator();
@@ -15,7 +16,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16
     },
     titleLabel: {
-        fontSize: 20,
+        fontSize: 18,
         color: "#000",
         fontWeight: "bold",
         marginTop: 5,
@@ -27,7 +28,7 @@ const styles = StyleSheet.create({
         borderTopColor: "#ccc"
     },
     itemLabel: {
-        fontSize: 18,
+        fontSize: 16,
         color: "#000",
         paddingLeft: 16
     },
@@ -39,6 +40,26 @@ const styles = StyleSheet.create({
         paddingVertical: 10
     }
 });
+
+//无标题页样式选项
+const noHeaderOptions = {
+	headerShown: false, // 是否显示标题
+    animationEnabled: false
+};
+
+//首页底部标签栏列表
+const posPayTabList = [
+    {
+        name: "主页",
+        component: IndexHome,
+        options: noHeaderOptions
+    },
+    {
+        name: "个人中心",
+        component: MineIndex,
+        options: noHeaderOptions
+    }
+];
 
 //抽屉列表
 const drawerItemList = [
@@ -104,7 +125,7 @@ function MyTabs(arg0){
     const params = { enabledDrawer: (arg0 !== false) };
     return (
         <PosPayTab.Navigator initialRouteName="主页">
-            {PosPayTabList.map(item =>
+            {posPayTabList.map(item =>
                 <PosPayTab.Screen
                     key={item.name}
                     name={item.name}
@@ -146,7 +167,7 @@ function CustomDrawerContent(props) {
                     );
                 } else {
                     return (
-                        <Pressable key={vx.key} style={styles.itemBox} onPress={() => onDrawerItemPress(vx.key)} android_ripple={tcCC}>
+                        <Pressable key={vx.key} style={styles.itemBox} onPress={() => onDrawerItemPress(vx.key)} android_ripple={tcBB}>
                             <PosPayIcon name={vx.iconName} size={20} />
                             <Text style={styles.itemLabel}>{vx.label}</Text>
                         </Pressable>
@@ -160,6 +181,7 @@ function CustomDrawerContent(props) {
 //首页标签栏组件
 export default function IndexIndex(props){
     const i18n = useI18N();
+    const params = props.route.params || {};
     
     useEffect(() => {
         StatusBar.setBackgroundColor("#FFF", false);
@@ -173,13 +195,32 @@ export default function IndexIndex(props){
         });
     }, [i18n]);
     
-    if(!!props.route.params?.enabledDrawer){//如果弃用抽屉
-        return (
-            <PosPayDrawer.Navigator screenOptions={noHeaderOptions} drawerContent={CustomDrawerContent}>
-                <PosPayDrawer.Screen name="抽屉栏" component={MyTabs} />
-            </PosPayDrawer.Navigator>
-        );
+    if(params.enabledDrawer){//如果启用抽屉
+        if(params.enabledTabbar){
+            return (
+                <PosPayDrawer.Navigator screenOptions={noHeaderOptions} drawerContent={CustomDrawerContent}>
+                    <PosPayDrawer.Screen 
+                        name="抽屉栏" 
+                        component={MyTabs}
+                        options={noHeaderOptions} />
+                </PosPayDrawer.Navigator>
+            );
+        } else {//如果不启用底部标签栏
+            return (
+                <PosPayDrawer.Navigator screenOptions={noHeaderOptions} drawerContent={CustomDrawerContent}>
+                    <PosPayDrawer.Screen 
+                        name={posPayTabList[0].name} 
+                        component={posPayTabList[0].component} 
+                        options={posPayTabList[0].options} 
+                        initialParams={params} />
+                </PosPayDrawer.Navigator>
+            );
+        }
     } else {
-        return MyTabs(false);
+        if(params.enabledTabbar){
+            return MyTabs(false);
+        } else {//如果不启用底部标签栏
+            return posPayTabList[0].component(props);
+        }
     }
 }

@@ -7,7 +7,7 @@ export default function MineHelps(props){
     return (
         <ScrollView>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
-            <Text style={[pdX, taC, fs18]}>{i18n["nodata"]}</Text>
+            <Text style={[pdX, taC, fs16]}>{i18n["nodata"]}</Text>
         </ScrollView>
     );
 }

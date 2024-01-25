@@ -43,7 +43,11 @@ global.appMainColor = "#30a3fc";
 global.appLightColor = "#62b9fd"; //由 SASS 的 lighten(appMainColor, 10%) 生成所得。https://sass.js.org/
 // APP 主色的深色调。比主色深一点
 global.appDarkColor = "#048cf5"; //由 SASS 的 darken(appMainColor, 10%) 生成所得。https://sass.js.org/
+// APP 基准字体大小（后面可以设置1倍、2倍、3倍的基于基准字体的大小）
+global.appBaseFontSize = (dimensionsInfo.scale > 2 ? 16 : 14);
 
+//获取基于基准字体的多少倍（get responsive font size）字体，类似于 CSS rem 单位
+global.$getrfs = (em) => Math.max((+em || 1) * appBaseFontSize, 0);
 // 图片地址。Object Storage Service Path 数据对象存储服务的路径
 global.$osspath = (path) => {
     if(path){
@@ -73,5 +77,20 @@ global.$throttle = (func, delay, ...args) => {
         isThrottled = true;
         func(...args);
         setTimeout(() => isThrottled=false, delay);
+    }
+}
+// 保留 N 位小数 Math.round 的升级版
+global.$mathround = (n1, n2) => {
+    const nNum =(+n1);
+    const nPow = (n2 ? Math.pow(10, n2) : 0);
+    
+    if(!nNum){
+        return 0;
+    } else {
+        if(nPow){
+            return Math.round(nNum * nPow) / nPow;
+        } else {
+            return nNum;
+        }
     }
 }

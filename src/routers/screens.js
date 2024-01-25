@@ -1,13 +1,12 @@
 import IndexIndex from "@/pages/index/index";
 import IndexSplash from "@/pages/index/splash";
-import IndexHome from "@/pages/index/home";
-import MineIndex from "@/pages/mine/index";
 import MineAccount from "@/pages/mine/account";
 import MineHelps from "@/pages/mine/helps";
 import SettingIndex from "@/pages/setting/index";
 import SettingLanguage from "@/pages/setting/language";
 import LoginIndex from "@/pages/login/index";
 import TestIndex from "@/pages/test/index";
+import TestDevinfo from "@/pages/test/devinfo";
 
 //非Tabs页面的顶部导航栏全局配置
 const defaultScreenOptions = {
@@ -34,20 +33,6 @@ const noHeaderOptions = {
     animationEnabled: false
 };
 
-//首页底部标签栏列表
-const PosPayTabList = [
-    {
-        name: "主页",
-        component: IndexHome,
-        options: noHeaderOptions
-    },
-    {
-        name: "个人中心",
-        component: MineIndex,
-        options: noHeaderOptions
-    }
-];
-
 //路由页面列表
 const PosPayRouterList = [
     {
@@ -59,7 +44,7 @@ const PosPayRouterList = [
         name: "应用首页",
         component: IndexIndex,
         options: noHeaderOptions,
-        params: { enabledDrawer: true } //是否启用抽屉（仅 “应用首页” 有这个功能，其他页面不必设置）
+        params: { enabledDrawer: true, enabledTabbar: true } //是否启用抽屉，是否显示底部标签栏（仅 “应用首页” 有这个功能，其他页面不必设置）
     },
     {
         name: "登录页",
@@ -95,12 +80,16 @@ const PosPayRouterList = [
         component: TestIndex,
         i18nTitle: "test.centre",
         options: {...defaultScreenOptions}
+    },
+    {
+        name: "设备信息",
+        component: TestDevinfo,
+        i18nTitle: "test.devinfo",
+        options: {...defaultScreenOptions}
     }
 ];
 
 export { 
     defaultScreenOptions,
-    noHeaderOptions,
-    PosPayTabList,
     PosPayRouterList
 };

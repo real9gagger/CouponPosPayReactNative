@@ -48,6 +48,20 @@ const FastCss = StyleSheet.create({
     op09: { opacity: 0.9 },
     op10: { opacity: 1.0 },
     
+    /* fs1X:  { fontSize: appBaseFontSize * 1.0 }, //1。0倍字体
+    fs1X2: { fontSize: appBaseFontSize * 1.2 }, //1.2倍字体，下同
+    fs1X4: { fontSize: appBaseFontSize * 1.4 },
+    fs1X5: { fontSize: appBaseFontSize * 1.5 },
+    fs1X6: { fontSize: appBaseFontSize * 1.6 },
+    fs1X8: { fontSize: appBaseFontSize * 1.8 },
+    fs2X:  { fontSize: appBaseFontSize * 2.0 },
+    fs2X2: { fontSize: appBaseFontSize * 2.2 },
+    fs2X4: { fontSize: appBaseFontSize * 2.4 },
+    fs2X5: { fontSize: appBaseFontSize * 2.5 },
+    fs2X6: { fontSize: appBaseFontSize * 2.6 },
+    fs2X8: { fontSize: appBaseFontSize * 2.8 },
+    fs3X:  { fontSize: appBaseFontSize * 3.0 }, */
+    
     fs0: { fontSize: 0 },
     fs10: { fontSize: 10 },
     fs12: { fontSize: 12 },
@@ -75,7 +89,10 @@ const FastCss = StyleSheet.create({
     tc66: { color: "#666" },
     tc99: { color: "#999" },
     tcAA: { color: "#aaa" },
+    tcBB: { color: "#bbb" },
     tcCC: { color: "#ccc" },
+    tcDD: { color: "#ddd" },
+    tcEE: { color: "#eee" },
     tcFF: { color: "#fff" },
     tcR0: { color: "#ff8989" }, /* text color red 0 */
     tcR1: { color: "#ff6161" }, /* text color red 1 */

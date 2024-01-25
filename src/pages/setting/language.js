@@ -42,7 +42,7 @@ export default function SettingLanguage(props){
             {lgList.map(vx => (
                 <TouchableHighlight key={vx.code} underlayColor="#f0f0f0" style={pdHX} onPress={() => setLanguage(vx)}>
                     <View style={[fxHC, styles.lgItem]}>
-                        <Text style={[fxG1, fs18, vx.code===lgCode&&tcMC]}>{vx.name}</Text>
+                        <Text style={[fxG1, fs16, vx.code===lgCode&&tcMC]}>{vx.name}</Text>
                         <PosPayIcon name="check-v" color={appMainColor} visible={vx.code===lgCode} size={18} />
                     </View>
                 </TouchableHighlight>

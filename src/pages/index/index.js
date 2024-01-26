@@ -205,14 +205,13 @@ export default function IndexIndex(props){
                         options={noHeaderOptions} />
                 </PosPayDrawer.Navigator>
             );
-        } else {//如果不启用底部标签栏
+        } else {//如果不启用底部标签栏（默认显示首页）
             return (
                 <PosPayDrawer.Navigator screenOptions={noHeaderOptions} drawerContent={CustomDrawerContent}>
-                    <PosPayDrawer.Screen 
+                    <PosPayDrawer.Screen initialParams={params} 
                         name={posPayTabList[0].name} 
                         component={posPayTabList[0].component} 
-                        options={posPayTabList[0].options} 
-                        initialParams={params} />
+                        options={posPayTabList[0].options} />
                 </PosPayDrawer.Navigator>
             );
         }

@@ -1,5 +1,5 @@
-import { useEffect, useState, useRef } from "react";
-import { ScrollView, View, Text, TouchableWithoutFeedback, TextInput, StatusBar, StyleSheet } from "react-native";
+import { useEffect, useState, useRef, useCallback } from "react";
+import { ScrollView, View, Text, TouchableWithoutFeedback, TextInput, StatusBar, StyleSheet, DeviceEventEmitter } from "react-native";
 import { useI18N } from "@/store/getter";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
 import ImageButton from "@/components/ImageButton";
@@ -55,8 +55,8 @@ const styles = StyleSheet.create({
         borderBottomColor: "#999",
         borderBottomWidth: StyleSheet.hairlineWidth,
         fontSize: 30,
-        paddingBottom: 0,
-        paddingRight: 10,
+        paddingHorizontal: 10,
+        lineHeight: 44
     },
     couponLabel: {
         flex: 1,
@@ -68,22 +68,32 @@ const styles = StyleSheet.create({
         borderBottomColor: "#999",
         borderBottomWidth: StyleSheet.hairlineWidth,
         fontSize: 30,
-        paddingVertical: 0,
-        paddingRight: 10
+        paddingHorizontal: 10,
+        lineHeight: 44
     },
     couponEmpty: {
-        color: "#ccc"
+        color: "#ccc",
+        fontSize: 14
     },
     InputActived: {
         borderBottomColor: appMainColor,
         backgroundColor: "#e5faf3"
     }
 });
+const renderScene = SceneMap({ tabBankCard, tabEWallet, tabQRCode });
+const tabPublicData = { //各个 tab 间的公共数据
+    payAmounts: "",
+    couponCode: "",
+    inputIndex: 1
+};
+const onTabViewChange = "ON_TAB_VIEW_CHANGE";
 
-//银行卡
-function tabBankCard(props){
+//标签视图内容
+function myTabContent(props, tabType){
+    
     const i18n = useI18N();
     const pkRef = useRef();
+    const evtEmitter = useRef(null);
     const [payAmounts, setPayAmounts] = useState("");
     const [couponCode, setCouponCode] = useState("");
     const [currentInputBox, setCurrentInputBox] = useState(1);
@@ -91,24 +101,56 @@ function tabBankCard(props){
     const setInputValue = (txt) => {
         if(currentInputBox === 1){
             setPayAmounts(txt);
+            tabPublicData.payAmounts = txt;
         } else {
             setCouponCode(txt);
+            tabPublicData.couponCode = txt;
         }
     }
-    
     const toggleAmountInput = () => {
-        setCurrentInputBox(1);        
+        setCurrentInputBox(1);
+        tabPublicData.inputIndex = 1;
         pkRef.current.initiText(payAmounts);
     }
     const toggleCouponInput = () => {
         setCurrentInputBox(2);
+        tabPublicData.inputIndex = 2;
         pkRef.current.initiText(couponCode);
     }
     const togglePKHidden = () => {
         setCurrentInputBox(0);
+        tabPublicData.inputIndex = 0;
+        pkRef.current.clearText();
     }
+    const onPkConfirm = () => {
+        console.log(payAmounts, couponCode)
+    }
+    const onTVChangeCallback = useCallback((routeKey) => {
+        if(routeKey == props.route.key){//只更新滑动到的视图
+            //console.log("滑动到的视图::::", routeKey);
+            setPayAmounts(tabPublicData.payAmounts);
+            setCouponCode(tabPublicData.couponCode);
+            setCurrentInputBox(tabPublicData.inputIndex);
+            if(tabPublicData.inputIndex===1){
+                pkRef.current.initiText(tabPublicData.payAmounts);
+            } else if(tabPublicData.inputIndex===2){
+                pkRef.current.initiText(tabPublicData.couponCode);
+            } else {
+                pkRef.current.clearText();
+            }
+        }
+    });
     
-    return (<>
+    useEffect(() => {
+        //用于共享各个Tab视图之间的状态
+        evtEmitter.current = DeviceEventEmitter.addListener(onTabViewChange, onTVChangeCallback);
+        return () => { 
+            evtEmitter.current.remove();
+            evtEmitter.current = null;
+        }
+    }, []);
+    
+    return (<ScrollView style={fxG1}>
         <View style={pdX}>
             <Text style={styles.moneyLabel}>{i18n["input.amount.tip"]}</Text>
             <Text style={[styles.moneyInput, currentInputBox===1&&styles.InputActived]} onPress={toggleAmountInput}>{i18n["currency.symbol"]}{payAmounts}</Text>
@@ -119,23 +161,34 @@ function tabBankCard(props){
                 <Text style={[tc99, mgRX]}>{i18n["qrcode.identify"]}</Text>
                 <PosPayIcon name="qrcode-pay" color="#000" size={24} />
             </View>
-            <Text 
-                style={[styles.couponInput, !couponCode&&styles.couponEmpty, currentInputBox===2&&styles.InputActived]} 
-                onPress={toggleCouponInput}>{couponCode || i18n["coupon.code"]}</Text>
+            <Text style={[styles.couponInput, !couponCode&&styles.couponEmpty, currentInputBox===2&&styles.InputActived]} onPress={toggleCouponInput}>{couponCode || i18n["coupon.code"]}</Text>
         </View>
         <Text style={fxG1} onPress={togglePKHidden}>{/* 点我关闭键盘 */}</Text>
-        <PayKeyboard ref={pkRef} visible={currentInputBox > 0} precision={2} onChange={setInputValue} onClose={togglePKHidden} />
-    </>);
+        <PayKeyboard 
+            ref={pkRef} 
+            visible={currentInputBox > 0} 
+            precision={2} 
+            isPhoneMode={currentInputBox===2} 
+            onChange={setInputValue} 
+            onClose={togglePKHidden} 
+            onConfirm={onPkConfirm}
+        />
+    </ScrollView>);
+}
+
+//银行卡
+function tabBankCard(props){
+    return myTabContent(props, 1);
 }
 
 //电子钱包
-function tabEWallet(){
-    return <PayKeyboard precision={0} />
+function tabEWallet(props){
+    return myTabContent(props, 2);
 }
 
 //二维码
-function tabQRCode(){
-    return <PayKeyboard precision={0} />
+function tabQRCode(props){
+    return myTabContent(props, 3);
 }
 
 //自定义标签项
@@ -169,8 +222,6 @@ function customTabBar(props) {
     );
 }
 
-const renderScene = SceneMap({ tabBankCard, tabEWallet, tabQRCode });
-
 export default function IndexHome(props){
     const i18n = useI18N();
     const [tabList, setTabList] = useState([]);
@@ -178,6 +229,11 @@ export default function IndexHome(props){
     
     const openDrawer = () => {
         props.navigation.openDrawer();
+    }
+    
+    const onTVChange = (nth) => {
+        DeviceEventEmitter.emit(onTabViewChange, tabList[nth].key);
+        setTabIndex(nth);
     }
     
     useEffect(() => {
@@ -198,10 +254,9 @@ export default function IndexHome(props){
             <TabView
                 navigationState={{ index: tabIndex, routes: tabList }}
                 renderScene={renderScene}
-                onIndexChange={setTabIndex}
+                onIndexChange={onTVChange}
                 initialLayout={styles.tabView}
                 renderTabBar={customTabBar}
-                style={fxG1}
             />
         </View>
     );

@@ -11,7 +11,7 @@ const COLOR_GREY = "#aaa";
 const styles = StyleSheet.create({
     loginBox: {
         width: LOGIN_BOX_WIDTH,
-        marginTop: (deviceDimensions.isLandscape ? 30 : deviceDimensions.screenHeight * 0.2), //需要处理横屏的情况
+        marginTop: (deviceDimensions.screenHeight * 0.15), //需要处理横屏的情况
         marginLeft: (deviceDimensions.screenWidth - LOGIN_BOX_WIDTH) / 2
     },
     loginTitle: {
@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
         textAlign: "center"
     },
     loginSubmit: {
-        marginTop: 50
+        marginTop: 30
     },
     inputWrapper: {
         display: "flex",

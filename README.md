@@ -27,7 +27,7 @@
     * 【注意】推荐安装 openssl 版本：1.1.1w，或者其他低于 3.0.0 的版本（已放在 /android/app/Win64OpenSSL_Light-1_1_1w-20240125.zip 中，解压安装即可）
 * 3、安装 APK 时，必须使用 adb install -r xxx.apk 命令行安装，直接复制 APK 文件到设备将无法安装！
 * 4、显示POS机调试设置界面：安装 Debug 版 APK 后，打开出行红字错误。运行 adb shell input keyevent KEYCODE_MENU 即可显示调试设置页面，设置 debug host 后，重启APP即可。
-    * 【>> 经测试发现，第 2 步只需要执行首次就行，后续可以直接跳过这步，执行第 3 步 <<】
+> 【>> 经测试发现，第 2 步只需要执行首次就行，后续可以直接跳过这步，执行第 3 步 <<】
 
 ## 打包条件
 > 列出打包该项目所必须的条件和相关依赖 
@@ -37,9 +37,9 @@
 * 【或者直接用 Android Studio 直接打包】
 
 ## 第三方插件修改说明
-> 说明如何修改第三方项目，建议给出具体的步骤说明
->> 【以下修改可以改善第三方组件的体验】
->> 【！！！每次添加新插件后，以下配置都可能被覆盖，需要重新修改！！！】
+> 说明如何修改第三方项目，建议给出具体的步骤说明  
+> 【以下修改可以改善第三方组件的体验】  
+> 【！！！每次添加新插件后，以下配置都可能被覆盖，需要重新修改！！！】  
 * 【图片预览点击空白无法关闭问题】打开 /node_modules/react-native-image-viewing/ImageViewing.js。转到第42行，将 View 改为 TouchableOpacity（需要 import），并添加两个属性 “ activeOpacity={1} onPress={onRequestCloseEnhanced} ”。
 * 【Android 8+ 启动屏无法全屏问题】打开 /node_modules/react-native-splash-screen/android/src/main/java/org/devio/rn/splashscreen/SplashScreen.java 找到 setActivityAndroidP 函数。在 if(Build.VERSION.SDK_INT >= 28){...} 语句后面加上如下代码：（2024年1月26日 使用的是 react-native-splash-screen 3.3.0 版本）
 ```java
@@ -54,10 +54,9 @@ else {
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         dialog.getWindow().getDecorView().setSystemUiVisibility(uiFlags);
     }
-}
+} //！！！需要 import android.view.View;
 ```
-    *	！！！需要 import android.view.View;
- 
+
 ## 测试说明
 > 如果有测试相关内容需要说明，请填写在这里  
 

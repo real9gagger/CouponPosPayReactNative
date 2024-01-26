@@ -1,11 +1,12 @@
-import { useEffect, useState, useRef, useCallback } from "react";
-import { ScrollView, View, Text, TouchableWithoutFeedback, TextInput, StatusBar, StyleSheet, DeviceEventEmitter } from "react-native";
+import { useEffect, useState, useRef } from "react";
+import { ScrollView, View, Text, Image, StatusBar, StyleSheet, TouchableOpacity, DeviceEventEmitter } from "react-native";
 import { useI18N } from "@/store/getter";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
 import ImageButton from "@/components/ImageButton";
 import PayKeyboard from "@/components/PayKeyboard";
 import LocalPictures from "@/common/Pictures";
 import PosPayIcon from "@/components/PosPayIcon";
+import GradientButton from "@/components/GradientButton";
 
 const styles = StyleSheet.create({
     headerBox: {
@@ -78,79 +79,103 @@ const styles = StyleSheet.create({
     InputActived: {
         borderBottomColor: appMainColor,
         backgroundColor: "#e5faf3"
+    },
+    paymentBox: {
+        width: 77,
+        height: 77,
+        padding: 5,
+        backgroundColor: "#fff",
+        borderColor: "#ccc",
+        borderWidth: 1,
+        marginRight: 5,
+        marginBottom: 5
+    },
+    paymentSelected: {
+        borderColor: appDarkColor,
+        backgroundColor: "#e5faf3",
+    },
+    paymentChecked: {
+        position: "absolute",
+        top: 2,
+        right: 2,
+        zIndex: 1
+    },
+    paymentQrcode: {
+        width: 60,
+        height: 60
     }
 });
 const renderScene = SceneMap({ tabBankCard, tabEWallet, tabQRCode });
-const tabPublicData = { //各个 tab 间的公共数据
-    payAmounts: "",
-    couponCode: "",
-    inputIndex: 1
-};
-const onTabViewChange = "ON_TAB_VIEW_CHANGE";
+const onInputToggle = "ON_INPUT_TOGGLE"; //切换输入框
+const onInputChange = "ON_INPUT_CHANGE";
+const onInputColse = "ON_INPUT_CLOSE";
+const bankCardList = [
+    {
+        logo: LocalPictures.logoChinaUnionpay,
+        name: "中国银联"
+    }
+];
+const eWalletList = [
+    {
+        logo: LocalPictures.logoJiaotongxiIC,
+        name: "交通系IC"
+    },
+    {
+        logo: LocalPictures.logoLetianEdy,
+        name: "乐天Edy"
+    },
+    {
+        logo: LocalPictures.logoQuicPay,
+        name: "QUICPay"
+    },
+    {
+        logo: LocalPictures.logoNanaco,
+        name: "nanaco"
+    }
+];
 
 //标签视图内容
 function myTabContent(props, tabType){
     
     const i18n = useI18N();
-    const pkRef = useRef();
-    const evtEmitter = useRef(null);
+    const paymentList = useRef(tabType===1 ? bankCardList : (tabType===2 ? eWalletList : []));
     const [payAmounts, setPayAmounts] = useState("");
     const [couponCode, setCouponCode] = useState("");
+    const [paymentIndex, setPaymentIndex] = useState(0);
     const [currentInputBox, setCurrentInputBox] = useState(1);
     
-    const setInputValue = (txt) => {
-        if(currentInputBox === 1){
-            setPayAmounts(txt);
-            tabPublicData.payAmounts = txt;
-        } else {
-            setCouponCode(txt);
-            tabPublicData.couponCode = txt;
-        }
-    }
     const toggleAmountInput = () => {
+        DeviceEventEmitter.emit(onInputToggle, { nth: 1, txt: payAmounts }); //发送数据给父组件
         setCurrentInputBox(1);
-        tabPublicData.inputIndex = 1;
-        pkRef.current.initiText(payAmounts);
     }
     const toggleCouponInput = () => {
+        DeviceEventEmitter.emit(onInputToggle, { nth: 2, txt: couponCode }); //发送数据给父组件
         setCurrentInputBox(2);
-        tabPublicData.inputIndex = 2;
-        pkRef.current.initiText(couponCode);
     }
     const togglePKHidden = () => {
+        DeviceEventEmitter.emit(onInputToggle, { nth: 0, txt: "" }); //发送数据给父组件
         setCurrentInputBox(0);
-        tabPublicData.inputIndex = 0;
-        pkRef.current.clearText();
     }
-    const onPkConfirm = () => {
-        console.log(payAmounts, couponCode)
-    }
-    const onTVChangeCallback = useCallback((routeKey) => {
-        if(routeKey == props.route.key){//只更新滑动到的视图
-            //console.log("滑动到的视图::::", routeKey);
-            setPayAmounts(tabPublicData.payAmounts);
-            setCouponCode(tabPublicData.couponCode);
-            setCurrentInputBox(tabPublicData.inputIndex);
-            if(tabPublicData.inputIndex===1){
-                pkRef.current.initiText(tabPublicData.payAmounts);
-            } else if(tabPublicData.inputIndex===2){
-                pkRef.current.initiText(tabPublicData.couponCode);
-            } else {
-                pkRef.current.clearText();
-            }
-        }
-    });
     
     useEffect(() => {
-        //用于共享各个Tab视图之间的状态
-        evtEmitter.current = DeviceEventEmitter.addListener(onTabViewChange, onTVChangeCallback);
+        const eventer1000 = DeviceEventEmitter.addListener(onInputChange, function(infos){
+            if(infos.nth === 1){
+                setPayAmounts(infos.txt);
+            } else {
+                setCouponCode(infos.txt);
+            }
+        });
+        const eventer2000 = DeviceEventEmitter.addListener(onInputColse, function(nth){
+            setCurrentInputBox(nth);
+        });
+        
         return () => { 
-            evtEmitter.current.remove();
-            evtEmitter.current = null;
+            eventer1000.remove();
+            eventer2000.remove();
         }
     }, []);
     
-    return (<ScrollView style={fxG1}>
+    return (<ScrollView style={fxG1} contentContainerStyle={mhF}>
         <View style={pdX}>
             <Text style={styles.moneyLabel}>{i18n["input.amount.tip"]}</Text>
             <Text style={[styles.moneyInput, currentInputBox===1&&styles.InputActived]} onPress={toggleAmountInput}>{i18n["currency.symbol"]}{payAmounts}</Text>
@@ -159,20 +184,30 @@ function myTabContent(props, tabType){
             <View style={fxHC}>
                 <Text style={styles.couponLabel}>{i18n["coupon"]}</Text>
                 <Text style={[tc99, mgRX]}>{i18n["qrcode.identify"]}</Text>
-                <PosPayIcon name="qrcode-pay" color="#000" size={24} />
+                <PosPayIcon name="qrcode-scan" color="#000" size={24} />
             </View>
             <Text style={[styles.couponInput, !couponCode&&styles.couponEmpty, currentInputBox===2&&styles.InputActived]} onPress={toggleCouponInput}>{couponCode || i18n["coupon.code"]}</Text>
         </View>
+        <View style={[fxR, fxJC, fxWP ,pdX]}>
+            {tabType !== 3 ? 
+                paymentList.current.map((vx, ix) => (
+                    <TouchableOpacity key={vx.name} activeOpacity={0.5} onPress={() => setPaymentIndex(ix)} style={[styles.paymentBox, paymentIndex===ix&&styles.paymentSelected]}>
+                        <Image style={whF} source={vx.logo} />
+                        <PosPayIcon visible={paymentIndex===ix} name="check-confirm" color={appMainColor} size={20} style={styles.paymentChecked} />
+                    </TouchableOpacity>
+                )): 
+                (
+                    <TouchableOpacity style={[fxVM, pdX]}>
+                        <Image style={styles.paymentQrcode} source={LocalPictures.scanQRcode} />
+                        <Text style={[tcMC, taC, mgTX]}>{i18n["qrcode.collect"]}</Text>
+                    </TouchableOpacity>
+                )
+            }
+        </View>
         <Text style={fxG1} onPress={togglePKHidden}>{/* 点我关闭键盘 */}</Text>
-        <PayKeyboard 
-            ref={pkRef} 
-            visible={currentInputBox > 0} 
-            precision={2} 
-            isPhoneMode={currentInputBox===2} 
-            onChange={setInputValue} 
-            onClose={togglePKHidden} 
-            onConfirm={onPkConfirm}
-        />
+        <View style={pdX}>
+            <GradientButton>{i18n["btn.collect"]}</GradientButton>
+        </View>
     </ScrollView>);
 }
 
@@ -224,17 +259,32 @@ function customTabBar(props) {
 
 export default function IndexHome(props){
     const i18n = useI18N();
+    const pkRef = useRef();
     const [tabList, setTabList] = useState([]);
     const [tabIndex, setTabIndex] = useState(0);
+    const [inputIndex, setInputIndex] = useState(1);
     
     const openDrawer = () => {
         props.navigation.openDrawer();
     }
-    
-    const onTVChange = (nth) => {
-        DeviceEventEmitter.emit(onTabViewChange, tabList[nth].key);
-        setTabIndex(nth);
+    const onTxtChange = (txt) => {
+        DeviceEventEmitter.emit(onInputChange, { nth: inputIndex, txt: txt }); //发送数据给子组件
     }
+    const onPkClose = (txt) => {
+        DeviceEventEmitter.emit(onInputColse, 0); //发送数据给子组件
+        setInputIndex(0);
+    }
+    
+    useEffect(() => {
+        const eventer9000 = DeviceEventEmitter.addListener(onInputToggle, function(infos){
+            setInputIndex(infos.nth);
+            pkRef.current.initiText(infos.txt);
+        });
+        
+        return () => {
+            eventer9000.remove();
+        }
+    }, []);
     
     useEffect(() => {
         setTabList([
@@ -254,9 +304,19 @@ export default function IndexHome(props){
             <TabView
                 navigationState={{ index: tabIndex, routes: tabList }}
                 renderScene={renderScene}
-                onIndexChange={onTVChange}
+                onIndexChange={setTabIndex}
                 initialLayout={styles.tabView}
                 renderTabBar={customTabBar}
+            />
+            <PayKeyboard
+                ref={pkRef} 
+                fixed={true}
+                visible={inputIndex > 0} 
+                precision={2} 
+                isPhoneMode={inputIndex===2} 
+                onChange={onTxtChange} 
+                onClose={onPkClose} 
+                onConfirm={onPkClose}
             />
         </View>
     );

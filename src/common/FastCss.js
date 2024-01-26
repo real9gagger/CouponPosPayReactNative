@@ -108,8 +108,14 @@ const FastCss = StyleSheet.create({
     hiS: { height: deviceDimensions.screenHeight }, /* stretch */
     hiF: { height: "100%" }, /* full */
     
+    mhS: { minHeight: deviceDimensions.screenHeight },
+    mhF: { minHeight: "100%" },
+    
     wiS: { width: deviceDimensions.screenWidth }, /* stretch */
     wiF: { width: "100%" }, /* full */
+    
+    mwS: { minWidth: deviceDimensions.screenWidth },
+    mwF: { minWidth: "100%" },
     
     whF: { width: "100%", height: "100%" },
     whS: { width: deviceDimensions.screenWidth, height: deviceDimensions.screenHeight },

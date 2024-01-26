@@ -21,7 +21,8 @@ const styles = StyleSheet.create({
         height: 80,
         borderRadius: 80,
         elevation: 5,
-        overflow: "hidden"
+        overflow: "hidden",
+        backgroundColor: "#fff"
     },
     accountName: {
         paddingTop: 10,

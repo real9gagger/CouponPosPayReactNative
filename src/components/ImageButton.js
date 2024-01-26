@@ -8,7 +8,7 @@ class ImageButton extends Component {
             <TouchableOpacity 
                 activeOpacity={this.props.activeOpacity || 0.75}
                 onPress={this.props.onPress}
-                style={this.props.style}><Image style={[whF, bgFF]} onError={this.props.onError} source={this.props.source} resizeMode="contain" /></TouchableOpacity>
+                style={this.props.style}><Image style={whF} onError={this.props.onError} source={this.props.source} resizeMode="contain" /></TouchableOpacity>
         )
     }
 }

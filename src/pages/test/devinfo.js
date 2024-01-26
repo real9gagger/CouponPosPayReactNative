@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ScrollView, View, Text, StatusBar, StyleSheet, Dimensions, PixelRatio, Platform } from "react-native";
+import AppPackageInfo from "@/modules/AppPackageInfo";
 
 const styles = StyleSheet.create({
     infoBox: {
@@ -39,6 +40,12 @@ export default function TestDevinfo(props){
                 case "string": item.itemValue = Platform[key]; break;
                 case "number": item.itemValue = $mathround(Platform[key], precision); break;
                 case "boolean": item.itemValue = Platform[key].toString(); break;
+                case "object": 
+                    if(key === "constants"){
+                        item.itemKey = "platform.hardware"; //设备硬件信息
+                        item.itemValue = (Platform[key].Manufacturer + " " + Platform[key].Model);
+                    }
+                    break;
             }
             
             if(item.itemValue){
@@ -49,6 +56,11 @@ export default function TestDevinfo(props){
         infos.push({
             itemKey: "pixel.ratio",
             itemValue: $mathround(1.0 / PixelRatio.get(), precision)
+        });
+        
+        infos.push({
+            itemKey: "app.version",
+            itemValue: AppPackageInfo.getFullVersion()
         });
         
         setInfoList(infos);

@@ -138,8 +138,8 @@ android {
         applicationId "com.couponpospayreactnative"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 20240125
-        versionName "1.0.3"
+        versionCode 20240126
+        versionName "1.0.5"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
 
         if (isNewArchitectureEnabled()) {

@@ -354,7 +354,8 @@ export default class ModalProvider extends Component {
         
         const isNotify = (this.state.dialogComponent.props.dialogName === "notify")
         const notifyStyle = (isNotify ? this.__startSlideAni() : null)
-
+        
+        /* 需要设置 /android/app/src/main/res/values/styles.xml 中的 android:windowFullscreen 为 false，否则显示 Modal 时状态栏会自动隐藏！ */
         return (
             <Modal
                 visible={this.state.isShow} 

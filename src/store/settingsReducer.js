@@ -2,6 +2,9 @@ import { UPDATE_SETTINGS, UNKNOWN_ACTION } from "./types";
 
 const initialState = {
     languageCode: "", //语言编码，如：zh_CN
+    isEnableDrawer: true, //启用抽屉栏
+    isEnableTabbar: true, //启用底部导航栏
+    isEnableHomeHeader: true, //是否显示主页标题栏
 };
 
 //更新本地设置

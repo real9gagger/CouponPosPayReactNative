@@ -2,7 +2,7 @@ import AppPackageInfo from "@/modules/AppPackageInfo";
 import { CHANGE_LANGUAGE } from "./types";
 
 const regDigits = /\$\[\d+\]/; //用于检查翻译内容是否有占位标记
-const regKey = /^([a-z0-9_]+\.)*[a-z0-9_]+$/; //用于检查键名是否规范
+const regKey = /^([a-z0-9_]+\.){0,4}[a-z0-9_]+$/; //用于检查键名是否规范
 
 //占位填充器，填充 “今天是$[0]年$[1]月$[2]日，星期$[3]，天气晴” 这种格式的多语言文本
 function clozeHandler(...args){

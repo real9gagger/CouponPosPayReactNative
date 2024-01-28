@@ -26,7 +26,6 @@ export default function Routers(){
                 		name={vxo.name}
                 		component={vxo.component}
                 		options={vxo.options}
-                        initialParams={vxo.params}
                 	/>
                 ))}
             </PosPayStack.Navigator>

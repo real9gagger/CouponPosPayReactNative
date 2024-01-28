@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
-import { ScrollView, View, Text, Image, StatusBar, StyleSheet, TouchableOpacity, DeviceEventEmitter } from "react-native";
-import { useI18N } from "@/store/getter";
+import { ScrollView, View, Text, Pressable , Image, StatusBar, StyleSheet, TouchableOpacity, DeviceEventEmitter } from "react-native";
+import { useI18N, useAppSettings } from "@/store/getter";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
 import ImageButton from "@/components/ImageButton";
 import PayKeyboard from "@/components/PayKeyboard";
@@ -37,8 +37,9 @@ const styles = StyleSheet.create({
         paddingLeft: 5
     },
     tabInactived: {
-        color: "#666",
+        color: "#333",
         fontSize: 14,
+        fontWeight: "bold",
         paddingLeft: 5
     },
     tabView: {
@@ -57,7 +58,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: StyleSheet.hairlineWidth,
         fontSize: 30,
         paddingHorizontal: 10,
-        lineHeight: 44
+        lineHeight: 45
     },
     couponLabel: {
         flex: 1,
@@ -70,7 +71,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: StyleSheet.hairlineWidth,
         fontSize: 30,
         paddingHorizontal: 10,
-        lineHeight: 44
+        lineHeight: 45
     },
     couponEmpty: {
         color: "#ccc",
@@ -81,14 +82,13 @@ const styles = StyleSheet.create({
         backgroundColor: "#e5faf3"
     },
     paymentBox: {
-        width: 77,
-        height: 77,
+        width: 100,
+        height: 100,
         padding: 5,
         backgroundColor: "#fff",
-        borderColor: "#ccc",
+        borderColor: "#ddd",
         borderWidth: 1,
-        marginRight: 5,
-        marginBottom: 5
+        margin: 3
     },
     paymentSelected: {
         borderColor: appDarkColor,
@@ -99,6 +99,10 @@ const styles = StyleSheet.create({
         top: 2,
         right: 2,
         zIndex: 1
+    },
+    paymentScaning: {
+        padding: 15,
+        marginTop: 15
     },
     paymentQrcode: {
         width: 60,
@@ -134,96 +138,227 @@ const eWalletList = [
     }
 ];
 
-//标签视图内容
-function myTabContent(props, tabType){
-    
+//银行卡
+function tabBankCard(props){
     const i18n = useI18N();
-    const paymentList = useRef(tabType===1 ? bankCardList : (tabType===2 ? eWalletList : []));
     const [payAmounts, setPayAmounts] = useState("");
     const [couponCode, setCouponCode] = useState("");
     const [paymentIndex, setPaymentIndex] = useState(0);
     const [currentInputBox, setCurrentInputBox] = useState(1);
+    const routeKey = props.route.key;
     
     const toggleAmountInput = () => {
-        DeviceEventEmitter.emit(onInputToggle, { nth: 1, txt: payAmounts }); //发送数据给父组件
+        DeviceEventEmitter.emit(onInputToggle, { nth: 1, txt: payAmounts, key: routeKey }); //发送数据给父组件
         setCurrentInputBox(1);
     }
     const toggleCouponInput = () => {
-        DeviceEventEmitter.emit(onInputToggle, { nth: 2, txt: couponCode }); //发送数据给父组件
+        DeviceEventEmitter.emit(onInputToggle, { nth: 2, txt: couponCode, key: routeKey }); //发送数据给父组件
         setCurrentInputBox(2);
     }
     const togglePKHidden = () => {
-        DeviceEventEmitter.emit(onInputToggle, { nth: 0, txt: "" }); //发送数据给父组件
+        DeviceEventEmitter.emit(onInputToggle, { nth: 0, txt: "", key: routeKey }); //发送数据给父组件
         setCurrentInputBox(0);
     }
     
     useEffect(() => {
-        const eventer1000 = DeviceEventEmitter.addListener(onInputChange, function(infos){
+        const evt1000 = DeviceEventEmitter.addListener(onInputChange, function(infos){
             if(infos.nth === 1){
                 setPayAmounts(infos.txt);
             } else {
                 setCouponCode(infos.txt);
             }
         });
-        const eventer2000 = DeviceEventEmitter.addListener(onInputColse, function(nth){
-            setCurrentInputBox(nth);
+        const evt1001 = DeviceEventEmitter.addListener(onInputColse, function(nth){
+            if(nth === 0){
+                setCurrentInputBox(0);
+            }
+        });
+        const evt1002 = DeviceEventEmitter.addListener(onInputToggle, function(infos){
+            if(infos.key !== routeKey){
+                setCurrentInputBox(infos.nth);
+            }
         });
         
         return () => { 
-            eventer1000.remove();
-            eventer2000.remove();
+            evt1000.remove();
+            evt1001.remove();
+            evt1002.remove();
         }
     }, []);
     
-    return (<ScrollView style={fxG1} contentContainerStyle={mhF}>
-        <View style={pdX}>
-            <Text style={styles.moneyLabel}>{i18n["input.amount.tip"]}</Text>
-            <Text style={[styles.moneyInput, currentInputBox===1&&styles.InputActived]} onPress={toggleAmountInput}>{i18n["currency.symbol"]}{payAmounts}</Text>
-        </View>
-        <View style={pdHX}>
-            <View style={fxHC}>
-                <Text style={styles.couponLabel}>{i18n["coupon"]}</Text>
-                <Text style={[tc99, mgRX]}>{i18n["qrcode.identify"]}</Text>
-                <PosPayIcon name="qrcode-scan" color="#000" size={24} />
+    return (
+        <ScrollView style={fxG1} contentContainerStyle={mhF}>
+            <View style={pdX}>
+                <Text style={styles.moneyLabel}>{i18n["input.amount.tip"]}</Text>
+                <Text style={[styles.moneyInput, currentInputBox===1&&styles.InputActived]} onPress={toggleAmountInput}>{i18n["currency.symbol"]}{payAmounts}</Text>
             </View>
-            <Text style={[styles.couponInput, !couponCode&&styles.couponEmpty, currentInputBox===2&&styles.InputActived]} onPress={toggleCouponInput}>{couponCode || i18n["coupon.code"]}</Text>
-        </View>
-        <View style={[fxR, fxJC, fxWP ,pdX]}>
-            {tabType !== 3 ? 
-                paymentList.current.map((vx, ix) => (
+            <View style={pdHX}>
+                <View style={fxHC}>
+                    <Text style={styles.couponLabel}>{i18n["coupon"]}</Text>
+                    <Text style={[tc99, mgRX]}>{i18n["qrcode.identify"]}</Text>
+                    <PosPayIcon name="qrcode-scan" color="#000" size={24} />
+                </View>
+                <Text style={[styles.couponInput, !couponCode&&styles.couponEmpty, currentInputBox===2&&styles.InputActived]} onPress={toggleCouponInput}>{couponCode || i18n["coupon.code"]}</Text>
+            </View>
+            <View style={[fxR, fxJC, fxWP ,pdX]}>
+                {bankCardList.map((vx, ix) => (
                     <TouchableOpacity key={vx.name} activeOpacity={0.5} onPress={() => setPaymentIndex(ix)} style={[styles.paymentBox, paymentIndex===ix&&styles.paymentSelected]}>
                         <Image style={whF} source={vx.logo} />
                         <PosPayIcon visible={paymentIndex===ix} name="check-confirm" color={appMainColor} size={20} style={styles.paymentChecked} />
                     </TouchableOpacity>
-                )): 
-                (
-                    <TouchableOpacity style={[fxVM, pdX]}>
-                        <Image style={styles.paymentQrcode} source={LocalPictures.scanQRcode} />
-                        <Text style={[tcMC, taC, mgTX]}>{i18n["qrcode.collect"]}</Text>
-                    </TouchableOpacity>
-                )
-            }
-        </View>
-        <Text style={fxG1} onPress={togglePKHidden}>{/* 点我关闭键盘 */}</Text>
-        <View style={pdX}>
-            <GradientButton>{i18n["btn.collect"]}</GradientButton>
-        </View>
-    </ScrollView>);
-}
-
-//银行卡
-function tabBankCard(props){
-    return myTabContent(props, 1);
+                ))}
+            </View>
+            <Text style={fxG1} onPress={togglePKHidden}>{/* 点我关闭键盘 */}</Text>
+            <View style={pdX}><GradientButton>{i18n["btn.collect"]}</GradientButton></View>
+        </ScrollView>
+    );
 }
 
 //电子钱包
 function tabEWallet(props){
-    return myTabContent(props, 2);
+    const i18n = useI18N();
+    const [payAmounts, setPayAmounts] = useState("");
+    const [couponCode, setCouponCode] = useState("");
+    const [paymentIndex, setPaymentIndex] = useState(0);
+    const [currentInputBox, setCurrentInputBox] = useState(1);
+    const routeKey = props.route.key;
+    
+    const toggleAmountInput = () => {
+        DeviceEventEmitter.emit(onInputToggle, { nth: 1, txt: payAmounts, key: routeKey }); //发送数据给父组件
+        setCurrentInputBox(1);
+    }
+    const toggleCouponInput = () => {
+        DeviceEventEmitter.emit(onInputToggle, { nth: 2, txt: couponCode, key: routeKey }); //发送数据给父组件
+        setCurrentInputBox(2);
+    }
+    const togglePKHidden = () => {
+        DeviceEventEmitter.emit(onInputToggle, { nth: 0, txt: "", key: routeKey }); //发送数据给父组件
+        setCurrentInputBox(0);
+    }
+    
+    useEffect(() => {
+        const evt2000 = DeviceEventEmitter.addListener(onInputChange, function(infos){
+            if(infos.nth === 1){
+                setPayAmounts(infos.txt);
+            } else {
+                setCouponCode(infos.txt);
+            }
+        });
+        const evt2001 = DeviceEventEmitter.addListener(onInputColse, function(nth){
+            if(nth === 0){
+                setCurrentInputBox(0);
+            }
+        });
+        const evt2002 = DeviceEventEmitter.addListener(onInputToggle, function(infos){
+            if(infos.key !== routeKey){
+                setCurrentInputBox(infos.nth);
+            }
+        });
+        
+        return () => { 
+            evt2000.remove();
+            evt2001.remove();
+            evt2002.remove();
+        }
+    }, []);
+    
+    return (
+        <ScrollView style={fxG1} contentContainerStyle={mhF}>
+            <View style={pdX}>
+                <Text style={styles.moneyLabel}>{i18n["input.amount.tip"]}</Text>
+                <Text style={[styles.moneyInput, currentInputBox===1&&styles.InputActived]} onPress={toggleAmountInput}>{i18n["currency.symbol"]}{payAmounts}</Text>
+            </View>
+            <Pressable style={[fxHC, pdHX]} android_ripple={tcCC}>
+                <Text style={styles.couponLabel}>{i18n["coupon"]}</Text>
+                <Text style={[tcMC, mgRX]}>{i18n["qrcode.identify"]}</Text>
+                <PosPayIcon name="qrcode-scan" color="#000" size={24} />
+            </Pressable>
+            <View style={pdHX}>
+                <Text style={[styles.couponInput, !couponCode&&styles.couponEmpty, currentInputBox===2&&styles.InputActived]} onPress={toggleCouponInput}>{couponCode || i18n["coupon.code"]}</Text>
+            </View>
+            <View style={[fxR, fxJC, fxWP ,pdX]}>
+                {eWalletList.map((vx, ix) => (
+                    <TouchableOpacity key={vx.name} activeOpacity={0.5} onPress={() => setPaymentIndex(ix)} style={[styles.paymentBox, paymentIndex===ix&&styles.paymentSelected]}>
+                        <Image style={whF} source={vx.logo} />
+                        <PosPayIcon visible={paymentIndex===ix} name="check-confirm" color={appMainColor} size={20} style={styles.paymentChecked} />
+                    </TouchableOpacity>
+                ))}
+            </View>
+            <Text style={fxG1} onPress={togglePKHidden}>{/* 点我关闭键盘 */}</Text>
+            <View style={pdX}><GradientButton>{i18n["btn.collect"]}</GradientButton></View>
+        </ScrollView>
+    );
 }
 
 //二维码
 function tabQRCode(props){
-    return myTabContent(props, 3);
+    const i18n = useI18N();
+    const [payAmounts, setPayAmounts] = useState("");
+    const [couponCode, setCouponCode] = useState("");
+    const [currentInputBox, setCurrentInputBox] = useState(1);
+    const routeKey = props.route.key;
+    
+    const toggleAmountInput = () => {
+        DeviceEventEmitter.emit(onInputToggle, { nth: 1, txt: payAmounts, key: routeKey }); //发送数据给父组件
+        setCurrentInputBox(1);
+    }
+    const toggleCouponInput = () => {
+        DeviceEventEmitter.emit(onInputToggle, { nth: 2, txt: couponCode, key: routeKey }); //发送数据给父组件
+        setCurrentInputBox(2);
+    }
+    const togglePKHidden = () => {
+        DeviceEventEmitter.emit(onInputToggle, { nth: 0, txt: "", key: routeKey }); //发送数据给父组件
+        setCurrentInputBox(0);
+    }
+    
+    useEffect(() => {
+        const evt3000 = DeviceEventEmitter.addListener(onInputChange, function(infos){
+            if(infos.nth === 1){
+                setPayAmounts(infos.txt);
+            } else {
+                setCouponCode(infos.txt);
+            }
+        });
+        const evt3001 = DeviceEventEmitter.addListener(onInputColse, function(nth){
+            if(nth === 0){
+                setCurrentInputBox(0);
+            }
+        });
+        const evt3002 = DeviceEventEmitter.addListener(onInputToggle, function(infos){
+            if(infos.key !== routeKey){
+                setCurrentInputBox(infos.nth);
+            }
+        });
+        
+        return () => { 
+            evt3000.remove();
+            evt3001.remove();
+            evt3002.remove();
+        }
+    }, []);
+    
+    return (
+        <ScrollView style={fxG1} contentContainerStyle={mhF}>
+            <View style={pdX}>
+                <Text style={styles.moneyLabel}>{i18n["input.amount.tip"]}</Text>
+                <Text style={[styles.moneyInput, currentInputBox===1&&styles.InputActived]} onPress={toggleAmountInput}>{i18n["currency.symbol"]}{payAmounts}</Text>
+            </View>
+            <View style={pdHX}>
+                <View style={fxHC}>
+                    <Text style={styles.couponLabel}>{i18n["coupon"]}</Text>
+                    <Text style={[tc99, mgRX]}>{i18n["qrcode.identify"]}</Text>
+                    <PosPayIcon name="qrcode-scan" color="#000" size={24} />
+                </View>
+                <Text style={[styles.couponInput, !couponCode&&styles.couponEmpty, currentInputBox===2&&styles.InputActived]} onPress={toggleCouponInput}>{couponCode || i18n["coupon.code"]}</Text>
+            </View>
+            <TouchableOpacity style={[fxVM, styles.paymentScaning]} activeOpacity={0.5}>
+                <Image style={styles.paymentQrcode} source={LocalPictures.scanQRcode} />
+                <Text style={[tcMC, taC, mgTX]}>{i18n["qrcode.collect"]}</Text>
+            </TouchableOpacity>
+            <Text style={fxG1} onPress={togglePKHidden}>{/* 点我关闭键盘 */}</Text>
+            <View style={pdX}><GradientButton>{i18n["btn.collect"]}</GradientButton></View>
+        </ScrollView>
+    );
 }
 
 //自定义标签项
@@ -260,6 +395,7 @@ function customTabBar(props) {
 export default function IndexHome(props){
     const i18n = useI18N();
     const pkRef = useRef();
+    const appSettings = useAppSettings();
     const [tabList, setTabList] = useState([]);
     const [tabIndex, setTabIndex] = useState(0);
     const [inputIndex, setInputIndex] = useState(1);
@@ -297,10 +433,12 @@ export default function IndexHome(props){
     return (
         <View style={pgFF}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
-            <View style={[fxVM, styles.headerBox]}>
-                <ImageButton source={LocalPictures.iconToggleDrawer} style={styles.toggleIcon} onPress={openDrawer} />
-                <Text style={[taC,fs18]}>{i18n["tabbar.home"]}</Text>
-            </View>
+            {appSettings.isEnableHomeHeader &&
+                <View style={[fxVM, styles.headerBox]}>
+                    <ImageButton visible={appSettings.isEnableDrawer} source={LocalPictures.iconToggleDrawer} style={styles.toggleIcon} onPress={openDrawer} />
+                    <Text style={fs18}>{i18n["tabbar.home"]}</Text>
+                </View>
+            }
             <TabView
                 navigationState={{ index: tabIndex, routes: tabList }}
                 renderScene={renderScene}

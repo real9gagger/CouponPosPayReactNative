@@ -56,3 +56,10 @@ export function getUserInfo(key){
 export function useAppSettings(){
     return useSelector(state => state.appSettings);
 }
+export function getAppSettings(key){
+    if(key){
+        return store.getState().appSettings[key];
+    } else {
+        return store.getState().appSettings;
+    }
+}

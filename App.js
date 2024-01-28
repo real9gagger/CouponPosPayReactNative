@@ -14,7 +14,7 @@ import ModalProvider from "@/common/Modals";
 export default function App(){
     useEffect(() => {
         oniniti(dispatchInitiLanguage); //完成初始化后显示界面
-        console.log(">>>> 发布前请按照 README.md 中的“第三方插件修改说明”修改后再发布");
+        !runtimeEnvironment.isProduction && console.log(">>>> 发布前请按照 README.md 中的“第三方插件修改说明”修改后再发布");
     }, []);
     
     return (

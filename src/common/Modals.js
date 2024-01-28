@@ -234,7 +234,7 @@ export function showNotify(msg, duration, type){
     })
 }
 
-export default class ModalProvider extends Component {
+class ModalProvider extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -246,6 +246,7 @@ export default class ModalProvider extends Component {
         this.removeEvent = null
         this.callRemoveDialog = this.__removeDialog.bind(this, 2)
         this.callOnViewLayout = this.__onViewLayout.bind(this)
+        this.callSetHide = this.__setHide.bind(this)
         this.timerID = 0
     }
     
@@ -324,7 +325,7 @@ export default class ModalProvider extends Component {
                 useNativeDriver: true,
                 easing: Easing.elastic(0.8)
             }).start(() => {
-                this.timerID = setTimeout(this.__setHide.bind(this), drt) //几秒后自动关闭
+                this.timerID = setTimeout(this.callSetHide, drt) //几秒后自动关闭
             })
         } else {
             slideDown = new Animated.Value(0)
@@ -375,3 +376,5 @@ export default class ModalProvider extends Component {
         )
     }
 }
+
+export default ModalProvider

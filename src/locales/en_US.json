@@ -39,6 +39,9 @@
     "input.amount.tip": "Please enter the amount",
     "currency.symbol": "$",
     "coupon.code": "coupon code",
+    "setting.enable.drawer": "Enable drawer",
+    "setting.enable.tabbar": "Enable tabbar",
+    "setting.enable.home.header": "Enable homepage header",
     
     "coupon": "Coupon",
     "business": "Business",

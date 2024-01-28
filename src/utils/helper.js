@@ -27,15 +27,21 @@ export function arrayToObject(sourceArray, keyField, callBack) {
 
     if (cbType === "function") {
         for (const item of sourceArray) {
-            outputObj[item[keyField]] = callBack(item);
+            if(item[keyField]){
+                outputObj[item[keyField]] = callBack(item);
+            }
         }
     } else if (cbType === "string") {
         for (const item of sourceArray) {
-            outputObj[item[keyField]] = item[callBack];
+            if(item[keyField]){
+                outputObj[item[keyField]] = item[callBack];
+            }
         }
     } else {
         for (const item of sourceArray) {
-            outputObj[item[keyField]] = item;
+            if(item[keyField]){
+                outputObj[item[keyField]] = item;
+            }
         }
     }
 

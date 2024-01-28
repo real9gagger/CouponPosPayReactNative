@@ -47,6 +47,9 @@
     "input.amount.tip": "请输入收款金额",
     "currency.symbol": "￥",
     "coupon.code": "优惠码",
+    "setting.enable.drawer": "启用抽屉栏",
+    "setting.enable.tabbar": "显示底部导航栏",
+    "setting.enable.home.header": "显示主页标题栏",
     
     /* ==== 通用翻译 ==== */
     "coupon": "优惠券",

@@ -43,8 +43,7 @@ const PosPayRouterList = [
     {
         name: "应用首页",
         component: IndexIndex,
-        options: noHeaderOptions,
-        params: { enabledDrawer: true, enabledTabbar: true } //是否启用抽屉，是否显示底部标签栏（仅 “应用首页” 有这个功能，其他页面不必设置）
+        options: noHeaderOptions
     },
     {
         name: "登录页",

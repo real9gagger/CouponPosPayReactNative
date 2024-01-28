@@ -10,6 +10,9 @@ const LocalPictures = {
     logoLetianEdy: require("@/images/logos/letian_edy.png"), //乐天 Edy
     logoQuicPay: require("@/images/logos/quic_pay.png"),
     logoNanaco: require("@/images/logos/nanaco.png"),
+    logoPitapa: require("@/images/logos/pitapa.png"),
+    logoWaon: require("@/images/logos/waon.png"),
+    logoIdCredit: require("@/images/logos/id_credit.png"),
 };
 
 export default LocalPictures;

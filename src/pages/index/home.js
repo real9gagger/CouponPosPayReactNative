@@ -2,9 +2,10 @@ import { useEffect, useState, useRef } from "react";
 import { ScrollView, View, Text, Pressable , Image, StatusBar, StyleSheet, TouchableOpacity, DeviceEventEmitter } from "react-native";
 import { useI18N, useAppSettings } from "@/store/getter";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
+import LocalPictures from "@/common/Pictures";
+import QRcodeScaner from "@/modules/QRcodeScaner";
 import ImageButton from "@/components/ImageButton";
 import PayKeyboard from "@/components/PayKeyboard";
-import LocalPictures from "@/common/Pictures";
 import PosPayIcon from "@/components/PosPayIcon";
 import GradientButton from "@/components/GradientButton";
 
@@ -122,13 +123,13 @@ const onInputChange = "ON_INPUT_CHANGE";
 const bankCardList = [
     {
         logo: LocalPictures.logoChinaUnionpay,
-        name: "中国银联"
+        name: "银联/UnionPay"
     }
 ];
 const eWalletList = [
     {
         logo: LocalPictures.logoIdCredit,
-        name: "iD信用卡"
+        name: "iD"
     },
     {
         logo: LocalPictures.logoJiaotongxiIC,
@@ -136,7 +137,7 @@ const eWalletList = [
     },
     {
         logo: LocalPictures.logoLetianEdy,
-        name: "乐天Edy"
+        name: "楽天Edy"
     },
     {
         logo: LocalPictures.logoQuicPay,
@@ -144,15 +145,15 @@ const eWalletList = [
     },
     {
         logo: LocalPictures.logoNanaco,
-        name: "Nanaco"
+        name: "nanaco"
     },
     {
         logo: LocalPictures.logoPitapa,
-        name: "Pitapa"
+        name: "PiTaPa"
     },
     {
         logo: LocalPictures.logoWaon,
-        name: "Waon"
+        name: "WAON"
     }
 ];
 
@@ -193,6 +194,7 @@ function tabBankCard(props){
         if(currentInputBox !== 0){
             togglePKHidden();
         }
+        QRcodeScaner.startScaning();
     }
     
     useEffect(() => {
@@ -227,8 +229,9 @@ function tabBankCard(props){
             <View style={pdHX}>
                 <Text style={[styles.couponInput, !couponCode&&styles.couponEmpty, currentInputBox===2&&styles.InputActived]} onPress={toggleCouponInput}>{couponCode || i18n["coupon.enter.tip"]}</Text>
             </View>
-            <View style={styles.rowBox}>
-                <Text style={styles.paymentLabel}>{i18n["payment.method"]}</Text>
+            <View style={[fxHC, styles.rowBox]}>
+                <Text style={[fxG1, styles.paymentLabel]}>{i18n["payment.method"]}</Text>
+                <Text style={styles.paymentLabel}>{bankCardList[paymentIndex].name}</Text>
             </View>
             <View style={[fxR, fxJC, fxWP, pdHX]}>
                 {bankCardList.map((vx, ix) => (
@@ -315,8 +318,9 @@ function tabEWallet(props){
             <View style={pdHX}>
                 <Text style={[styles.couponInput, !couponCode&&styles.couponEmpty, currentInputBox===2&&styles.InputActived]} onPress={toggleCouponInput}>{couponCode || i18n["coupon.enter.tip"]}</Text>
             </View>
-            <View style={styles.rowBox}>
-                <Text style={styles.paymentLabel}>{i18n["payment.method"]}</Text>
+            <View style={[fxHC, styles.rowBox]}>
+                <Text style={[fxG1, styles.paymentLabel]}>{i18n["payment.method"]}</Text>
+                <Text style={styles.paymentLabel}>{eWalletList[paymentIndex].name}</Text>
             </View>
             <View style={[fxR, fxWP, pdHX]}>
                 {eWalletList.map((vx, ix) => (
@@ -338,6 +342,7 @@ function tabQRCode(props){
     const [payAmounts, setPayAmounts] = useState("");
     const [couponCode, setCouponCode] = useState("");
     const [currentInputBox, setCurrentInputBox] = useState(1);
+    const [paymentName, setPaymentName] = useState("");
     
     const toggleAmountInput = () => {
         if(currentInputBox !== 1){
@@ -394,8 +399,9 @@ function tabQRCode(props){
             <View style={pdHX}>
                 <Text style={[styles.couponInput, !couponCode&&styles.couponEmpty, currentInputBox===2&&styles.InputActived]} onPress={toggleCouponInput}>{couponCode || i18n["coupon.enter.tip"]}</Text>
             </View>
-            <View style={styles.rowBox}>
-                <Text style={styles.paymentLabel}>{i18n["payment.method"]}</Text>
+            <View style={[fxHC, styles.rowBox]}>
+                <Text style={[fxG1, styles.paymentLabel]}>{i18n["payment.method"]}</Text>
+                <Text style={[styles.paymentLabel, !paymentName&&tcAA]}>{paymentName || i18n["qrcode.scan.tip"]}</Text>
             </View>
             <TouchableOpacity style={[fxVM, styles.paymentScaning]} activeOpacity={0.5}>
                 <Image style={styles.paymentQrcode} source={LocalPictures.scanQRcode} />

@@ -36,6 +36,7 @@
     "qrcode.pay": "QR code",
     "qrcode.collect": "Scan to collect",
     "qrcode.identify": "Scan to identify",
+    "qrcode.scan.tip": "Please scan the code",
     "input.amount": "Amount",
     "input.amount.tip": "Please enter the amount",
     "currency.symbol": "$",

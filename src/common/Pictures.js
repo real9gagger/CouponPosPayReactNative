@@ -4,7 +4,12 @@ const LocalPictures = {
     launchScreenLogo: require("@/images/pics/launch_screen_logo.png"), //启动屏中心LOGO
     loadingPicError: require("@/images/pics/loading_pic_error.png"), //加载图片失败时的默认图片
     scanQRcode: require("@/images/pics/scan_qrcode.png"),
+    couponCodeTest: require("@/images/pics/coupon_code_test.png"), //优惠码（测试专用）
+    
+    //图标图片
     iconToggleDrawer: require("@/images/icons/toggle_drawer.png"), //切换抽屉图标
+    
+    //LOGO图片
     logoChinaUnionpay: require("@/images/logos/china_unionpay_logo.png"),
     logoJiaotongxiIC: require("@/images/logos/jiaotongxi_ic.png"), //交通系IC
     logoLetianEdy: require("@/images/logos/letian_edy.png"), //乐天 Edy

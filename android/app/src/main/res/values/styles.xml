@@ -23,4 +23,16 @@
         <!-- !!!Required!!! Set the theme of the Activity that directly follows your splash screen. -->
         <item name="postSplashScreenTheme">@style/AppThemeDefault</item>
     </style>
+
+    <!-- 二维码扫码器主题样式 -->
+    <style name="AppThemeQrcodeCapture">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
 </resources>

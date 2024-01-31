@@ -3,7 +3,8 @@ import { ScrollView, View, Text, Pressable , Image, StatusBar, StyleSheet, Touch
 import { useI18N, useAppSettings } from "@/store/getter";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
 import LocalPictures from "@/common/Pictures";
-import QRcodeScaner from "@/modules/QRcodeScaner";
+import QRcodeScanner from "@/modules/QRcodeScanner";
+import PaymentHelper from "@/modules/PaymentHelper";
 import ImageButton from "@/components/ImageButton";
 import PayKeyboard from "@/components/PayKeyboard";
 import PosPayIcon from "@/components/PosPayIcon";
@@ -111,6 +112,7 @@ const styles = StyleSheet.create({
     },
     paymentScaning: {
         padding: 15,
+        marginTop: 15
     },
     paymentQrcode: {
         width: 60,
@@ -123,7 +125,8 @@ const onInputChange = "ON_INPUT_CHANGE";
 const bankCardList = [
     {
         logo: LocalPictures.logoChinaUnionpay,
-        name: "银联/UnionPay"
+        name: "银联/UnionPay",
+        pmcode: "01" //Payment Code
     }
 ];
 const eWalletList = [
@@ -194,7 +197,23 @@ function tabBankCard(props){
         if(currentInputBox !== 0){
             togglePKHidden();
         }
-        QRcodeScaner.startScaning();
+        QRcodeScanner.openScanner(dat => {
+            setCouponCode(dat.scanResult);
+            console.log(dat);
+        });
+    }
+    const startPayMoney = () => {
+        //以下属性数据类型都是字符串！
+        PaymentHelper.startPay({
+            transactionMode: (runtimeEnvironment.isProduction ? "1" : "2"), //1-正常，2-练习
+            transactionType: "1", //1-付款，2-取消付款，3-退款
+            paymentType: bankCardList[paymentIndex].pmcode,
+            amount: (payAmounts || "0"),
+            tax: "0",
+            slipNumber: "" //单据号码，取消付款或者退款时用到
+        }, function(payRes){
+            console.log(payRes);
+        });
     }
     
     useEffect(() => {
@@ -242,7 +261,7 @@ function tabBankCard(props){
                 ))}
             </View>
             <Text style={fxG1} onPress={togglePKHidden}>{/* 点我关闭键盘 */}</Text>
-            <View style={pdX}><GradientButton>{i18n["btn.collect"]}</GradientButton></View>
+            <View style={pdX}><GradientButton onPress={startPayMoney}>{i18n["btn.collect"]}</GradientButton></View>
         </ScrollView>
     );
 }
@@ -280,10 +299,14 @@ function tabEWallet(props){
             }
         }
     }
-    const scanCouponCode = () => {
+    const scanCouponCode = () => {//点击钱包扫码识别
         if(currentInputBox !== 0){
             togglePKHidden();
         }
+        QRcodeScanner.startScanner(val => {
+            //setCouponCode(val);
+            console.log(val);
+        });
     }
     
     useEffect(() => {
@@ -366,6 +389,19 @@ function tabQRCode(props){
             togglePKHidden();
         }
     }
+    const startPayMoney = () => {
+        //以下属性数据类型都是字符串！
+        PaymentHelper.startPay({
+            transactionMode: (runtimeEnvironment.isProduction ? "1" : "2"), //1-正常，2-练习
+            transactionType: "1", //1-付款，2-取消付款，3-退款
+            paymentType: "03", //扫描支付固定为 03
+            amount: (payAmounts || "0"),
+            tax: "0",
+            slipNumber: "" //单据号码，取消付款或者退款时用到
+        }, function(payRes){
+            console.log(payRes);
+        });
+    }
     
     useEffect(() => {
         const evt3000 = DeviceEventEmitter.addListener(onInputChange, function(infos){
@@ -403,12 +439,10 @@ function tabQRCode(props){
                 <Text style={[fxG1, styles.paymentLabel]}>{i18n["payment.method"]}</Text>
                 <Text style={[styles.paymentLabel, !paymentName&&tcAA]}>{paymentName || i18n["qrcode.scan.tip"]}</Text>
             </View>
-            <TouchableOpacity style={[fxVM, styles.paymentScaning]} activeOpacity={0.5}>
+            <TouchableOpacity style={[fxVM, styles.paymentScaning]} activeOpacity={0.5} onPress={startPayMoney}>
                 <Image style={styles.paymentQrcode} source={LocalPictures.scanQRcode} />
                 <Text style={[tcMC, taC, mgTX]}>{i18n["qrcode.collect"]}</Text>
             </TouchableOpacity>
-            <Text style={fxG1} onPress={togglePKHidden}>{/* 点我关闭键盘 */}</Text>
-            <View style={pdX}><GradientButton>{i18n["btn.collect"]}</GradientButton></View>
         </ScrollView>
     );
 }

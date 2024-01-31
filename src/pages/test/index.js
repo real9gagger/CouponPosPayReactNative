@@ -9,6 +9,7 @@ const styles = StyleSheet.create({
         width: 300,
         height: 500,
         marginHorizontal: (deviceDimensions.screenWidth - 300 - 30) / 2,
+        marginTop: 10,
         marginBottom: 30
     }
 });
@@ -40,7 +41,8 @@ export default function TestIndex(props){
             <View><Text style={[fs20, taC, tcMC]}>请把要测试的功能放在这里</Text></View>
             <View style={styles.btnBox}><Button title="测试发送短信验证码" onPress={sendMsgCode} /></View>
             <View style={styles.btnBox}><Button title="查看设备信息" onPress={gotoDevinfo} /></View>
-            <Text style={[fs18, taC, pdVX]}>测试专用优惠码</Text>
+            <View style={{height: 200}}>{/* 占位专用 */}</View>
+            <Text style={[fs18, taC]}>测试专用优惠码</Text>
             <Image style={styles.imgBox} source={LocalPictures.couponCodeTest} resizeMode="contain" />
         </ScrollView>
     );

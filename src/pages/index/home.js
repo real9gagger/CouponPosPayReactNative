@@ -23,11 +23,13 @@ const styles = StyleSheet.create({
         padding: 3,
         overflow: "hidden"
     },
-    tabBar: {
+    tabBar1: {
         backgroundColor: "#eee",
-        elevation: 0, /* 禁用底部阴影效果 */
-        borderTopColor: "#ccc",
-        borderTopWidth: 0
+        elevation: 0 /* 禁用底部阴影效果 */
+    },
+    tabBar2: {
+        backgroundColor: "#fff",
+        elevation: 1
     },
     tabIndicator: {
         backgroundColor: appMainColor
@@ -52,11 +54,12 @@ const styles = StyleSheet.create({
     },
     rowBox: {
         paddingHorizontal: 15,
-        paddingVertical: 10
+        paddingVertical: 5
     },
     moneyLabel: {
-        fontSize: 16,
-        paddingVertical: 10
+        paddingHorizontal: 15,
+        paddingTop: 15,
+        paddingBottom: 5
     },
     moneyInput: {
         textAlign: "right",
@@ -67,9 +70,8 @@ const styles = StyleSheet.create({
         lineHeight: 45
     },
     couponLabel: {
-        flex: 1,
-        fontSize: 16,
-        paddingVertical: 0
+        paddingHorizontal: 15,
+        paddingVertical: 10
     },
     couponInput: {
         textAlign: "right",
@@ -98,7 +100,8 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         borderColor: "#ddd",
         borderWidth: 1,
-        margin: 3
+        marginTop: 5,
+        marginRight: 5
     },
     paymentSelected: {
         borderColor: appDarkColor,
@@ -132,33 +135,104 @@ const bankCardList = [
 const eWalletList = [
     {
         logo: LocalPictures.logoIdCredit,
-        name: "iD"
+        name: "iD",
+        pmcode: "02-01" //Payment Code
     },
     {
         logo: LocalPictures.logoJiaotongxiIC,
-        name: "交通系IC"
+        name: "交通系IC",
+        pmcode: "02-02"
     },
     {
         logo: LocalPictures.logoLetianEdy,
-        name: "楽天Edy"
-    },
-    {
-        logo: LocalPictures.logoQuicPay,
-        name: "QUICPay"
-    },
-    {
-        logo: LocalPictures.logoNanaco,
-        name: "nanaco"
-    },
-    {
-        logo: LocalPictures.logoPitapa,
-        name: "PiTaPa"
+        name: "楽天Edy",
+        pmcode: "02-03"
     },
     {
         logo: LocalPictures.logoWaon,
-        name: "WAON"
+        name: "WAON",
+        pmcode: "02-04"
+    },
+    {
+        logo: LocalPictures.logoNanaco,
+        name: "nanaco",
+        pmcode: "02-05"
+    },
+    {
+        logo: LocalPictures.logoQuicPay,
+        name: "QUICPay",
+        pmcode: "02-06"
+    },
+    {
+        logo: LocalPictures.logoPitapa,
+        name: "PiTaPa",
+        pmcode: "02-07"
     }
 ];
+const qrPayList = [
+    {
+        logo: null,
+        name: "楽天ペイ",
+        pmcode: "11" //Payment Code
+    },
+    {
+        logo: null,
+        name: "LINEPay",
+        pmcode: "12"
+    },
+    {
+        logo: null,
+        name: "PayPay",
+        pmcode: "13"
+    },
+    {
+        logo: null,
+        name: "d払い",
+        pmcode: "14"
+    },
+    {
+        logo: null,
+        name: "auPay",
+        pmcode: "15"
+    },
+    {
+        logo: null,
+        name: "メルペイ",
+        pmcode: "16"
+    },
+    {
+        logo: null,
+        name: "銀行Pay",
+        pmcode: "19"
+    },
+    {
+        logo: null,
+        name: "WeChatPay",
+        pmcode: "21"
+    },
+    {
+        logo: null,
+        name: "Alipay",
+        pmcode: "22" 
+    },
+    {
+        logo: null,
+        name: "銀聯",
+        pmcode: "23"
+    },
+    {
+        logo: null,
+        name: "BankPay",
+        pmcode: "35"
+    }
+];
+
+//扫描二维码结束后调用
+function onScanFinish(dat){
+    if(dat.scanResult){
+        DeviceEventEmitter.emit(onInputChange, { nth: 2, txt: dat.scanResult }); //发送数据给父组件
+    }
+}
 
 //银行卡
 function tabBankCard(props){
@@ -197,10 +271,7 @@ function tabBankCard(props){
         if(currentInputBox !== 0){
             togglePKHidden();
         }
-        QRcodeScanner.openScanner(dat => {
-            setCouponCode(dat.scanResult);
-            console.log(dat);
-        });
+        QRcodeScanner.openScanner(onScanFinish);
     }
     const startPayMoney = () => {
         //以下属性数据类型都是字符串！
@@ -234,14 +305,18 @@ function tabBankCard(props){
         }
     }, []);
     
+    //银行卡支付界面
     return (
         <ScrollView style={fxG1} contentContainerStyle={mhF}>
+            <View style={[fxHC, styles.moneyLabel]}>
+                <Text style={[fxG1, fs16]}>{i18n["input.amount"]}</Text>
+                <Text style={tcCC}>{i18n["currency.code"]}</Text>
+            </View>
             <View style={styles.rowBox}>
-                <Text style={styles.moneyLabel}>{i18n["input.amount"]}</Text>
                 <Text style={[styles.moneyInput, currentInputBox===1&&styles.InputActived]} onPress={toggleAmountInput}>{i18n["currency.symbol"]}{payAmounts}</Text>
             </View>
-            <Pressable style={[fxHC, styles.rowBox]} android_ripple={tcCC} onPress={scanCouponCode}>
-                <Text style={styles.couponLabel}>{i18n["coupon"]}</Text>
+            <Pressable style={[fxHC, styles.couponLabel]} android_ripple={tcCC} onPress={scanCouponCode}>
+                <Text style={[fxG1, fs16]}>{i18n["coupon"]}</Text>
                 <Text style={[tcMC, mgRX]}>{i18n["qrcode.identify"]}</Text>
                 <PosPayIcon name="qrcode-scan" color={appMainColor} size={24} />
             </Pressable>
@@ -252,7 +327,7 @@ function tabBankCard(props){
                 <Text style={[fxG1, styles.paymentLabel]}>{i18n["payment.method"]}</Text>
                 <Text style={styles.paymentLabel}>{bankCardList[paymentIndex].name}</Text>
             </View>
-            <View style={[fxR, fxJC, fxWP, pdHX]}>
+            <View style={[fxR, fxWP, pdHX]}>
                 {bankCardList.map((vx, ix) => (
                     <TouchableOpacity key={vx.name} activeOpacity={0.5} onPress={togglePayment(ix)} style={[styles.paymentBox, paymentIndex===ix&&styles.paymentSelected]}>
                         <Image style={whF} source={vx.logo} />
@@ -303,10 +378,7 @@ function tabEWallet(props){
         if(currentInputBox !== 0){
             togglePKHidden();
         }
-        QRcodeScanner.startScanner(val => {
-            //setCouponCode(val);
-            console.log(val);
-        });
+        QRcodeScanner.openScanner(onScanFinish);
     }
     
     useEffect(() => {
@@ -327,14 +399,18 @@ function tabEWallet(props){
         }
     }, []);
     
+    //电子钱包支付界面
     return (
         <ScrollView style={fxG1} contentContainerStyle={mhF}>
+            <View style={[fxHC, styles.moneyLabel]}>
+                <Text style={[fxG1, fs16]}>{i18n["input.amount"]}</Text>
+                <Text style={tcCC}>{i18n["currency.code"]}</Text>
+            </View>
             <View style={styles.rowBox}>
-                <Text style={styles.moneyLabel}>{i18n["input.amount"]}</Text>
                 <Text style={[styles.moneyInput, currentInputBox===1&&styles.InputActived]} onPress={toggleAmountInput}>{i18n["currency.symbol"]}{payAmounts}</Text>
             </View>
-            <Pressable style={[fxHC, styles.rowBox]} android_ripple={tcCC} onPress={scanCouponCode}>
-                <Text style={styles.couponLabel}>{i18n["coupon"]}</Text>
+            <Pressable style={[fxHC, styles.couponLabel]} android_ripple={tcCC} onPress={scanCouponCode}>
+                <Text style={[fxG1, fs16]}>{i18n["coupon"]}</Text>
                 <Text style={[tcMC, mgRX]}>{i18n["qrcode.identify"]}</Text>
                 <PosPayIcon name="qrcode-scan" color={appMainColor} size={24} />
             </Pressable>
@@ -388,6 +464,7 @@ function tabQRCode(props){
         if(currentInputBox !== 0){
             togglePKHidden();
         }
+        QRcodeScanner.openScanner(onScanFinish);
     }
     const startPayMoney = () => {
         //以下属性数据类型都是字符串！
@@ -421,14 +498,18 @@ function tabQRCode(props){
         }
     }, []);
     
+    //二维码支付界面
     return (
         <ScrollView style={fxG1} contentContainerStyle={mhF}>
+            <View style={[fxHC, styles.moneyLabel]}>
+                <Text style={[fxG1, fs16]}>{i18n["input.amount"]}</Text>
+                <Text style={tcCC}>{i18n["currency.code"]}</Text>
+            </View>
             <View style={styles.rowBox}>
-                <Text style={styles.moneyLabel}>{i18n["input.amount"]}</Text>
                 <Text style={[styles.moneyInput, currentInputBox===1&&styles.InputActived]} onPress={toggleAmountInput}>{i18n["currency.symbol"]}{payAmounts}</Text>
             </View>
-            <Pressable style={[fxHC, styles.rowBox]} android_ripple={tcCC} onPress={scanCouponCode}>
-                <Text style={styles.couponLabel}>{i18n["coupon"]}</Text>
+            <Pressable style={[fxHC, styles.couponLabel]} android_ripple={tcCC} onPress={scanCouponCode}>
+                <Text style={[fxG1, fs16]}>{i18n["coupon"]}</Text>
                 <Text style={[tcMC, mgRX]}>{i18n["qrcode.identify"]}</Text>
                 <PosPayIcon name="qrcode-scan" color={appMainColor} size={24} />
             </Pressable>
@@ -437,7 +518,7 @@ function tabQRCode(props){
             </View>
             <View style={[fxHC, styles.rowBox]}>
                 <Text style={[fxG1, styles.paymentLabel]}>{i18n["payment.method"]}</Text>
-                <Text style={[styles.paymentLabel, !paymentName&&tcAA]}>{paymentName || i18n["qrcode.scan.tip"]}</Text>
+                <Text style={[styles.paymentLabel, !paymentName&&tcCC]}>{paymentName || i18n["qrcode.scan.tip"]}</Text>
             </View>
             <TouchableOpacity style={[fxVM, styles.paymentScaning]} activeOpacity={0.5} onPress={startPayMoney}>
                 <Image style={styles.paymentQrcode} source={LocalPictures.scanQRcode} />
@@ -466,6 +547,8 @@ function customTabItem(args){
 
 //自定义顶部标签页
 function customTabBar(props) {
+    //是否显示页面标头
+    const isehh = (props.navigationState.routes.length ? props.navigationState.routes[0].isehh : true); //is enable home header
     return (
         <TabBar
             {...props}
@@ -473,7 +556,7 @@ function customTabBar(props) {
             renderLabel={customTabItem}
             indicatorStyle={styles.tabIndicator}
             tabStyle={styles.tabItem}
-            style={styles.tabBar}
+            style={isehh ? styles.tabBar1 : styles.tabBar2}
         />
     );
 }
@@ -495,13 +578,15 @@ export default function IndexHome(props){
     const onPkClose = (txt) => {
         DeviceEventEmitter.emit(onInputToggle, { nth: 0, txt: "" }); //发送数据给子组件
     }
+    const gotoSettingPage = () => {
+        props.navigation.navigate("设置页");
+    }
     
     useEffect(() => {
         const eventer9000 = DeviceEventEmitter.addListener(onInputToggle, function(infos){
             setInputIndex(infos.nth);
             pkRef.current.initiText(infos.txt);
         });
-        
         return () => {
             eventer9000.remove();
         }
@@ -509,11 +594,11 @@ export default function IndexHome(props){
     
     useEffect(() => {
         setTabList([
-            { key: "tabBankCard", title: i18n["credit.card"] },
+            { key: "tabBankCard", title: i18n["credit.card"], isehh: appSettings.isEnableHomeHeader },
             { key: "tabEWallet", title: i18n["e.wallet"] },
             { key: "tabQRCode", title: i18n["qrcode.pay"] },
         ]);
-    }, [i18n]);
+    }, [i18n, appSettings]);
     
     return (
         <View style={pgFF}>
@@ -521,7 +606,7 @@ export default function IndexHome(props){
             {appSettings.isEnableHomeHeader &&
                 <View style={[fxVM, styles.headerBox]}>
                     <ImageButton visible={appSettings.isEnableDrawer} source={LocalPictures.iconToggleDrawer} style={styles.toggleIcon} onPress={openDrawer} />
-                    <Text style={fs18}>{i18n["tabbar.home"]}</Text>
+                    <Text style={fs20}>{i18n["tabbar.home"]}</Text>
                 </View>
             }
             <TabView
@@ -535,8 +620,9 @@ export default function IndexHome(props){
                 ref={pkRef} 
                 fixed={true}
                 visible={inputIndex > 0} 
-                precision={2} 
-                isPhoneMode={inputIndex===2} 
+                precision={0} 
+                onSetting={gotoSettingPage}
+                phoneMode={inputIndex===2} 
                 onChange={onTxtChange} 
                 onClose={onPkClose} 
                 onConfirm={onPkClose}

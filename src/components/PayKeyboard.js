@@ -3,7 +3,7 @@ import { TouchableHighlight, View, Text, StyleSheet, Vibration } from "react-nat
 import PosPayIcon from "@/components/PosPayIcon"
 
 const TAP_COLOR = "#f0f0f0"
-
+const REGEXP_ZEROS = /^0*$/
 const styles = StyleSheet.create({
     pkContainer: {
         display: "flex",
@@ -24,14 +24,14 @@ const styles = StyleSheet.create({
         justifyContent: "center", 
         alignItems: "center",
         backgroundColor: "#fff",
-        height: 50,
-        margin: 2,
+        height: 50, /* 改了这个值，记得修改 settingIcon 的 right/bottom 值 */
+        margin: 2, /* 改了这个值，记得修改 settingIcon 的 right/bottom 值 */
         borderRadius: 8,
         elevation: 0
     },
     keyText: {
         fontSize: 24,
-        color: "#000"
+        color: "#333"
     },
     keyColumn: {
         width: "25%"
@@ -39,6 +39,12 @@ const styles = StyleSheet.create({
     confirmBtn: {
         flex: 1,
         backgroundColor: appMainColor
+    },
+    settingIcon: {
+        position: "absolute",
+        right: 2 + 5, /* 外边距 + 调整值 */
+        bottom: 50 + 2 - 12 - 5, /* 按钮高度 + 外边距 - 图标尺寸 - 调整值 */
+        zIndex: 2
     }
 })
 
@@ -59,6 +65,7 @@ class PayKeyboard extends Component {
         this.callKP9 = this.__onKeyPress.bind(this, "9")
         this.callKP_ = this.__onKeyPress.bind(this, "-")
         this.callKP$ = this.__onKeyPress.bind(this, ".")
+        this.callKPO = this.__onKeyPress.bind(this, "O")
         this.callKPB = this.__onKeyPress.bind(this, "B")
         this.callKPD = this.__onKeyPress.bind(this, "D")
         this.callKPE = this.__onKeyPress.bind(this, "E")
@@ -78,7 +85,7 @@ class PayKeyboard extends Component {
             case "8":
             case "9": 
             case "0": 
-                if(this.inputText === "0"){
+                if(REGEXP_ZEROS.test(this.inputText)){
                     this.inputText = num
                 } else {
                     const idot = this.inputText.lastIndexOf(".") + 1
@@ -97,6 +104,13 @@ class PayKeyboard extends Component {
             case ".": //小数点
                 if(this.inputText && +this.props.precision && !this.inputText.includes(num)){
                     this.inputText += num
+                } else {
+                    return
+                }
+                break
+            case "O":
+                if(!REGEXP_ZEROS.test(this.inputText)){
+                    this.inputText += "00"
                 } else {
                     return
                 }
@@ -150,7 +164,8 @@ class PayKeyboard extends Component {
         
         const isPrec = !!this.props.precision
         const isFixed = !!this.props.fixed
-        const isPhoneMode = !!this.props.isPhoneMode
+        const isPhoneMode = !!this.props.phoneMode
+        const isShowSetting = !!this.props.onSetting
         
         return (
             <View style={[styles.pkContainer, isFixed && styles.pkFixed]}>
@@ -158,7 +173,8 @@ class PayKeyboard extends Component {
                     <TouchableHighlight underlayColor={TAP_COLOR} onPress={this.callKP7} style={styles.keyBox}><Text style={styles.keyText}>7</Text></TouchableHighlight>
                     <TouchableHighlight underlayColor={TAP_COLOR} onPress={this.callKP4} style={styles.keyBox}><Text style={styles.keyText}>4</Text></TouchableHighlight>
                     <TouchableHighlight underlayColor={TAP_COLOR} onPress={this.callKP1} style={styles.keyBox}><Text style={styles.keyText}>1</Text></TouchableHighlight>
-                    <TouchableHighlight underlayColor={TAP_COLOR} onPress={this.callKPE} style={styles.keyBox}><PosPayIcon name="collapse-keyboard" size={20} /></TouchableHighlight>
+                    <TouchableHighlight underlayColor={TAP_COLOR} onPress={this.callKPE} style={styles.keyBox} onLongPress={this.props.onSetting}><PosPayIcon name="collapse-keyboard" size={20} /></TouchableHighlight>
+                    {isShowSetting && <PosPayIcon name="system-setting" color="#aaa" size={12} style={styles.settingIcon} />}
                 </View>
                 <View style={styles.keyColumn}>
                     <TouchableHighlight underlayColor={TAP_COLOR} onPress={this.callKP8} style={styles.keyBox}><Text style={styles.keyText}>8</Text></TouchableHighlight>
@@ -172,10 +188,10 @@ class PayKeyboard extends Component {
                     <TouchableHighlight underlayColor={TAP_COLOR} onPress={this.callKP3} style={styles.keyBox}><Text style={styles.keyText}>3</Text></TouchableHighlight>
                     {isPhoneMode ? 
                         <TouchableHighlight underlayColor={TAP_COLOR} onPress={this.callKP_} style={styles.keyBox}><Text style={styles.keyText}>-</Text></TouchableHighlight>
-                    :(isPrec ?
+                    : (isPrec ?
                         <TouchableHighlight underlayColor={TAP_COLOR} onPress={this.callKP$} style={styles.keyBox}><Text style={styles.keyText}>.</Text></TouchableHighlight>
-                        :
-                        <View style={[styles.keyBox, op05]}><Text style={styles.keyText}>.</Text></View>
+                    : /* 非手机号码模式且无小数点时，则默认可以一次输入两个 0 */
+                        <TouchableHighlight underlayColor={TAP_COLOR} onPress={this.callKPO} style={styles.keyBox}><Text style={styles.keyText}>00</Text></TouchableHighlight>
                     )}
                 </View>
                 <View style={styles.keyColumn}>

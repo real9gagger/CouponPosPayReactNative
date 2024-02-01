@@ -7,20 +7,26 @@ const initialState = {
     isEnableHomeHeader: true, //是否显示主页标题栏
 };
 
-//更新本地设置
+//单个更新本地设置
 export function updateAppSettings(key, value){
-    if(key && typeof key === "string"){
-        return {
-            type: UPDATE_SETTINGS,
-            payload: {
-                [key]: value
+    if(key){
+        const tok = (typeof key);
+        if(tok === "string"){
+            return {
+                type: UPDATE_SETTINGS,
+                payload: { [key]: value }
+            }
+        } else if(tok === "object"){
+            return {
+                type: UPDATE_SETTINGS,
+                payload: value
             }
         }
-    } else {
-        return {
-            type: UNKNOWN_ACTION,
-            payload: null
-        }
+    }
+    
+    return {
+        type: UNKNOWN_ACTION,
+        payload: null
     }
 }
 

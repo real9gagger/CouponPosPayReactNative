@@ -4,6 +4,10 @@ import { TouchableHighlight, TouchableOpacity, Text } from "react-native"
 //可以点击并触发事件的文本型按钮（没有背景色和边框）
 class TextualButton extends Component {
     render(){
+        if(this.props.visible === false){
+            return null
+        }
+        
         const boxStyle = { fontSize: 16 }
         const textStyle = { textAlign: "center" }
         const isStringText = (typeof this.props.children !== "object")

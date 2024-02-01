@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
 import { TouchableHighlight, ScrollView, View, Text, Switch, StatusBar, StyleSheet } from "react-native";
-import { useI18N, useAppSettings } from "@/store/getter";
+import { useI18N, getAppSettings } from "@/store/getter";
 import { dispatchUpdateAppSettings } from "@/store/setter";
 import PosPayIcon from "@/components/PosPayIcon";
+import GradientButton from "@/components/GradientButton";
 
 const styles = StyleSheet.create({
     blankBox: {
@@ -10,6 +12,13 @@ const styles = StyleSheet.create({
     boxDivider: {
         borderTopColor: "#ddd",
         borderTopWidth: StyleSheet.hairlineWidth
+    },
+    bthBox: {
+        position: "absolute",
+        bottom: 20,
+        left: 15,
+        right: 15,
+        zIndex: 9
     }
 });
 
@@ -45,22 +54,58 @@ const switchList = [
 const switchTrackColor = { 
     "true": appLightColor, 
     "false": "#ccc",
+    "thumbColor": "#eee"
 };
 
 export default function SettingIndex(props){
     const i18n = useI18N();
-    const appSettings = useAppSettings();
+    const appSettings = getAppSettings();
+    const [switchItems, setSwitchItems] = useState({});
     
     const onItemPress = (actionName) => {
         props.navigation.navigate(actionName);
     }
     
     const onSwitchChange = (settingKey) => {
-        dispatchUpdateAppSettings(settingKey, !appSettings[settingKey]);
+        return function(){
+            switchItems[settingKey] = !switchItems[settingKey];
+            switchItems.isSomeItemHasBeenChanged = false; //重置！
+            
+            for(const vx of switchList){
+                if(switchItems[vx.settingKey] !== appSettings[vx.settingKey]) {
+                    switchItems.isSomeItemHasBeenChanged = true;
+                    break;
+                }
+            }
+            
+            setSwitchItems({...switchItems});
+        }
     }
     
+    const onPressConfirm = () => {
+        const newSettings = {};
+        
+        for(const vx of switchList){
+            newSettings[vx.settingKey] = switchItems[vx.settingKey];
+        }
+        
+        dispatchUpdateAppSettings({}, newSettings);
+        
+        props.navigation.goBack();
+    }
+    
+    useEffect(() => {
+        const myItems = { isSomeItemHasBeenChanged: false }; //是否至少有一项被修改过了
+        
+        for(const vx of switchList){
+            myItems[vx.settingKey] = !!appSettings[vx.settingKey];
+        }
+
+        setSwitchItems(myItems);
+    }, []);
+    
     return (
-        <ScrollView>
+        <ScrollView style={fxG1} contentContainerStyle={mhF}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
             <View style={styles.blankBox}>{/*占位专用*/}</View>
             {settingList.map((vx, ix) => (
@@ -72,18 +117,23 @@ export default function SettingIndex(props){
                     </View>
                 </TouchableHighlight>
             ))}
-            {switchList.map(vx => (
+            <View style={styles.blankBox}>{/*占位专用*/}</View>
+            {switchList.map((vx, ix) => (
                 <View key={vx.settingKey} style={[pdHX, bgFF]}>
-                    <View style={[pdVX, fxHC, styles.boxDivider]}>
+                    <View style={[pdVX, fxHC, ix && styles.boxDivider]}>
                         <Text style={[fs16, fxG1]}>{i18n[vx.i18nLabel]}</Text>
                         <Switch 
-                            value={appSettings[vx.settingKey]} 
-                            thumbColor={appSettings[vx.settingKey] ? appMainColor : "#eee"} 
+                            value={switchItems[vx.settingKey]} 
+                            thumbColor={switchItems[vx.settingKey] ? appMainColor : switchTrackColor.thumbColor} 
                             trackColor={switchTrackColor} 
-                            onValueChange={() => onSwitchChange(vx.settingKey)}/>
+                            onValueChange={onSwitchChange(vx.settingKey)}/>
                     </View>
                 </View>
             ))}
+            <GradientButton 
+                style={styles.bthBox}
+                disable={!switchItems.isSomeItemHasBeenChanged} 
+                onPress={onPressConfirm}>{i18n["btn.confirm"]}</GradientButton>
         </ScrollView>
     )
 }

@@ -17,6 +17,10 @@ const defaultScreenOptions = {
 		// 去掉标题栏底部阴影效果
 		elevation: 0
 	},
+    headerTitleStyle: {
+        //标题字体大小
+        fontSize: 20
+    },
 	// 控制是否显示页面的标题栏。
 	headerShown: true,
 	// 设置标题栏文本颜色。

@@ -279,8 +279,8 @@ function tabBankCard(props){
             transactionMode: (runtimeEnvironment.isProduction ? "1" : "2"), //1-正常，2-练习
             transactionType: "1", //1-付款，2-取消付款，3-退款
             paymentType: bankCardList[paymentIndex].pmcode,
-            amount: (payAmounts || "0"),
-            tax: "0",
+            amount: payAmounts, //至少一块钱，否则报错
+            tax: "0", //税费
             slipNumber: "" //单据号码，取消付款或者退款时用到
         }, function(payRes){
             console.log(payRes);
@@ -472,8 +472,8 @@ function tabQRCode(props){
             transactionMode: (runtimeEnvironment.isProduction ? "1" : "2"), //1-正常，2-练习
             transactionType: "1", //1-付款，2-取消付款，3-退款
             paymentType: "03", //扫描支付固定为 03
-            amount: (payAmounts || "0"),
-            tax: "0",
+            amount: payAmounts, //至少一块钱，否则报错
+            tax: "0", //税费
             slipNumber: "" //单据号码，取消付款或者退款时用到
         }, function(payRes){
             console.log(payRes);
@@ -599,7 +599,7 @@ export default function IndexHome(props){
             { key: "tabQRCode", title: i18n["qrcode.pay"] },
         ]);
     }, [i18n, appSettings]);
-    
+
     return (
         <View style={pgFF}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />

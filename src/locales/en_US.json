@@ -46,7 +46,8 @@
     "payment.method": "Payment method",
     "setting.enable.drawer": "Enable drawer",
     "setting.enable.tabbar": "Enable tabbar",
-    "setting.enable.home.header": "Enable homepage header",
+    "setting.enable.homeheader": "Enable homepage header",
+    "setting.enable.sysnav": "Enable system navigation",
     
     "coupon": "Coupon",
     "business": "Business",

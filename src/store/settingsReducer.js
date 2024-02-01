@@ -5,6 +5,7 @@ const initialState = {
     isEnableDrawer: true, //启用抽屉栏
     isEnableTabbar: true, //启用底部导航栏
     isEnableHomeHeader: true, //是否显示主页标题栏
+    isEnableSystemNavigation: true //显示系统导航栏
 };
 
 //单个更新本地设置

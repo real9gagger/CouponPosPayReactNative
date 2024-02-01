@@ -2,6 +2,8 @@ package com.couponpospayreactnative.appinfo;
 
 import android.app.Activity;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 
@@ -31,8 +33,8 @@ public class AppNavigationInfoModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void setColor(int hexColor) {
         Activity act = this.mRNContext.getCurrentActivity();
-        if(act != null){
-            if(this.mIsFirstSet){
+        if (act != null) {
+            if (this.mIsFirstSet) {
                 this.mDefaultColor = act.getWindow().getNavigationBarColor();
                 this.mIsFirstSet = false;
                 Log.d(TAG, "系统导航栏默认颜色：" + this.mDefaultColor);
@@ -45,7 +47,7 @@ public class AppNavigationInfoModule extends ReactContextBaseJavaModule {
 
     @ReactMethod(isBlockingSynchronousMethod = true)
     public int getColor(boolean isGetDef) {
-        if(isGetDef){
+        if (isGetDef) {
             return this.mDefaultColor;
         }
 
@@ -59,7 +61,25 @@ public class AppNavigationInfoModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void resetColor(){
+    public void resetColor() {
         this.setColor(this.mDefaultColor);
+    }
+
+    @ReactMethod
+    public void setVisible(boolean isShow) {
+        Activity at = this.mRNContext.getCurrentActivity();
+        Window wd = (at != null ? at.getWindow() : null);
+        if (wd != null) {
+            at.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (!isShow) {//不显示系统导航栏
+                        wd.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+                    } else {
+                        wd.clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+                    }
+                }
+            });
+        }
     }
 }

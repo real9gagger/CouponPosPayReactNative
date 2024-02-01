@@ -46,7 +46,7 @@ const switchList = [
         settingKey: "isEnableTabbar"
     },
     {
-        i18nLabel: "setting.enable.home.header",
+        i18nLabel: "setting.enable.homeheader",
         settingKey: "isEnableHomeHeader"
     }
 ];

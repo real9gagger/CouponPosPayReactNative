@@ -32,6 +32,7 @@ public class MainActivity extends ReactActivity {
     if (mActivityResultCallback == null) {
       Log.d(TAG, "回调函数为空，不执行任何操作...");
     } else {
+      Log.d(TAG, "有获取到二维码扫码结果...");
       mActivityResultCallback.invoke(result.getContents()); //返回的是 ScanIntentResult 实例
       mActivityResultCallback = null; //调用后，重置为空！！！
     }
@@ -100,8 +101,8 @@ public class MainActivity extends ReactActivity {
       switch (requestCode) {
         case REQUEST_PAY_CODE:
           //返回数据，参见：https://www.smbc-card.com/steradevelopers/develop/kessai.jsp
-          args.putString("amount", intent.getStringExtra("Amount")); //交易金额
-          args.putString("tax", intent.getStringExtra("Tax"));//税费
+          args.putInt("amount", intent.getIntExtra("Amount", 0)); //交易金额
+          args.putInt("tax", intent.getIntExtra("Tax", 0));//税费
           args.putString("errorCode", intent.getStringExtra("ErrorCode")); //错误码，空字符串为交易成功
           args.putString("paymentType", intent.getStringExtra("PaymentType")); //支付类型 01-银联，02-电子钱包，03-扫描支付
           args.putString("slipNumber", intent.getStringExtra("SlipNumber")); //单据号码

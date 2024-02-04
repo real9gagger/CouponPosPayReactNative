@@ -11,7 +11,7 @@ const LocalPictures = {
     iconToggleDrawer: require("@/images/icons/toggle_drawer.png"), //切换抽屉图标
     
     //LOGO图片
-    logoChinaUnionpay: require("@/images/logos/china_unionpay_logo.png"),
+    logoChinaUnionpay: require("@/images/logos/china_unionpay.png"),
     logoJiaotongxiIC: require("@/images/logos/jiaotongxi_ic.png"), //交通系IC
     logoLetianEdy: require("@/images/logos/letian_edy.png"), //乐天 Edy
     logoQuicPay: require("@/images/logos/quic_pay.png"),
@@ -19,6 +19,17 @@ const LocalPictures = {
     logoPitapa: require("@/images/logos/pitapa.png"),
     logoWaon: require("@/images/logos/waon.png"),
     logoIdCredit: require("@/images/logos/id_credit.png"),
+    logoAlipay:  require("@/images/logos/alipay.png"),
+    logoWechatPay:  require("@/images/logos/wechat_pay.png"),
+    logoRakutenPay:  require("@/images/logos/rakuten_pay.png"),
+    logoLinePay:  require("@/images/logos/linepay.png"),
+    logoPaypay:  require("@/images/logos/paypay.png"),
+    logoAupay:  require("@/images/logos/aupay.png"),
+    logoBankpay:  require("@/images/logos/bankpay.png"),
+    logoDbarai:  require("@/images/logos/dbarai.png"),
+    logoMerpay:  require("@/images/logos/merpay.png"),
+    logoYunshanfu:  require("@/images/logos/yunshanfu.png"),
+    logoTaiwanpay:  require("@/images/logos/taiwanpay.png"),
 };
 
 export default LocalPictures;

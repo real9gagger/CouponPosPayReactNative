@@ -4,18 +4,35 @@ import { bankCardList, eWalletList, qrPayList } from "@/common/Statics";
 import LocalPictures from "@/common/Pictures";
 
 const styles = StyleSheet.create({
-    itemBox: {
-        width: "45%",
+    titleBox: {
+        fontSize: 16,
+        marginTop: 15,
+        fontWeight: "bold"
+    },
+    titleFirst: {
+        marginTop: 0
+    },
+    itemBox1: {
+        width: "50%",
+        paddingTop: 6,
+        paddingRight: 3
+    },
+    itemBox2: {
+        width: "50%",
+        paddingTop: 6,
+        paddingLeft: 3
+    },
+    itemContent: {
         backgroundColor: "#fff",
-        margin: 5,
         padding: 10,
         borderRadius: 8,
         flexDirection: "row",
         alignItems: "center"
     },
     imgBox: {
-        width: 60,
-        height: 60
+        width: 55,
+        height: 55,
+        marginRight: 5
     }
 });
 
@@ -26,12 +43,36 @@ export default function TestSupportPayment(props){
     return (
         <ScrollView style={pgEE} contentContainerStyle={pdX}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
-            <Text>{i18n["qrcode.pay"]}</Text>
+            <Text style={[styles.titleBox, styles.titleFirst]}>{i18n["credit.card"]}</Text>
             <View style={[fxR, fxWP]}>
-                {qrPayList.map(vx => (
-                    <View key={vx.pmcode} style={styles.itemBox}>
-                        <Image source={LocalPictures[vx.logo]} style={styles.imgBox} />
-                        <Text>{vx.name}</Text>
+                {bankCardList.map((vx, ix) => (
+                    <View key={vx.pmcode} style={ix%2===0 ? styles.itemBox1 : styles.itemBox2}>
+                        <View style={styles.itemContent}>
+                            <Image source={LocalPictures[vx.logo]} style={styles.imgBox} />
+                            <Text>{vx.name}</Text>
+                        </View>
+                    </View>
+                ))}
+            </View>
+            <Text style={styles.titleBox}>{i18n["e.wallet"]}</Text>
+            <View style={[fxR, fxWP]}>
+                {eWalletList.map((vx, ix) => (
+                    <View key={vx.pmcode} style={ix%2===0 ? styles.itemBox1 : styles.itemBox2}>
+                        <View style={styles.itemContent}>
+                            <Image source={LocalPictures[vx.logo]} style={styles.imgBox} />
+                            <Text>{vx.name}</Text>
+                        </View>
+                    </View>
+                ))}
+            </View>
+            <Text style={styles.titleBox}>{i18n["qrcode.pay"]}</Text>
+            <View style={[fxR, fxWP]}>
+                {qrPayList.map((vx, ix) => (
+                    <View key={vx.pmcode} style={ix%2===0 ? styles.itemBox1 : styles.itemBox2}>
+                        <View style={styles.itemContent}>
+                            <Image source={LocalPictures[vx.logo]} style={styles.imgBox} />
+                            <Text>{vx.name}</Text>
+                        </View>
                     </View>
                 ))}
             </View>

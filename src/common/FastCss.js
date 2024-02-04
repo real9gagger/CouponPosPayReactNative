@@ -18,6 +18,7 @@ const FastCss = StyleSheet.create({
     fxJE: { justifyContent: "flex-end" },
     fxJC: { justifyContent: "center" },
     fxJA: { justifyContent: "space-around" },
+    fxJB: { justifyContent: "space-between" },
     
     dpN: { display: "none" },
     dpF: { display: "flex" },

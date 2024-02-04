@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         backgroundColor: "#e9e9e9",
-        padding: 9
+        padding: 8
     },
     pkFixed: {
         position: "absolute",

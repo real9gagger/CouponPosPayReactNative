@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { ScrollView, View, Text, Pressable , Image, StatusBar, StyleSheet, TouchableOpacity, DeviceEventEmitter } from "react-native";
 import { useI18N, getI18N, useAppSettings } from "@/store/getter";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
-import { bankCardList, eWalletList } from "@/common/Statics";
+import { bankCardList, eWalletList, QR_PAYMENT_CODE } from "@/common/Statics";
 import LocalPictures from "@/common/Pictures";
 import QRcodeScanner from "@/modules/QRcodeScanner";
 import PaymentHelper from "@/modules/PaymentHelper";
@@ -10,7 +10,6 @@ import ImageButton from "@/components/ImageButton";
 import PayKeyboard from "@/components/PayKeyboard";
 import PosPayIcon from "@/components/PosPayIcon";
 import GradientButton from "@/components/GradientButton";
-import TextualButton from "@/components/TextualButton";
 
 const styles = StyleSheet.create({
     headerBox: {
@@ -96,14 +95,14 @@ const styles = StyleSheet.create({
         paddingTop: 10
     },
     paymentBox: {
-        width: 100,
-        height: 100,
+        width: 78,
+        height: 78,
         padding: 5,
         backgroundColor: "#fff",
         borderColor: "#ddd",
         borderWidth: 1,
-        marginTop: 5,
-        marginRight: 5
+        marginTop: 4,
+        marginRight: 4
     },
     paymentSelected: {
         borderColor: appDarkColor,
@@ -125,7 +124,7 @@ const styles = StyleSheet.create({
     },
     paymentSupports: {
         paddingVertical: 15,
-        color: "#999",
+        color: "#666",
         fontSize: 12,
         paddingRight: 5
     }
@@ -163,13 +162,13 @@ function callPayment(payMoney, paymentCode){
     //以下属性数据类型都是字符串！
     PaymentHelper.startPay({
         transactionMode: (runtimeEnvironment.isProduction ? "1" : "2"), //1-正常，2-练习
-        paymentType: (paymentCode || "03"), //03 为扫码支付
+        paymentType: paymentCode,
         amount: payMoney, //至少一块钱，否则报错
         transactionType: "1", //1-付款，2-取消付款，3-退款
         tax: "0", //税费
         slipNumber: "" //单据号码，取消付款或者退款时用到
     }, function(payRes){
-        console.log(payRes);
+        console.log("交易成功:::", payRes);
         if(payRes.activityResultCode === 0){//支付成功
             payRes.action = onTransactionSuccess;
             DeviceEventEmitter.emit(eventEmitterName, payRes); //发
@@ -258,7 +257,7 @@ function tabBankCard(props){
         <ScrollView style={fxG1} contentContainerStyle={mhF}>
             <View style={[fxHC, styles.moneyLabel]}>
                 <Text style={[fxG1, fs16]}>{i18n["input.amount"]}</Text>
-                <Text style={tcCC}>{i18n["currency.code"]}</Text>
+                <Text style={tc99}>{i18n["currency.code"]}</Text>
             </View>
             <View style={styles.rowBox}>
                 <Text style={[styles.moneyInput, currentInputBox===1&&styles.InputActived]} onPress={toggleAmountInput}>{i18n["currency.symbol"]}{payAmounts}</Text>
@@ -355,7 +354,7 @@ function tabEWallet(props){
         <ScrollView style={fxG1} contentContainerStyle={mhF}>
             <View style={[fxHC, styles.moneyLabel]}>
                 <Text style={[fxG1, fs16]}>{i18n["input.amount"]}</Text>
-                <Text style={tcCC}>{i18n["currency.code"]}</Text>
+                <Text style={tc99}>{i18n["currency.code"]}</Text>
             </View>
             <View style={styles.rowBox}>
                 <Text style={[styles.moneyInput, currentInputBox===1&&styles.InputActived]} onPress={toggleAmountInput}>{i18n["currency.symbol"]}{payAmounts}</Text>
@@ -388,7 +387,6 @@ function tabEWallet(props){
 
 //二维码
 function tabQRCode(props){
-    console.log(props)
     const i18n = useI18N();
     const [payAmounts, setPayAmounts] = useState("");
     const [couponCode, setCouponCode] = useState("");
@@ -414,7 +412,7 @@ function tabQRCode(props){
         QRcodeScanner.openScanner(onScanFinish);
     }
     const startPayMoney = () => {
-        callPayment(payAmounts);
+        callPayment(payAmounts, QR_PAYMENT_CODE);
     }
     const gotoSupportPayment = () => {
         DeviceEventEmitter.emit(eventEmitterName, {
@@ -452,7 +450,7 @@ function tabQRCode(props){
         <ScrollView style={fxG1} contentContainerStyle={mhF}>
             <View style={[fxHC, styles.moneyLabel]}>
                 <Text style={[fxG1, fs16]}>{i18n["input.amount"]}</Text>
-                <Text style={tcCC}>{i18n["currency.code"]}</Text>
+                <Text style={tc99}>{i18n["currency.code"]}</Text>
             </View>
             <View style={styles.rowBox}>
                 <Text style={[styles.moneyInput, currentInputBox===1&&styles.InputActived]} onPress={toggleAmountInput}>{i18n["currency.symbol"]}{payAmounts}</Text>
@@ -474,10 +472,10 @@ function tabQRCode(props){
                 <Text style={[tcMC, taC, mgTX]}>{i18n["qrcode.collect"]}</Text>
             </TouchableOpacity>
             <View style={fxG1}>{/* 占位专用 */}</View>
-            <TextualButton style={fxHM} onPress={gotoSupportPayment}>
+            <TouchableOpacity style={fxHM} activeOpacity={0.5} onPress={gotoSupportPayment}>
                 <Text style={styles.paymentSupports}>{i18n["payment.supports"]}</Text>
                 <PosPayIcon name="right-arrow-double" color={styles.paymentSupports.color} size={12} />
-            </TextualButton>
+            </TouchableOpacity>
         </ScrollView>
     );
 }
@@ -534,7 +532,7 @@ export default function IndexHome(props){
         });
     }
     const gotoSettingPage = () => {
-        props.navigation.navigate("设置页");
+        props.navigation.navigate("支付成功"); //设置页
     }
     
     useEffect(() => {

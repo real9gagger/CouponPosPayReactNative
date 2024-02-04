@@ -1,5 +1,7 @@
 /**************** 一些静态数据 ****************/
 
+export const QR_PAYMENT_CODE = "03";
+
 //信用卡
 export const bankCardList = [
     {
@@ -51,71 +53,71 @@ export const eWalletList = [
 //二维码支持的扫描支付方式
 export const qrPayList = [
     {
-        logo: "unknownPayment",
+        logo: "logoRakutenPay",
         name: "楽天ペイ",
         pmcode: "11" //Payment Code
     },
     {
-        logo: "unknownPayment",
+        logo: "logoLinePay",
         name: "LINEPay",
         pmcode: "12"
     },
     {
-        logo: "unknownPayment",
+        logo: "logoPaypay",
         name: "PayPay",
         pmcode: "13"
     },
     {
-        logo: "unknownPayment",
+        logo: "logoDbarai",
         name: "d払い",
         pmcode: "14"
     },
     {
-        logo: "unknownPayment",
+        logo: "logoAupay",
         name: "auPay",
         pmcode: "15"
     },
     {
-        logo: "unknownPayment",
+        logo: "logoMerpay",
         name: "メルペイ",
         pmcode: "16"
     },
     {
-        logo: "unknownPayment",
+        logo: "logoTaiwanpay",
         name: "銀行Pay",
         pmcode: "19"
     },
     {
-        logo: "unknownPayment",
+        logo: "logoWechatPay",
         name: "WeChatPay",
         pmcode: "21"
     },
     {
-        logo: "unknownPayment",
+        logo: "logoAlipay",
         name: "Alipay",
         pmcode: "22" 
     },
     {
-        logo: "unknownPayment",
+        logo: "logoYunshanfu",
         name: "銀聯",
         pmcode: "23"
     },
     {
-        logo: "unknownPayment",
+        logo: "logoBankpay",
         name: "BankPay",
         pmcode: "35"
     }
 ];
 
 //获取支付方式信息
-export function getPaymentInfo(pmcode){
+export function getPaymentInfo(pmcode, subcode){
     if(pmcode && (typeof pmcode === "string")){
         if(pmcode.startsWith("01")){
             return bankCardList.find(vx => vx.pmcode === pmcode);
         } else if(pmcode.startsWith("02")){
-            return eWalletList.find(vx => vx.pmcode === pmcode);
+            return eWalletList.find(vx => vx.pmcode === `${pmcode}-${subcode}`);
         } else {
-            return qrPayList.find(vx => vx.pmcode === pmcode);
+            return qrPayList.find(vx => vx.pmcode === subcode);
         }
     }
     return null;

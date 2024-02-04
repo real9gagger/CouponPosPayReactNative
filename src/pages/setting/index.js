@@ -5,6 +5,7 @@ import { dispatchUpdateAppSettings } from "@/store/setter";
 import PosPayIcon from "@/components/PosPayIcon";
 import GradientButton from "@/components/GradientButton";
 import AppPackageInfo from "@/modules/AppPackageInfo";
+//import AppNavigationInfo from "@/modules/AppNavigationInfo";
 
 const styles = StyleSheet.create({
     blankBox: {
@@ -67,7 +68,11 @@ const switchList = [
     {
         i18nLabel: "setting.enable.homeheader",
         settingKey: "isEnableHomeHeader"
-    }
+    },
+    /* {
+        i18nLabel: "setting.enable.sysnav",
+        settingKey: "isEnableSystemNavigation"
+    } */
 ];
 
 const switchTrackColor = { 
@@ -109,6 +114,8 @@ export default function SettingIndex(props){
         }
         
         dispatchUpdateAppSettings({}, newSettings);
+        
+        //AppNavigationInfo.setVisible(newSettings.isEnableSystemNavigation);
         
         props.navigation.goBack();
     }

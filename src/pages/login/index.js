@@ -64,7 +64,7 @@ export default function LoginIndex(props){
     const [isPeekPswd, setIsPeekPswd] = useState(false);
     const [isSubmiting, setIsSubmiting] = useState(false);
     const [isAutoLogin, setIsAutoLogin] = useState(false);
-    const [username, setUsername] = useState(getUserInfo("loginAccount") || "商户");
+    const [username, setUsername] = useState(getUserInfo("loginAccount"));
     const [password, setPassword] = useState(getUserInfo("loginPassword"));
     
     const onSubmit = (evt) => {

@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { ScrollView, View, Text, StatusBar, StyleSheet } from "react-native";
 import { dispatchResetUserInfo } from "@/store/setter";
 import { useI18N, useUserInfo } from "@/store/getter";
+import { formatDate } from "@/utils/helper";
 import GradientButton from "@/components/GradientButton";
 import ImageButton from "@/components/ImageButton";
 import LocalPictures from "@/common/Pictures";
@@ -10,9 +11,9 @@ import ImageView from "react-native-image-viewing";
 const LOGIN_BOX_WIDTH = Math.min(Math.round(deviceDimensions.screenWidth * 0.8), 400);
 const styles = StyleSheet.create({
     accountTitle: {
-        paddingTop: 50,
+        paddingTop: 30,
         paddingBottom: 30,
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: "bold",
         textAlign: "center"
     },
@@ -29,7 +30,6 @@ const styles = StyleSheet.create({
         fontSize: 16
     },
     logoutBox: {
-        marginBottom: 50,
         width: LOGIN_BOX_WIDTH,
         marginLeft: (deviceDimensions.screenWidth - LOGIN_BOX_WIDTH) / 2
     }
@@ -57,7 +57,7 @@ export default function MineAccount(props){
                 });
             }, 1000);
         }).catch(err => {
-            console.log("用户已取消登出");
+            setIsLogout(false);
         });
     }
     
@@ -72,6 +72,7 @@ export default function MineAccount(props){
                     style={styles.accountAvatar} 
                     source={userAvatar} />
                 <Text style={styles.accountName}>{userInfo.posName}</Text>
+                <Text style={[fs12, tc99, pdVX]}>{userInfo.posAddress}</Text>
             </View>
             <View style={fxG1}>{/*占位用*/}</View>
             <View style={styles.logoutBox}>
@@ -79,6 +80,7 @@ export default function MineAccount(props){
                     onPress={onLogout} 
                     showLoading={isLogout}
                     disable={isLogout}>{i18n["btn.logout"]}</GradientButton>
+                <Text style={[taC, fs12, tc99, pdVX]}>{i18n["login.lasttime"]} {formatDate(userInfo.loginTimestamp)}</Text>
             </View>
             <ImageView
                 visible={showImageView}

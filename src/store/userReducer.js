@@ -33,14 +33,16 @@ export function resetUserInfo(){
 
 //设置登录令牌
 export function setAccessToken(accessToken, expiresIn, loginAccount, loginPassword){
-    const expiresAfterTicks = Date.now() + (+expiresIn || 0) * 1000; //单位：毫秒
+    const loginTimestamp = Date.now();
+    const expiresAfterTicks = loginTimestamp + (+expiresIn || 0) * 1000; //单位：毫秒
     return {
         type: SET_ACCESSTOKEN,
         payload: {
             accessToken,
             expiresAfterTicks,
             loginAccount,
-            loginPassword
+            loginPassword,
+            loginTimestamp
         }
     }
 }

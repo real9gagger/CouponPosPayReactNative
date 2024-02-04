@@ -293,6 +293,14 @@ const IconCheckFill = (props) => {
         </Svg>
     )
 }
+//顾客屏幕
+const IconCustomerDisplay = (props) => {
+    return (
+        <Svg {...props}>
+            <Path stroke={props.fill} strokeWidth="15" d="M812 824c19.882 0 36 16.118 36 36s-16.118 36-36 36H212c-19.882 0-36-16.118-36-36s16.118-36 36-36h600z m68-696c44.183 0 80 35.817 80 80v449c0 44.183-35.817 80-80 80H144c-44.183 0-80-35.817-80-80V208c0-44.183 35.817-80 80-80h736z m0.25 72H144a8.006 8.006 0 0 0-8 7.75V657a8.006 8.006 0 0 0 7.75 8H880a8.006 8.006 0 0 0 8-7.75V208a8.006 8.006 0 0 0-7.75-8z" />
+        </Svg>
+    )
+}
 /* ================================ 分割线 ================================ */
 //转换成 svg 的属性
 function getSvgProps(props){
@@ -365,6 +373,7 @@ class PosPayIcon extends Component {
             case "qrcode-pay": return IconQRCodePay(svgProps)
             case "qrcode-scan": return IconQRCodeScan(svgProps)
             case "internationalization": return IconInternationalization(svgProps)
+            case "customer-display": return IconCustomerDisplay(svgProps)
             default: return null
         }
     }

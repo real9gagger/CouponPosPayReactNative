@@ -45,8 +45,8 @@ export default function IndexTransactionSuccess(props){
     const [transactionResult, setTransactionResult] = useState(null);
     
     useEffect(() => {
-        const params = //props.route.params;
-        { //2024年2月2日。支付成功时的测试数据
+        const params = props.route.params;
+        /* { //2024年2月2日。支付成功时的测试数据
             activityRequestCode:  99, 
             activityResultCode:   0, 
             amount:               108, 
@@ -62,7 +62,7 @@ export default function IndexTransactionSuccess(props){
             tax:                  0, 
             transactionTime:      1706862993364, 
             transactionType:      "1"
-        };/*  */
+        }; */
         
         if(params){
             params.paymentInfo = getPaymentInfo(params.paymentType, params.eMoneyType || params.qrPayType);

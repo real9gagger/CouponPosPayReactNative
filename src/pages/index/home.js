@@ -532,7 +532,7 @@ export default function IndexHome(props){
         });
     }
     const gotoSettingPage = () => {
-        props.navigation.navigate("支付成功"); //设置页
+        props.navigation.navigate("设置页"); //跳转到设置页
     }
     
     useEffect(() => {

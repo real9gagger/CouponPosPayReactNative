@@ -48,7 +48,7 @@ export default function SettingLanguage(props){
                 </TouchableHighlight>
             ))}
             <View style={[pdX, styles.bthBox]}>
-                <GradientButton disable={initCode.current===lgCode} onPress={restartAPP}>{i18n["btn.confirm"]}</GradientButton>
+                <GradientButton disable={initCode.current===lgCode} onPress={restartAPP}>{i18n["btn.apply"]}</GradientButton>
             </View>
         </ScrollView>
     )

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ScrollView, View, Text, TextInput, TouchableOpacity, StatusBar, StyleSheet } from "react-native";
+import { ScrollView, View, Text, TextInput, TouchableOpacity, StatusBar, StyleSheet, ActivityIndicator } from "react-native";
 import { dispatchSetAccessToken, dispatchUpdateUserInfo } from "@/store/setter";
 import { useI18N, getUserInfo } from "@/store/getter";
 import GradientButton from "@/components/GradientButton";
@@ -40,6 +40,20 @@ const styles = StyleSheet.create({
     lgsBox: {
         marginTop: 40,
         padding: 10
+    },
+    autoLoginTip: {
+        position: "absolute",
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        zIndex: 9,
+        paddingBottom: 80,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#fff"
     }
 });
 
@@ -49,10 +63,11 @@ export default function LoginIndex(props){
     const [isPswdFocus, setIsPswdFocus] = useState(false);
     const [isPeekPswd, setIsPeekPswd] = useState(false);
     const [isSubmiting, setIsSubmiting] = useState(false);
+    const [isAutoLogin, setIsAutoLogin] = useState(false);
     const [username, setUsername] = useState(getUserInfo("loginAccount") || "商户");
     const [password, setPassword] = useState(getUserInfo("loginPassword"));
     
-    const onSubmit = () => {
+    const onSubmit = (evt) => {
         if(isSubmiting){
             return; //正在提交，请耐心等待...
         }
@@ -64,15 +79,20 @@ export default function LoginIndex(props){
             return !$notify.error(i18n["login.errmsg2"]);
         }
         
-        setIsSubmiting(true);
+        if(evt === true){
+            setIsAutoLogin(true);
+        } else {
+            setIsSubmiting(true);
+        }
         
         //console.log("用户输入的账户密码：", username, password);
         $request("loginWithPassword", {username, password}).then(res => {
             dispatchSetAccessToken(res.access_token, res.expires_in, username, password);
-            $request("getPostInfo").then(res => res && dispatchUpdateUserInfo(res)); //登录成功后获取用户信息
+            $request("getPostInfo").then(dispatchUpdateUserInfo); //登录成功后获取用户信息
             props.navigation.replace("应用首页");
         }).catch(err => {
             setIsSubmiting(false);
+            setIsAutoLogin(false);
         });
     }
     
@@ -83,13 +103,13 @@ export default function LoginIndex(props){
     useEffect(() => {
         //如果已存在账户密码则自动登录
         if(username && password){
-            onSubmit();
+            onSubmit(true);
         }
     }, []);
     
-    return (
+    return (<>
         <ScrollView style={pgEE}>
-            <StatusBar backgroundColor="#eee" barStyle="dark-content" />
+            <StatusBar backgroundColor={isAutoLogin ? "#FFF" : "#EEE"} barStyle="dark-content" />
             <View style={styles.loginBox}>
                 <Text style={styles.loginTitle}>{i18n["app.alias"]}</Text>
                 <View style={[styles.inputWrapper, isAccountFocus && styles.inputFocus]}>
@@ -140,5 +160,9 @@ export default function LoginIndex(props){
                 <PosPayIcon name="right-arrow" color="#999" size={16} offset={3}/>
             </TouchableOpacity>
         </ScrollView>
-    );
+        {isAutoLogin && <View style={styles.autoLoginTip}>
+            <ActivityIndicator color={appMainColor} size={50} />
+            <Text style={[fs14, tcMC, pdVX]}>{i18n["login.waiting"]}</Text>
+        </View>}
+    </>);
 }

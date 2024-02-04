@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { ScrollView, View, Text, StatusBar, StyleSheet } from "react-native";
-import { dispatchUpdateUserInfo } from "@/store/setter";
+import { dispatchResetUserInfo } from "@/store/setter";
 import { useI18N, useUserInfo } from "@/store/getter";
 import GradientButton from "@/components/GradientButton";
 import ImageButton from "@/components/ImageButton";
@@ -49,7 +49,7 @@ export default function MineAccount(props){
         
         $confirm(i18n["account.logout.tip"], i18n["alert.title"]).then(() => {
             setIsLogout(true);
-            dispatchUpdateUserInfo(null);
+            dispatchResetUserInfo(); //重置用户信息
             setTimeout(() => {
                 props.navigation.reset({ //清空路由，并跳转到登录页
                     index: 0,

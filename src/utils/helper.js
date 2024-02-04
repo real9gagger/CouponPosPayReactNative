@@ -47,3 +47,41 @@ export function arrayToObject(sourceArray, keyField, callBack) {
 
     return outputObj;
 }
+
+//格式化日期
+export function formatDate(dateObj, formatStr) {
+	if(!dateObj){
+		dateObj = new Date();
+	} else if(typeof dateObj === "number"){
+        dateObj = new Date(dateObj);
+    }
+	
+	if(!formatStr){
+		formatStr = "yyyy/MM/dd hh:mm:ss";
+	}
+	
+    const ooo = [
+		[/(y+)/, dateObj.getFullYear()], //year
+        [/(M+)/, dateObj.getMonth() + 1], //month
+        [/(d+)/, dateObj.getDate()], //day
+        [/(h+)/, dateObj.getHours()], //hour
+        [/(m+)/, dateObj.getMinutes()], //minute
+        [/(s+)/, dateObj.getSeconds()], //second
+        [/(q+)/, Math.floor(dateObj.getMonth() / 3) + 1], //quarter
+        [/(S+)/, dateObj.getMilliseconds()] //millisecond
+    ];
+	
+    for (const arr of ooo) {
+        if (arr[0].test(formatStr)) {
+			const mat = RegExp.$1;
+			const val = arr[1].toString();            
+			if(val.length >= mat.length){
+				formatStr = formatStr.replace(mat, val);
+			} else {
+				formatStr = formatStr.replace(mat, ("00000000" + val).substr(-mat.length));
+			}
+        }
+    }
+	
+    return formatStr;
+}

@@ -1,4 +1,4 @@
-import { ScrollView, View, Text, Image, Button, StatusBar, StyleSheet } from "react-native";
+import { ScrollView, View, Text, Image, Button, StatusBar, StyleSheet, DevSettings } from "react-native";
 import LocalPictures from "@/common/Pictures";
 
 const styles = StyleSheet.create({
@@ -31,8 +31,8 @@ export default function TestIndex(props){
         });
     }
     
-    const gotoDevinfo = () => {
-        props.navigation.navigate("设备信息");
+    const restartApp = () => {
+        DevSettings.reload();
     }
     
     return (
@@ -40,7 +40,7 @@ export default function TestIndex(props){
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
             <View><Text style={[fs20, taC, tcMC]}>请把要测试的功能放在这里</Text></View>
             <View style={styles.btnBox}><Button title="测试发送短信验证码" onPress={sendMsgCode} /></View>
-            <View style={styles.btnBox}><Button title="查看设备信息" onPress={gotoDevinfo} /></View>
+            <View style={styles.btnBox}><Button title="重启应用" onPress={restartApp} /></View>
             <View style={{height: 200}}>{/* 占位专用 */}</View>
             <Text style={[fs18, taC]}>测试专用优惠码</Text>
             <Image style={styles.imgBox} source={LocalPictures.couponCodeTest} resizeMode="contain" />

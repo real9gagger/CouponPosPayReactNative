@@ -8,9 +8,14 @@ export function useI18N() {
     return useSelector(state => state.localesLanguage.i18n);
 }
 //类组件中使用
-export function getI18N(key){
+export function getI18N(key, ...args){
     if(key){
-        return store.getState().localesLanguage.i18n[key];
+        const output = store.getState().localesLanguage.i18n[key];
+        if(args && typeof output === "object"){
+            return output.cloze(...args);
+        } else {
+            return output;
+        }
     } else {
         return store.getState().localesLanguage.i18n;
     }

@@ -1,5 +1,6 @@
 import IndexIndex from "@/pages/index/index";
 import IndexSplash from "@/pages/index/splash";
+import IndexTransactionSuccess from "@/pages/index/transactionSuccess";
 import MineAccount from "@/pages/mine/account";
 import MineHelps from "@/pages/mine/helps";
 import SettingIndex from "@/pages/setting/index";
@@ -7,6 +8,8 @@ import SettingLanguage from "@/pages/setting/language";
 import LoginIndex from "@/pages/login/index";
 import TestIndex from "@/pages/test/index";
 import TestDevinfo from "@/pages/test/devinfo";
+import TestAboutSoftware from "@/pages/test/aboutSoftware";
+import TestSupportPayment from "@/pages/test/supportPayment";
 
 //非Tabs页面的顶部导航栏全局配置
 const defaultScreenOptions = {
@@ -89,6 +92,23 @@ const PosPayRouterList = [
         component: TestDevinfo,
         i18nTitle: "test.devinfo",
         options: {...defaultScreenOptions}
+    },
+    {
+        name: "关于软件",
+        component: TestAboutSoftware,
+        i18nTitle: "about.software",
+        options: {...defaultScreenOptions}
+    },
+    {
+        name: "支付列表页",
+        component: TestSupportPayment,
+        i18nTitle: "payment.supports",
+        options: {...defaultScreenOptions}
+    },
+    {
+        name: "支付成功",
+        component: IndexTransactionSuccess,
+        options: noHeaderOptions
     }
 ];
 

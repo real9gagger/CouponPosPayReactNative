@@ -46,6 +46,12 @@ public class PaymentHelperModule extends ReactContextBaseJavaModule {
         return "PaymentHelper";
     }
 
+    //是否支持支付功能
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public boolean isSupport(){
+        return this.isPanasonicJTC60;
+    }
+
     @ReactMethod
     public void startPay(ReadableMap params, Callback callback) {
         if (params == null || callback == null) {

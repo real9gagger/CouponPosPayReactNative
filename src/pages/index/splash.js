@@ -8,9 +8,7 @@ export default function IndexSplash(props){
     useEffect(() => {
         //检查用户是否已登录或者登录是否成功
         $request("getPostInfo", { doNotToastErrMsg: true }).then(res => {
-            if(res){
-                dispatchUpdateUserInfo(res); //每次启动时更新用户信息！
-            }
+            dispatchUpdateUserInfo(res); //每次启动时更新用户信息！
             SplashScreen.hide();
             props.navigation.replace("应用首页"); //初始化完成，跳转到首页
         }).catch(err => {

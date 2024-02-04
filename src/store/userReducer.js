@@ -23,6 +23,14 @@ export function updateUserInfo(infos){
     }
 }
 
+//登出时，重置用户信息
+export function resetUserInfo(){
+    return {
+        type: RESET_USERINFO,
+        payload: null
+    }
+}
+
 //设置登录令牌
 export function setAccessToken(accessToken, expiresIn, loginAccount, loginPassword){
     const expiresAfterTicks = Date.now() + (+expiresIn || 0) * 1000; //单位：毫秒

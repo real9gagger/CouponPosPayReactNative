@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { ScrollView, View, Text, Pressable , Image, StatusBar, StyleSheet, TouchableOpacity, DeviceEventEmitter } from "react-native";
-import { useI18N, useAppSettings } from "@/store/getter";
+import { useI18N, getI18N, useAppSettings } from "@/store/getter";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
+import { bankCardList, eWalletList } from "@/common/Statics";
 import LocalPictures from "@/common/Pictures";
 import QRcodeScanner from "@/modules/QRcodeScanner";
 import PaymentHelper from "@/modules/PaymentHelper";
@@ -9,6 +10,7 @@ import ImageButton from "@/components/ImageButton";
 import PayKeyboard from "@/components/PayKeyboard";
 import PosPayIcon from "@/components/PosPayIcon";
 import GradientButton from "@/components/GradientButton";
+import TextualButton from "@/components/TextualButton";
 
 const styles = StyleSheet.create({
     headerBox: {
@@ -120,120 +122,76 @@ const styles = StyleSheet.create({
     paymentQrcode: {
         width: 60,
         height: 60
+    },
+    paymentSupports: {
+        paddingVertical: 15,
+        color: "#999",
+        fontSize: 12,
+        paddingRight: 5
     }
 });
 const renderScene = SceneMap({ tabBankCard, tabEWallet, tabQRCode });
+const eventEmitterName = "HOME_EVENT_BUS"; //事件总枢纽
 const onInputToggle = "ON_INPUT_TOGGLE"; //切换输入框
-const onInputChange = "ON_INPUT_CHANGE";
-const bankCardList = [
-    {
-        logo: LocalPictures.logoChinaUnionpay,
-        name: "银联/UnionPay",
-        pmcode: "01" //Payment Code
-    }
-];
-const eWalletList = [
-    {
-        logo: LocalPictures.logoIdCredit,
-        name: "iD",
-        pmcode: "02-01" //Payment Code
-    },
-    {
-        logo: LocalPictures.logoJiaotongxiIC,
-        name: "交通系IC",
-        pmcode: "02-02"
-    },
-    {
-        logo: LocalPictures.logoLetianEdy,
-        name: "楽天Edy",
-        pmcode: "02-03"
-    },
-    {
-        logo: LocalPictures.logoWaon,
-        name: "WAON",
-        pmcode: "02-04"
-    },
-    {
-        logo: LocalPictures.logoNanaco,
-        name: "nanaco",
-        pmcode: "02-05"
-    },
-    {
-        logo: LocalPictures.logoQuicPay,
-        name: "QUICPay",
-        pmcode: "02-06"
-    },
-    {
-        logo: LocalPictures.logoPitapa,
-        name: "PiTaPa",
-        pmcode: "02-07"
-    }
-];
-const qrPayList = [
-    {
-        logo: null,
-        name: "楽天ペイ",
-        pmcode: "11" //Payment Code
-    },
-    {
-        logo: null,
-        name: "LINEPay",
-        pmcode: "12"
-    },
-    {
-        logo: null,
-        name: "PayPay",
-        pmcode: "13"
-    },
-    {
-        logo: null,
-        name: "d払い",
-        pmcode: "14"
-    },
-    {
-        logo: null,
-        name: "auPay",
-        pmcode: "15"
-    },
-    {
-        logo: null,
-        name: "メルペイ",
-        pmcode: "16"
-    },
-    {
-        logo: null,
-        name: "銀行Pay",
-        pmcode: "19"
-    },
-    {
-        logo: null,
-        name: "WeChatPay",
-        pmcode: "21"
-    },
-    {
-        logo: null,
-        name: "Alipay",
-        pmcode: "22" 
-    },
-    {
-        logo: null,
-        name: "銀聯",
-        pmcode: "23"
-    },
-    {
-        logo: null,
-        name: "BankPay",
-        pmcode: "35"
-    }
-];
+const onInputChange = "ON_INPUT_CHANGE"; //文本变化
+const onTransactionSuccess = "ON_TRANSACTION_SUCCESS"; //建议成功时触发
+const onSeePayments = "ON_SEE_PAYMENTS"; //查看支持的支付方式
+const regZeros = /^0*$/;
 
 //扫描二维码结束后调用
 function onScanFinish(dat){
     if(dat.scanResult){
-        DeviceEventEmitter.emit(onInputChange, { nth: 2, txt: dat.scanResult }); //发送数据给父组件
+        DeviceEventEmitter.emit(eventEmitterName, { 
+            nth: 2, 
+            txt: dat.scanResult,
+            action: onInputChange
+        }); //发送数据给父组件
     }
 }
 
+//调用支付功能
+function callPayment(payMoney, paymentCode){
+    if(regZeros.test(payMoney)){
+        return !$notify.info(getI18N("input.amount.tip"));
+    }
+    
+    //如果不支持支付功能
+    if(!PaymentHelper.isSupport()){
+        return $alert(getI18N("payment.errmsg1"));
+    }
+    
+    //以下属性数据类型都是字符串！
+    PaymentHelper.startPay({
+        transactionMode: (runtimeEnvironment.isProduction ? "1" : "2"), //1-正常，2-练习
+        paymentType: (paymentCode || "03"), //03 为扫码支付
+        amount: payMoney, //至少一块钱，否则报错
+        transactionType: "1", //1-付款，2-取消付款，3-退款
+        tax: "0", //税费
+        slipNumber: "" //单据号码，取消付款或者退款时用到
+    }, function(payRes){
+        console.log(payRes);
+        if(payRes.activityResultCode === 0){//支付成功
+            payRes.action = onTransactionSuccess;
+            DeviceEventEmitter.emit(eventEmitterName, payRes); //发
+        } else if(payRes.activityResultCode === 2){//取消支付
+            $toast(getI18N("payment.errmsg2"));
+        } else {//支付失败
+            $alert(getI18N("payment.errmsg3", payRes.errorCode || "E0000"))
+        }
+    });
+}
+
+//关闭键盘
+function togglePKHidden(evt){
+    if(evt !== 0){
+        DeviceEventEmitter.emit(eventEmitterName, {
+            nth: 0, 
+            txt: "",
+            action: onInputToggle
+        });
+    }
+}
+    
 //银行卡
 function tabBankCard(props){
     const i18n = useI18N();
@@ -243,65 +201,55 @@ function tabBankCard(props){
     const [currentInputBox, setCurrentInputBox] = useState(1);
     
     const toggleAmountInput = () => {
-        if(currentInputBox !== 1){
-            DeviceEventEmitter.emit(onInputToggle, { nth: 1, txt: payAmounts }); //发送数据给父组件
-        } else {
-            DeviceEventEmitter.emit(onInputToggle, { nth: 0, txt: "" }); //发送数据给父组件
-        }
+        DeviceEventEmitter.emit(eventEmitterName, { 
+            nth: (currentInputBox !== 1 ? 1 : 0), 
+            txt: payAmounts,
+            action: onInputToggle
+        });
     }
     const toggleCouponInput = () => {
-        if(currentInputBox !== 2){
-            DeviceEventEmitter.emit(onInputToggle, { nth: 2, txt: couponCode }); //发送数据给父组件
-        } else {
-            DeviceEventEmitter.emit(onInputToggle, { nth: 0, txt: "" }); //发送数据给父组件
-        }
-    }
-    const togglePKHidden = () => {
-        DeviceEventEmitter.emit(onInputToggle, { nth: 0, txt: "" }); //发送数据给父组件
+        DeviceEventEmitter.emit(eventEmitterName, {
+            nth: (currentInputBox !== 2 ? 2 : 0), 
+            txt: couponCode,
+            action: onInputToggle
+        });
     }
     const togglePayment = (idx) => {
         return function() {
             setPaymentIndex(idx);
-            if(currentInputBox !== 0){
-                togglePKHidden();
-            }
+            togglePKHidden(currentInputBox);
         }
     }
     const scanCouponCode = () => {
-        if(currentInputBox !== 0){
-            togglePKHidden();
-        }
+        togglePKHidden(currentInputBox);
         QRcodeScanner.openScanner(onScanFinish);
     }
     const startPayMoney = () => {
-        //以下属性数据类型都是字符串！
-        PaymentHelper.startPay({
-            transactionMode: (runtimeEnvironment.isProduction ? "1" : "2"), //1-正常，2-练习
-            transactionType: "1", //1-付款，2-取消付款，3-退款
-            paymentType: bankCardList[paymentIndex].pmcode,
-            amount: payAmounts, //至少一块钱，否则报错
-            tax: "0", //税费
-            slipNumber: "" //单据号码，取消付款或者退款时用到
-        }, function(payRes){
-            console.log(payRes);
-        });
+        callPayment(payAmounts, bankCardList[paymentIndex].pmcode);
     }
     
     useEffect(() => {
-        const evt1000 = DeviceEventEmitter.addListener(onInputChange, function(infos){
-            if(infos.nth === 1){
-                setPayAmounts(infos.txt);
-            } else {
-                setCouponCode(infos.txt);
+        const evt1000 = DeviceEventEmitter.addListener(eventEmitterName, function(infos){
+            switch(infos.action){
+                case onInputChange:
+                    if(infos.nth === 1){
+                        setPayAmounts(infos.txt);
+                    } else {
+                        setCouponCode(infos.txt);
+                    }
+                    break;
+                case onInputToggle:
+                    setCurrentInputBox(infos.nth);
+                    break;
+                case onTransactionSuccess: //交易成功重置数据
+                    setPayAmounts("");
+                    setCouponCode("");
+                    setCurrentInputBox(0);
+                    break;
             }
         });
-        const evt1001 = DeviceEventEmitter.addListener(onInputToggle, function(infos){
-            setCurrentInputBox(infos.nth);
-        });
-        
         return () => { 
             evt1000.remove();
-            evt1001.remove();
         }
     }, []);
     
@@ -330,7 +278,7 @@ function tabBankCard(props){
             <View style={[fxR, fxWP, pdHX]}>
                 {bankCardList.map((vx, ix) => (
                     <TouchableOpacity key={vx.name} activeOpacity={0.5} onPress={togglePayment(ix)} style={[styles.paymentBox, paymentIndex===ix&&styles.paymentSelected]}>
-                        <Image style={whF} source={vx.logo} />
+                        <Image style={whF} source={LocalPictures[vx.logo]} />
                         <PosPayIcon visible={paymentIndex===ix} name="check-fill" color={appMainColor} size={20} style={styles.paymentChecked} />
                     </TouchableOpacity>
                 ))}
@@ -350,52 +298,55 @@ function tabEWallet(props){
     const [currentInputBox, setCurrentInputBox] = useState(1);
     
     const toggleAmountInput = () => {
-        if(currentInputBox !== 1){
-            DeviceEventEmitter.emit(onInputToggle, { nth: 1, txt: payAmounts }); //发送数据给父组件
-        } else {
-            DeviceEventEmitter.emit(onInputToggle, { nth: 0, txt: "" }); //发送数据给父组件
-        }
+        DeviceEventEmitter.emit(eventEmitterName, {
+            nth: (currentInputBox !== 1 ? 1 : 0), 
+            txt: payAmounts,
+            action: onInputToggle
+        });
     }
     const toggleCouponInput = () => {
-        if(currentInputBox !== 2){
-            DeviceEventEmitter.emit(onInputToggle, { nth: 2, txt: couponCode }); //发送数据给父组件
-        } else {
-            DeviceEventEmitter.emit(onInputToggle, { nth: 0, txt: "" }); //发送数据给父组件
-        }
-    }
-    const togglePKHidden = () => {
-        DeviceEventEmitter.emit(onInputToggle, { nth: 0, txt: "" }); //发送数据给父组件
+        DeviceEventEmitter.emit(eventEmitterName, {
+            nth: (currentInputBox !== 2 ? 2 : 0), 
+            txt: payAmounts,
+            action: onInputToggle
+        });
     }
     const togglePayment = (idx) => {
         return function() {
             setPaymentIndex(idx);
-            if(currentInputBox !== 0){
-                togglePKHidden();
-            }
+            togglePKHidden(currentInputBox);
         }
     }
     const scanCouponCode = () => {//点击钱包扫码识别
-        if(currentInputBox !== 0){
-            togglePKHidden();
-        }
+        togglePKHidden(currentInputBox);
         QRcodeScanner.openScanner(onScanFinish);
+    }
+    const startPayMoney = () => {
+        callPayment(payAmounts, eWalletList[paymentIndex].pmcode);
     }
     
     useEffect(() => {
-        const evt2000 = DeviceEventEmitter.addListener(onInputChange, function(infos){
-            if(infos.nth === 1){
-                setPayAmounts(infos.txt);
-            } else {
-                setCouponCode(infos.txt);
+        const evt2000 = DeviceEventEmitter.addListener(eventEmitterName, function(infos){
+            switch(infos.action){
+                case onInputChange:
+                    if(infos.nth === 1){
+                        setPayAmounts(infos.txt);
+                    } else {
+                        setCouponCode(infos.txt);
+                    }
+                    break;
+                case onInputToggle:
+                    setCurrentInputBox(infos.nth);
+                    break;
+                case onTransactionSuccess: //交易成功重置数据
+                    setPayAmounts("");
+                    setCouponCode("");
+                    setCurrentInputBox(0);
+                    break;
             }
         });
-        const evt2001 = DeviceEventEmitter.addListener(onInputToggle, function(infos){
-            setCurrentInputBox(infos.nth);
-        });
-        
         return () => { 
             evt2000.remove();
-            evt2001.remove();
         }
     }, []);
     
@@ -424,19 +375,20 @@ function tabEWallet(props){
             <View style={[fxR, fxWP, pdHX]}>
                 {eWalletList.map((vx, ix) => (
                     <TouchableOpacity key={vx.name} activeOpacity={0.5} onPress={togglePayment(ix)} style={[styles.paymentBox, paymentIndex===ix&&styles.paymentSelected]}>
-                        <Image style={whF} source={vx.logo} />
+                        <Image style={whF} source={LocalPictures[vx.logo]} />
                         <PosPayIcon visible={paymentIndex===ix} name="check-fill" color={appMainColor} size={20} style={styles.paymentChecked} />
                     </TouchableOpacity>
                 ))}
             </View>
             <Text style={fxG1} onPress={togglePKHidden}>{/* 点我关闭键盘 */}</Text>
-            <View style={pdX}><GradientButton>{i18n["btn.collect"]}</GradientButton></View>
+            <View style={pdX}><GradientButton onPress={startPayMoney}>{i18n["btn.collect"]}</GradientButton></View>
         </ScrollView>
     );
 }
 
 //二维码
 function tabQRCode(props){
+    console.log(props)
     const i18n = useI18N();
     const [payAmounts, setPayAmounts] = useState("");
     const [couponCode, setCouponCode] = useState("");
@@ -444,57 +396,54 @@ function tabQRCode(props){
     const [paymentName, setPaymentName] = useState("");
     
     const toggleAmountInput = () => {
-        if(currentInputBox !== 1){
-            DeviceEventEmitter.emit(onInputToggle, { nth: 1, txt: payAmounts }); //发送数据给父组件
-        } else {
-            DeviceEventEmitter.emit(onInputToggle, { nth: 0, txt: "" }); //发送数据给父组件
-        }
+        DeviceEventEmitter.emit(eventEmitterName, {
+            nth: (currentInputBox !== 1 ? 1 : 0), 
+            txt: payAmounts,
+            action: onInputToggle
+        });
     }
     const toggleCouponInput = () => {
-        if(currentInputBox !== 2){
-            DeviceEventEmitter.emit(onInputToggle, { nth: 2, txt: couponCode }); //发送数据给父组件
-        } else {
-            DeviceEventEmitter.emit(onInputToggle, { nth: 0, txt: "" }); //发送数据给父组件
-        }
-    }
-    const togglePKHidden = () => {
-        DeviceEventEmitter.emit(onInputToggle, { nth: 0, txt: "" }); //发送数据给父组件
+        DeviceEventEmitter.emit(eventEmitterName, {
+            nth: (currentInputBox !== 2 ? 2 : 0), 
+            txt: couponCode,
+            action: onInputToggle
+        });
     }
     const scanCouponCode = () => {
-        if(currentInputBox !== 0){
-            togglePKHidden();
-        }
+        togglePKHidden(currentInputBox);
         QRcodeScanner.openScanner(onScanFinish);
     }
     const startPayMoney = () => {
-        //以下属性数据类型都是字符串！
-        PaymentHelper.startPay({
-            transactionMode: (runtimeEnvironment.isProduction ? "1" : "2"), //1-正常，2-练习
-            transactionType: "1", //1-付款，2-取消付款，3-退款
-            paymentType: "03", //扫描支付固定为 03
-            amount: payAmounts, //至少一块钱，否则报错
-            tax: "0", //税费
-            slipNumber: "" //单据号码，取消付款或者退款时用到
-        }, function(payRes){
-            console.log(payRes);
+        callPayment(payAmounts);
+    }
+    const gotoSupportPayment = () => {
+        DeviceEventEmitter.emit(eventEmitterName, {
+            action: onSeePayments
         });
     }
     
     useEffect(() => {
-        const evt3000 = DeviceEventEmitter.addListener(onInputChange, function(infos){
-            if(infos.nth === 1){
-                setPayAmounts(infos.txt);
-            } else {
-                setCouponCode(infos.txt);
+        const evt3000 = DeviceEventEmitter.addListener(eventEmitterName, function(infos){
+            switch(infos.action){
+                case onInputChange:
+                    if(infos.nth === 1){
+                        setPayAmounts(infos.txt);
+                    } else {
+                        setCouponCode(infos.txt);
+                    }
+                    break;
+                case onInputToggle:
+                    setCurrentInputBox(infos.nth);
+                    break;
+                case onTransactionSuccess: //交易成功重置数据
+                    setPayAmounts("");
+                    setCouponCode("");
+                    setCurrentInputBox(0);
+                    break;
             }
         });
-        const evt3001 = DeviceEventEmitter.addListener(onInputToggle, function(infos){
-            setCurrentInputBox(infos.nth);
-        });
-        
         return () => { 
             evt3000.remove();
-            evt3001.remove();
         }
     }, []);
     
@@ -524,6 +473,11 @@ function tabQRCode(props){
                 <Image style={styles.paymentQrcode} source={LocalPictures.scanQRcode} />
                 <Text style={[tcMC, taC, mgTX]}>{i18n["qrcode.collect"]}</Text>
             </TouchableOpacity>
+            <View style={fxG1}>{/* 占位专用 */}</View>
+            <TextualButton style={fxHM} onPress={gotoSupportPayment}>
+                <Text style={styles.paymentSupports}>{i18n["payment.supports"]}</Text>
+                <PosPayIcon name="right-arrow-double" color={styles.paymentSupports.color} size={12} />
+            </TextualButton>
         </ScrollView>
     );
 }
@@ -573,19 +527,36 @@ export default function IndexHome(props){
         props.navigation.openDrawer();
     }
     const onTxtChange = (txt) => {
-        DeviceEventEmitter.emit(onInputChange, { nth: inputIndex, txt: txt }); //发送数据给子组件
-    }
-    const onPkClose = (txt) => {
-        DeviceEventEmitter.emit(onInputToggle, { nth: 0, txt: "" }); //发送数据给子组件
+        DeviceEventEmitter.emit(eventEmitterName, { 
+            nth: inputIndex, 
+            txt: txt,
+            action: onInputChange
+        });
     }
     const gotoSettingPage = () => {
         props.navigation.navigate("设置页");
     }
     
     useEffect(() => {
-        const eventer9000 = DeviceEventEmitter.addListener(onInputToggle, function(infos){
-            setInputIndex(infos.nth);
-            pkRef.current.initiText(infos.txt);
+        const eventer9000 = DeviceEventEmitter.addListener(eventEmitterName, function(infos){
+            switch(infos.action){
+                case onInputToggle:
+                    setInputIndex(infos.nth);
+                    if(infos.nth){
+                        pkRef.current.initiText(infos.txt);
+                    } else {
+                        pkRef.current.clearText();
+                    }
+                    break;
+                case onTransactionSuccess:
+                    delete infos.action; //删除冗余信息
+                    setInputIndex(0); //交易成功，重置一些信息
+                    props.navigation.navigate("支付成功", infos); //如果交易成功，则跳转到交易成功页面
+                    break;
+                case onSeePayments:
+                    props.navigation.navigate("支付列表页");
+                    break;
+            }
         });
         return () => {
             eventer9000.remove();
@@ -624,8 +595,8 @@ export default function IndexHome(props){
                 onSetting={gotoSettingPage}
                 phoneMode={inputIndex===2} 
                 onChange={onTxtChange} 
-                onClose={onPkClose} 
-                onConfirm={onPkClose}
+                onClose={togglePKHidden} 
+                onConfirm={togglePKHidden}
             />
         </View>
     );

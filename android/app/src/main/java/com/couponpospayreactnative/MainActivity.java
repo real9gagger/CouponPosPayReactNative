@@ -94,7 +94,10 @@ public class MainActivity extends ReactActivity {
     }
 
     WritableMap args = Arguments.createMap();
-    args.putInt("activityResultCode", resultCode); //安卓调用结果编码 -1:成功，0:取消
+    //安卓调用结果编码：
+    //**扫描二维码时：-1=成功，0=取消
+    //**刷卡/电子钱包/扫码收款时：0=成功, 1=失败, 2=取消
+    args.putInt("activityResultCode", resultCode);
     args.putInt("activityRequestCode", requestCode);
 
     if (intent != null) {

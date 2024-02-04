@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
         flex: 1
     },
     modalBg2: {
+        backgroundColor: "rgba(0, 0, 0, 0.1)",
         flex: 1
     },
     dialogBox: {

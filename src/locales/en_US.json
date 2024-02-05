@@ -68,6 +68,8 @@
     "version.latest.tip": "It's already the latest version",
     "customer.display": "Customer display",
     "unimplemented.tip": "This function has not been implemented yet, please stay tuned~",
+    "more.help.tip": "Scan or long press for more help",
+    "more.help.errmsg1": "Not support to open the link, please scan for more help~",
     
     "print": "Print",
     "printer": "Printer",
@@ -82,5 +84,5 @@
     "settlement": "Settlement",
     "exit": "Exit",
     "setting": "Setting",
-    "nodata": "No Data"
+    "nodata": "No records"
 }

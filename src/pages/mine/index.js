@@ -61,7 +61,7 @@ const actionList1 = [
     },
     {
         i18nName: "print",
-        iconName: "printer-stroke",
+        iconName: "printing",
         pageName: ""
     },
     {
@@ -72,14 +72,14 @@ const actionList1 = [
 ];
 const actionList2 = [
     {
-        i18nName: "setting",
-        iconName: "system-setting",
-        pageName: "设置页"
-    },
-    {
         i18nName: "customer.display",
         iconName: "customer-display",
         pageName: "",
+    },
+    {
+        i18nName: "setting",
+        iconName: "system-setting",
+        pageName: "设置页"
     },
     {
         i18nName: "printer",

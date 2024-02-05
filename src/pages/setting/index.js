@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
         color: "#f90",
         textAlign: "center",
         paddingHorizontal: 10,
-        paddingVertical: 15,
+        paddingVertical: 20,
         fontSize: 14
     }
 });
@@ -46,6 +46,11 @@ const settingList = [
     {
         actionName: "设备信息",
         i18nLabel: "test.devinfo",
+        i18nDesc: ""
+    },
+    {
+        actionName: "支付列表页",
+        i18nLabel: "payment.supports",
         i18nDesc: ""
     },
     {
@@ -130,7 +135,7 @@ export default function SettingIndex(props){
         setSwitchItems(myItems);
     }, []);
     
-    return (
+    return (<>
         <ScrollView style={fxG1} contentContainerStyle={mhF}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
             <View style={styles.blankBox}>{/*==== 占位专用 ====*/}</View>
@@ -156,11 +161,12 @@ export default function SettingIndex(props){
                     </View>
                 </TouchableHighlight>
             ))}
-            <Text style={switchItems.isSomeItemHasBeenChanged ? styles.tipBox : dpN}>{i18n["setting.apply.tip"]}</Text>
-            <GradientButton 
-                style={styles.bthBox}
-                disable={!switchItems.isSomeItemHasBeenChanged} 
-                onPress={onPressConfirm}>{i18n["btn.apply"]}</GradientButton>
+            <Text style={[styles.tipBox, !switchItems.isSomeItemHasBeenChanged && op00]}>{i18n["setting.apply.tip"]}</Text>
+            <View style={{height:60}}>{/* 占位专用 */}</View>
         </ScrollView>
-    )
+        <GradientButton
+            style={styles.bthBox}
+            disable={!switchItems.isSomeItemHasBeenChanged} 
+            onPress={onPressConfirm}>{i18n["btn.apply"]}</GradientButton>
+    </>)
 }

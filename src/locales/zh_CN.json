@@ -76,6 +76,8 @@
     "version.latest.tip": "已是最新版本",
     "customer.display": "顾客屏幕",
     "unimplemented.tip": "功能暂未实现，敬请期待~",
+    "more.help.tip": "扫码或长按以获取更多帮助",
+    "more.help.errmsg1": "不支持打开链接，请扫码获取更多帮助~",
     
     "print": "打印",
     "printer": "打印机",

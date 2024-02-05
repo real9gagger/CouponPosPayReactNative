@@ -83,7 +83,7 @@ const drawerItemList = [
     {
         key: "业务-打印",
         i18nLabel: "print",
-        iconName: "printer-stroke"
+        iconName: "printing"
     },
     {
         key: "合计",
@@ -98,7 +98,7 @@ const drawerItemList = [
     {
         key: "合计-打印",
         i18nLabel: "print",
-        iconName: "printer-stroke"
+        iconName: "printing"
     },
     {
         key: "系统",

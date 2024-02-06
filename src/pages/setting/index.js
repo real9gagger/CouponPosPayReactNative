@@ -49,7 +49,7 @@ const settingList = [
         i18nDesc: ""
     },
     {
-        actionName: "支付列表页",
+        actionName: "支付合作商",
         i18nLabel: "payment.supports",
         i18nDesc: ""
     },
@@ -166,7 +166,7 @@ export default function SettingIndex(props){
         </ScrollView>
         <GradientButton
             style={styles.bthBox}
-            disable={!switchItems.isSomeItemHasBeenChanged} 
+            disabled={!switchItems.isSomeItemHasBeenChanged} 
             onPress={onPressConfirm}>{i18n["btn.apply"]}</GradientButton>
     </>)
 }

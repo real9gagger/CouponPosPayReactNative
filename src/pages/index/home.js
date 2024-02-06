@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { ScrollView, View, Text, Pressable , Image, StatusBar, StyleSheet, TouchableOpacity, DeviceEventEmitter } from "react-native";
 import { useI18N, getI18N, useAppSettings } from "@/store/getter";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
-import { bankCardList, eWalletList, QR_PAYMENT_CODE } from "@/common/Statics";
+import { bankCardList, eWalletList, QR_PAYMENT_CODE, DISCOUNT_TYPE_LJ } from "@/common/Statics";
 import LocalPictures from "@/common/Pictures";
 import QRcodeScanner from "@/modules/QRcodeScanner";
 import PaymentHelper from "@/modules/PaymentHelper";
@@ -86,6 +86,12 @@ const styles = StyleSheet.create({
         color: "#aaa",
         fontSize: 14
     },
+    couponInfo: {
+        position: "absolute",
+        left: 25,
+        top: 5,
+        zIndex: 1
+    },
     InputActived: {
         borderBottomColor: appMainColor,
         backgroundColor: "#e5faf3"
@@ -135,15 +141,20 @@ const onInputToggle = "ON_INPUT_TOGGLE"; //切换输入框
 const onInputChange = "ON_INPUT_CHANGE"; //文本变化
 const onTransactionSuccess = "ON_TRANSACTION_SUCCESS"; //建议成功时触发
 const onSeePayments = "ON_SEE_PAYMENTS"; //查看支持的支付方式
+const onCouponInfo = "ON_COUPON_INFO"; //接收到优惠券信息
 const regZeros = /^0*$/;
+const iNthNone = 0;
+const iNthAmount = 1;
+const iNthCoupon = 2;
+
 
 //扫描二维码结束后调用
 function onScanFinish(dat){
     if(dat.scanResult){
         DeviceEventEmitter.emit(eventEmitterName, { 
-            nth: 2, 
+            nth: iNthCoupon, 
             txt: dat.scanResult,
-            action: onInputChange
+            action: onInputToggle
         }); //发送数据给父组件
     }
 }
@@ -182,34 +193,44 @@ function callPayment(payMoney, paymentCode){
 
 //关闭键盘
 function togglePKHidden(evt){
-    if(evt !== 0){
+    if(evt !== iNthNone){
         DeviceEventEmitter.emit(eventEmitterName, {
-            nth: 0, 
+            nth: iNthNone, 
             txt: "",
             action: onInputToggle
         });
     }
 }
-    
+
+//获取折扣了多少钱，返回的是负数
+function getDiscountAmount(total, discount, distype){
+    if(distype === DISCOUNT_TYPE_LJ){
+        return $mathround(-Math.min(total, discount), 2);
+    } else {
+        return $mathround(-total * discount / 100, 2);
+    }
+}
+
 //银行卡
 function tabBankCard(props){
     const i18n = useI18N();
     const [payAmounts, setPayAmounts] = useState("");
-    const [couponCode, setCouponCode] = useState("");
+    const [disAmounts, setDisAmounts] = useState(0); //优惠金额
+    const [cpInfo, setCpInfo] = useState(null);
     const [paymentIndex, setPaymentIndex] = useState(0);
-    const [currentInputBox, setCurrentInputBox] = useState(1);
+    const [currentInputBox, setCurrentInputBox] = useState(0);
     
     const toggleAmountInput = () => {
         DeviceEventEmitter.emit(eventEmitterName, { 
-            nth: (currentInputBox !== 1 ? 1 : 0), 
+            nth: (currentInputBox !== iNthAmount ? iNthAmount : iNthNone), 
             txt: payAmounts,
             action: onInputToggle
         });
     }
     const toggleCouponInput = () => {
         DeviceEventEmitter.emit(eventEmitterName, {
-            nth: (currentInputBox !== 2 ? 2 : 0), 
-            txt: couponCode,
+            nth: iNthCoupon,
+            txt: (cpInfo ? cpInfo.cpcode : ""),
             action: onInputToggle
         });
     }
@@ -231,10 +252,8 @@ function tabBankCard(props){
         const evt1000 = DeviceEventEmitter.addListener(eventEmitterName, function(infos){
             switch(infos.action){
                 case onInputChange:
-                    if(infos.nth === 1){
+                    if(infos.nth === iNthAmount){
                         setPayAmounts(infos.txt);
-                    } else {
-                        setCouponCode(infos.txt);
                     }
                     break;
                 case onInputToggle:
@@ -242,8 +261,11 @@ function tabBankCard(props){
                     break;
                 case onTransactionSuccess: //交易成功重置数据
                     setPayAmounts("");
-                    setCouponCode("");
-                    setCurrentInputBox(0);
+                    setCpInfo(null);
+                    setCurrentInputBox(iNthNone);
+                    break;
+                case onCouponInfo:
+                    setCpInfo(infos.cpinfo);
                     break;
             }
         });
@@ -251,6 +273,14 @@ function tabBankCard(props){
             evt1000.remove();
         }
     }, []);
+    
+     useEffect(() => {
+        if(cpInfo){
+            setDisAmounts(getDiscountAmount(payAmounts, cpInfo.discount, cpInfo.distype));
+        } else {
+            setDisAmounts(0);
+        }
+    }, [payAmounts, cpInfo]);
     
     //银行卡支付界面
     return (
@@ -260,7 +290,7 @@ function tabBankCard(props){
                 <Text style={tc99}>{i18n["currency.code"]}</Text>
             </View>
             <View style={styles.rowBox}>
-                <Text style={[styles.moneyInput, currentInputBox===1&&styles.InputActived]} onPress={toggleAmountInput}>{i18n["currency.symbol"]}{payAmounts}</Text>
+                <Text style={[styles.moneyInput, currentInputBox===iNthAmount&&styles.InputActived]} onPress={toggleAmountInput}>{i18n["currency.symbol"]}{payAmounts}</Text>
             </View>
             <Pressable style={[fxHC, styles.couponLabel]} android_ripple={tcCC} onPress={scanCouponCode}>
                 <Text style={[fxG1, fs16]}>{i18n["coupon"]}</Text>
@@ -268,7 +298,15 @@ function tabBankCard(props){
                 <PosPayIcon name="qrcode-scan" color={appMainColor} size={24} />
             </Pressable>
             <View style={pdHX}>
-                <Text style={[styles.couponInput, !couponCode&&styles.couponEmpty, currentInputBox===2&&styles.InputActived]} onPress={toggleCouponInput}>{couponCode || i18n["coupon.enter.tip"]}</Text>
+                {!cpInfo ? 
+                    <Text style={[styles.couponInput, styles.couponEmpty, currentInputBox===iNthCoupon&&styles.InputActived]} onPress={toggleCouponInput}>{i18n["coupon.enter.tip"]}</Text>
+                :<>
+                    <View style={styles.couponInfo}>
+                        <Text style={[fs14, fwB]}>{cpInfo.title}&nbsp;<PosPayIcon name="check-fill" color={tcG0.color} size={14} /></Text>
+                        <Text style={[fs12, tcR1]}>{i18n[cpInfo.distype===DISCOUNT_TYPE_LJ ? "coupon.reduction" : "coupon.off"].cloze(100, cpInfo.discount)}</Text>
+                    </View>
+                    <Text style={[styles.couponInput, currentInputBox===iNthCoupon&&styles.InputActived]} onPress={toggleCouponInput}>{disAmounts}</Text>
+                </>}
             </View>
             <View style={[fxHC, styles.rowBox]}>
                 <Text style={[fxG1, styles.paymentLabel]}>{i18n["payment.method"]}</Text>
@@ -294,19 +332,19 @@ function tabEWallet(props){
     const [payAmounts, setPayAmounts] = useState("");
     const [couponCode, setCouponCode] = useState("");
     const [paymentIndex, setPaymentIndex] = useState(0);
-    const [currentInputBox, setCurrentInputBox] = useState(1);
+    const [currentInputBox, setCurrentInputBox] = useState(0);
     
     const toggleAmountInput = () => {
         DeviceEventEmitter.emit(eventEmitterName, {
-            nth: (currentInputBox !== 1 ? 1 : 0), 
+            nth: (currentInputBox !== iNthAmount ? iNthAmount : iNthNone), 
             txt: payAmounts,
             action: onInputToggle
         });
     }
     const toggleCouponInput = () => {
         DeviceEventEmitter.emit(eventEmitterName, {
-            nth: (currentInputBox !== 2 ? 2 : 0), 
-            txt: payAmounts,
+            nth: iNthCoupon,
+            txt: couponCode,
             action: onInputToggle
         });
     }
@@ -328,7 +366,7 @@ function tabEWallet(props){
         const evt2000 = DeviceEventEmitter.addListener(eventEmitterName, function(infos){
             switch(infos.action){
                 case onInputChange:
-                    if(infos.nth === 1){
+                    if(infos.nth === iNthAmount){
                         setPayAmounts(infos.txt);
                     } else {
                         setCouponCode(infos.txt);
@@ -340,7 +378,7 @@ function tabEWallet(props){
                 case onTransactionSuccess: //交易成功重置数据
                     setPayAmounts("");
                     setCouponCode("");
-                    setCurrentInputBox(0);
+                    setCurrentInputBox(iNthNone);
                     break;
             }
         });
@@ -357,7 +395,7 @@ function tabEWallet(props){
                 <Text style={tc99}>{i18n["currency.code"]}</Text>
             </View>
             <View style={styles.rowBox}>
-                <Text style={[styles.moneyInput, currentInputBox===1&&styles.InputActived]} onPress={toggleAmountInput}>{i18n["currency.symbol"]}{payAmounts}</Text>
+                <Text style={[styles.moneyInput, currentInputBox===iNthAmount&&styles.InputActived]} onPress={toggleAmountInput}>{i18n["currency.symbol"]}{payAmounts}</Text>
             </View>
             <Pressable style={[fxHC, styles.couponLabel]} android_ripple={tcCC} onPress={scanCouponCode}>
                 <Text style={[fxG1, fs16]}>{i18n["coupon"]}</Text>
@@ -365,7 +403,7 @@ function tabEWallet(props){
                 <PosPayIcon name="qrcode-scan" color={appMainColor} size={24} />
             </Pressable>
             <View style={pdHX}>
-                <Text style={[styles.couponInput, !couponCode&&styles.couponEmpty, currentInputBox===2&&styles.InputActived]} onPress={toggleCouponInput}>{couponCode || i18n["coupon.enter.tip"]}</Text>
+                <Text style={[styles.couponInput, !couponCode&&styles.couponEmpty, currentInputBox===iNthCoupon&&styles.InputActived]} onPress={toggleCouponInput}>{couponCode || i18n["coupon.enter.tip"]}</Text>
             </View>
             <View style={[fxHC, styles.rowBox]}>
                 <Text style={[fxG1, styles.paymentLabel]}>{i18n["payment.method"]}</Text>
@@ -390,19 +428,19 @@ function tabQRCode(props){
     const i18n = useI18N();
     const [payAmounts, setPayAmounts] = useState("");
     const [couponCode, setCouponCode] = useState("");
-    const [currentInputBox, setCurrentInputBox] = useState(1);
+    const [currentInputBox, setCurrentInputBox] = useState(0);
     const [paymentName, setPaymentName] = useState("");
     
     const toggleAmountInput = () => {
         DeviceEventEmitter.emit(eventEmitterName, {
-            nth: (currentInputBox !== 1 ? 1 : 0), 
+            nth: (currentInputBox !== iNthAmount ? iNthAmount : iNthNone), 
             txt: payAmounts,
             action: onInputToggle
         });
     }
     const toggleCouponInput = () => {
         DeviceEventEmitter.emit(eventEmitterName, {
-            nth: (currentInputBox !== 2 ? 2 : 0), 
+            nth: iNthCoupon,
             txt: couponCode,
             action: onInputToggle
         });
@@ -424,7 +462,7 @@ function tabQRCode(props){
         const evt3000 = DeviceEventEmitter.addListener(eventEmitterName, function(infos){
             switch(infos.action){
                 case onInputChange:
-                    if(infos.nth === 1){
+                    if(infos.nth === iNthAmount){
                         setPayAmounts(infos.txt);
                     } else {
                         setCouponCode(infos.txt);
@@ -436,7 +474,7 @@ function tabQRCode(props){
                 case onTransactionSuccess: //交易成功重置数据
                     setPayAmounts("");
                     setCouponCode("");
-                    setCurrentInputBox(0);
+                    setCurrentInputBox(iNthNone);
                     break;
             }
         });
@@ -453,7 +491,7 @@ function tabQRCode(props){
                 <Text style={tc99}>{i18n["currency.code"]}</Text>
             </View>
             <View style={styles.rowBox}>
-                <Text style={[styles.moneyInput, currentInputBox===1&&styles.InputActived]} onPress={toggleAmountInput}>{i18n["currency.symbol"]}{payAmounts}</Text>
+                <Text style={[styles.moneyInput, currentInputBox===iNthAmount&&styles.InputActived]} onPress={toggleAmountInput}>{i18n["currency.symbol"]}{payAmounts}</Text>
             </View>
             <Pressable style={[fxHC, styles.couponLabel]} android_ripple={tcCC} onPress={scanCouponCode}>
                 <Text style={[fxG1, fs16]}>{i18n["coupon"]}</Text>
@@ -461,7 +499,7 @@ function tabQRCode(props){
                 <PosPayIcon name="qrcode-scan" color={appMainColor} size={24} />
             </Pressable>
             <View style={pdHX}>
-                <Text style={[styles.couponInput, !couponCode&&styles.couponEmpty, currentInputBox===2&&styles.InputActived]} onPress={toggleCouponInput}>{couponCode || i18n["coupon.enter.tip"]}</Text>
+                <Text style={[styles.couponInput, !couponCode&&styles.couponEmpty, currentInputBox===iNthCoupon&&styles.InputActived]} onPress={toggleCouponInput}>{couponCode || i18n["coupon.enter.tip"]}</Text>
             </View>
             <View style={[fxHC, styles.rowBox]}>
                 <Text style={[fxG1, styles.paymentLabel]}>{i18n["payment.method"]}</Text>
@@ -519,7 +557,7 @@ export default function IndexHome(props){
     const appSettings = useAppSettings();
     const [tabList, setTabList] = useState([]);
     const [tabIndex, setTabIndex] = useState(0);
-    const [inputIndex, setInputIndex] = useState(1);
+    const [inputIndex, setInputIndex] = useState(0);
     
     const openDrawer = () => {
         props.navigation.openDrawer();
@@ -534,28 +572,41 @@ export default function IndexHome(props){
     const gotoSettingPage = () => {
         props.navigation.navigate("设置页"); //跳转到设置页
     }
+    const useTheCoupon = (cpinfo) => {
+        console.log(cpinfo)
+        DeviceEventEmitter.emit(eventEmitterName, {
+            action: onCouponInfo,
+            cpinfo: cpinfo
+        });
+    }
     
     useEffect(() => {
         const eventer9000 = DeviceEventEmitter.addListener(eventEmitterName, function(infos){
             switch(infos.action){
                 case onInputToggle:
-                    setInputIndex(infos.nth);
-                    if(infos.nth){
+                    if(infos.nth === iNthAmount){
+                        setInputIndex(infos.nth);
                         pkRef.current.initiText(infos.txt);
                     } else {
+                        setInputIndex(iNthNone);
                         pkRef.current.clearText();
+                    }
+                    
+                    if(infos.nth === iNthCoupon){
+                        props.navigation.navigate("优惠券信息", { couponID: infos.txt, onGoBack: useTheCoupon });
                     }
                     break;
                 case onTransactionSuccess:
                     delete infos.action; //删除冗余信息
-                    setInputIndex(0); //交易成功，重置一些信息
+                    setInputIndex(iNthNone); //交易成功，重置一些信息
                     props.navigation.navigate("支付成功", infos); //如果交易成功，则跳转到交易成功页面
                     break;
                 case onSeePayments:
-                    props.navigation.navigate("支付列表页");
+                    props.navigation.navigate("支付合作商");
                     break;
             }
         });
+        
         return () => {
             eventer9000.remove();
         }
@@ -591,7 +642,6 @@ export default function IndexHome(props){
                 visible={inputIndex > 0} 
                 precision={0} 
                 onSetting={gotoSettingPage}
-                phoneMode={inputIndex===2} 
                 onChange={onTxtChange} 
                 onClose={togglePKHidden} 
                 onConfirm={togglePKHidden}

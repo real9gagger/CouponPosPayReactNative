@@ -7,6 +7,7 @@ const LocalPictures = {
     couponCodeTest: require("@/images/pics/coupon_code_test.png"), //优惠码（测试专用）
     unknownPayment: require("@/images/pics/unknown_payment.png"), //如果某支付方式没有图标，请使用这张图片
     helpsQRcode: require("@/images/pics/helps_qrcode.png"),
+    couponDefaultPic: require("@/images/pics/coupon_default_pic.png"),
     
     //图标图片
     iconToggleDrawer: require("@/images/icons/toggle_drawer.png"), //切换抽屉图标

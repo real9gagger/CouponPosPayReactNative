@@ -10,34 +10,41 @@ import TestIndex from "@/pages/test/index";
 import TestDevinfo from "@/pages/test/devinfo";
 import TestAboutSoftware from "@/pages/test/aboutSoftware";
 import TestSupportPayment from "@/pages/test/supportPayment";
+import CouponIndex from "@/pages/coupon/index";
 
 //非Tabs页面的顶部导航栏全局配置
 const defaultScreenOptions = {
-	// 自定义标题栏的样式。
-	headerStyle: {
-		// 背景颜色
-		backgroundColor: "#fff",
-		// 去掉标题栏底部阴影效果
-		elevation: 0
-	},
+    // 自定义标题栏的样式。
+    headerStyle: {
+        // 背景颜色
+        backgroundColor: "#fff",
+        // 去掉标题栏底部阴影效果
+        elevation: 0
+    },
     headerTitleStyle: {
         //标题字体大小
         fontSize: 20
     },
-	// 控制是否显示页面的标题栏。
-	headerShown: true,
-	// 设置标题栏文本颜色。
-	headerTintColor: "#000",
-	// 设置标题文本的对齐方式
-	headerTitleAlign: "left",
+    // 控制是否显示页面的标题栏。
+    headerShown: true,
+    // 设置标题栏文本颜色。
+    headerTintColor: "#000",
+    // 设置标题文本的对齐方式
+    headerTitleAlign: "left",
     // 页面标题（如果显示 Header，则会显示此标题）
     title: ""
 };
 
-//无标题页样式选项
+//无标题无动画屏选项
 const noHeaderOptions = {
-	headerShown: false, // 是否显示标题
-    animationEnabled: false
+    headerShown: false, // 是否显示标题
+    animationEnabled: false //是否启用切换动画
+};
+
+//无标题屏选项
+const noHeaderOnly = {
+    headerShown: false, // 是否显示标题
+    animationEnabled: true //是否启用切换动画
 };
 
 //路由页面列表
@@ -100,7 +107,7 @@ const PosPayRouterList = [
         options: {...defaultScreenOptions}
     },
     {
-        name: "支付列表页",
+        name: "支付合作商",
         component: TestSupportPayment,
         i18nTitle: "payment.supports",
         options: {...defaultScreenOptions}
@@ -108,11 +115,16 @@ const PosPayRouterList = [
     {
         name: "支付成功",
         component: IndexTransactionSuccess,
-        options: noHeaderOptions
-    }
+        options: noHeaderOnly
+    },
+    {
+        name: "优惠券信息",
+        component: CouponIndex,
+        options: noHeaderOnly
+    },
 ];
 
-export { 
+export {
     defaultScreenOptions,
     PosPayRouterList
 };

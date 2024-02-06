@@ -152,7 +152,7 @@ export default function LoginIndex(props){
                     style={styles.loginSubmit} 
                     onPress={onSubmit} 
                     showLoading={isSubmiting}
-                    disable={isSubmiting}>{i18n["btn.login"]}</GradientButton>
+                    disabled={isSubmiting}>{i18n["btn.login"]}</GradientButton>
             </View>
             <TouchableOpacity style={[fxHM, styles.lgsBox]} onPress={gotoLanguageSetting}>
                 <PosPayIcon name="internationalization" color={appMainColor} size={16} offset={-6} />

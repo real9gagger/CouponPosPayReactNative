@@ -79,7 +79,7 @@ export default function MineAccount(props){
                 <GradientButton
                     onPress={onLogout} 
                     showLoading={isLogout}
-                    disable={isLogout}>{i18n["btn.logout"]}</GradientButton>
+                    disabled={isLogout}>{i18n["btn.logout"]}</GradientButton>
                 <Text style={[taC, fs12, tc99, pdVX]}>{i18n["login.lasttime"]} {formatDate(userInfo.loginTimestamp)}</Text>
             </View>
             <ImageView

@@ -1,6 +1,8 @@
 /**************** 一些静态数据 ****************/
 
 export const QR_PAYMENT_CODE = "03";
+export const DISCOUNT_TYPE_ZK = 1; //优惠类型：折扣
+export const DISCOUNT_TYPE_LJ = 2; //优惠类型：立减
 
 //信用卡
 export const bankCardList = [

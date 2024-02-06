@@ -17,7 +17,7 @@ class GradientButton extends Component {
     }
     
     render(){
-        const isDisable = !!this.props.disable
+        const isDisable = !!this.props.disabled
         const boxStyle = {
             height: 40,
             borderRadius: 8,

@@ -17,7 +17,7 @@ export default function TestDevinfo(props){
     useEffect(() => {
         const winInfo = Dimensions.get("window");
         const infos = [];
-        const precision = 6; //数字保留多少位小数
+        const precision = 8; //数字保留多少位小数
         
         for(const key in winInfo){
             const item = { itemKey: "window." + key };

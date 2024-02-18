@@ -69,8 +69,8 @@ export default function IndexTransactionSuccess(props){
             params.payeeName = getUserInfo("posName");
             params.transactionTimeTxt = formatDate(params.transactionTime);
             params.currencyCode = (params.currencyCode || i18n["currency.code"]);
-            params.amountTxt = (+params.amount || 0).toFixed(2);
-            params.taxTxt = (+params.tax || 0).toFixed(2);
+            params.amountTxt = $tofixed(params.amount);
+            params.taxTxt = $tofixed(params.tax);
             
             setTransactionResult(params);
         }
@@ -85,11 +85,11 @@ export default function IndexTransactionSuccess(props){
                 <Text style={styles.moneyText}>+{transactionResult.amountTxt}<Text style={tcTP}>+</Text></Text>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["transaction.amount"]}</Text>
-                    <Text>{transactionResult.amountTxt} {transactionResult.currencyCode}</Text>
+                    <Text><Text style={fwB}>{transactionResult.amountTxt}</Text> {transactionResult.currencyCode}</Text>
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["tax"]}</Text>
-                    <Text>{transactionResult.taxTxt} {transactionResult.currencyCode}</Text>
+                    <Text><Text style={fwB}>{transactionResult.taxTxt}</Text> {transactionResult.currencyCode}</Text>
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["payment.method"]}</Text>

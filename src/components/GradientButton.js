@@ -21,7 +21,8 @@ class GradientButton extends Component {
         const boxStyle = {
             height: 40,
             borderRadius: 8,
-            overflow: "hidden"
+            overflow: "hidden",
+            backgroundColor: "#fff"
         }
         const innerStyle = {
             display: "flex",

@@ -181,7 +181,7 @@ export function showNotify(msg, duration, type){
         }
         
         if((typeof duration !== "number") || duration <= 0){
-            duration = 3000
+            duration = 2000
         }
         
         const iconInfo = {}
@@ -316,7 +316,7 @@ class ModalProvider extends Component {
     //通知提示框滑入滑出动画
     __startSlideAni(){
         let slideDown = null
-        let drt = +this.state.dialogComponent.props.duration || 120000
+        let drt = +this.state.dialogComponent.props.duration || 60000
         
         if(this.state.isShow){
             slideDown = new Animated.Value(-300)

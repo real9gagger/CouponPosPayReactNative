@@ -39,7 +39,7 @@ export default function TestAboutSoftware(props){
     return (
         <ScrollView style={pgFF} contentContainerStyle={[pdX, fxC, fxAC, mhF]}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
-            <Image source={LocalPictures.defaultUserAvatar} style={styles.logoBox} />
+            <Image source={LocalPictures.logoApp} style={styles.logoBox} />
             <Text style={styles.verBox1}>v{APP_VER}</Text>
             <View style={fxHC}>
                 <Text style={styles.verBox2}>{i18n["version.latest.tip"]}</Text>

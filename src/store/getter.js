@@ -38,6 +38,7 @@ export function getLanguageName(){
         return lgcode;
     }
 }
+
 /* ================ 用户信息相关 ================ */
 //获取登录令牌
 export function getAccessToken(){
@@ -67,4 +68,7 @@ export function getAppSettings(key){
     } else {
         return store.getState().appSettings;
     }
+}
+export function getNumbersDecimalOfMoney(key){
+    return (store.getState().appSettings.numbersDecimalOfMoney || 0);
 }

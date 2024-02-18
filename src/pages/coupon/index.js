@@ -1,11 +1,13 @@
 import { useEffect, useState, useRef } from "react";
-import { ScrollView, View, Image, Text, StyleSheet, ActivityIndicator } from "react-native";
+import { ScrollView, View, Image, Text, StyleSheet, Pressable, ActivityIndicator } from "react-native";
 import { useI18N } from "@/store/getter";
+import { DISCOUNT_TYPE_LJ } from "@/common/Statics";
 import LinearGradient from "react-native-linear-gradient"
 import PayKeyboard from "@/components/PayKeyboard";
 import PosPayIcon from "@/components/PosPayIcon";
 import GradientButton from "@/components/GradientButton";
 import LocalPictures from "@/common/Pictures";
+import QRcodeScanner from "@/modules/QRcodeScanner";
 
 const styles = StyleSheet.create({
     codeInput: {
@@ -53,7 +55,7 @@ const styles = StyleSheet.create({
     couponBox: {
         backgroundColor: "#ffe2d5",
         borderRadius: 10,
-        padding: 15,
+        padding: 10,
         marginBottom: 30,
         marginTop: 15
     },
@@ -89,7 +91,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         textAlign: "center",
         color: "#ff590e",
-        marginTop: 5,
+        marginTop: 0,
         marginBottom: 10
     },
     couponTip:{
@@ -128,27 +130,57 @@ const styles = StyleSheet.create({
     },
     couponWatermark: {
         position: "absolute",
-        top: 80,
-        right: 0,
-        zIndex: 0,
-        transform: [{ rotate: "45deg" }]
+        bottom: 10,
+        left: 10,
+        zIndex: 0
     },
     couponWMText: {
         letterSpacing: 2,
+        fontSize: 12,
         color: "#feb797"
+    },
+    couponEmpty: {
+        height: 150,
+        width: 150,
+        marginTop: 50,
+        marginBottom: 30
     }
 });
 
 const lgColors = ["#ffe2d5", "#fee7dc", "#ffc4a9"];
 const lgStartEnd = [{x:0, y:0.5}, {x:1, y:0.5}];
+const couponLoading = {loading: true}; //正在查询优惠券信息
+const couponReady = {ready: true};//已输入优惠码，可查询
+
+//查询优惠券信息
+function getCouponInfo(cc, iu) {
+    return new Promise(function(resolve, reject){
+        setTimeout(() => {
+            if("02468".indexOf(cc[cc.length - 1]) >= 0){
+                resolve({
+                    picurl: LocalPictures.couponDefaultPic,
+                    title: "新年大促销",
+                    discount: 17,
+                    distype: 1, //1-折扣，2-立减
+                    expiration: "2025/02/10 ~ 2025/12/31",
+                    condition: 100, //满免条件
+                    store: "东京路51号门店",
+                    cpcode: cc,
+                    inuse: iu //in use 是否正在使用
+                });
+            } else {
+                resolve({});
+            }
+        }, 500);
+    });
+}
 
 export default function CouponIndex(props){
     const i18n = useI18N();
     const pkRef = useRef();
     const [couponCode, setCouponCode] = useState("");
     const [pkVisible, setPkVisible] = useState(true);
-    const [isLoading, setIsLoading] = useState(false);
-    const [couponInfo, setCouponInfo] = useState(null);
+    const [couponInfo, setCouponInfo] = useState(couponReady);
     
     const showPKBox = () => {
         pkRef.current.initiText(couponCode);
@@ -158,45 +190,33 @@ export default function CouponIndex(props){
         if(!couponCode){
             return !$notify.info(i18n["coupon.enter.tip"]);
         }
-        setIsLoading(true);
-        setCouponInfo(null);
         setPkVisible(false);
-        //查询优惠券信息...
-        getCouponInfo();
+        setCouponInfo(couponLoading);
+        getCouponInfo(couponCode, false).then(setCouponInfo); //查询优惠券信息...
     }
     const useThisCoupon = () => {
         //带参数返回上一页
-        props.route.params?.onGoBack(couponInfo ? {
-            title: couponInfo.title,
-            discount: couponInfo.discount,
-            distype: couponInfo.distype,
-            cpcode: couponCode
-        } : null);
+        props.route.params?.onGoBack(couponInfo.cpcode && !couponInfo.inuse ? couponInfo : null);
         props.navigation.goBack();
     }
-    const getCouponInfo = () => {
-        setTimeout(() => {
-            setCouponInfo({
-                picurl: LocalPictures.couponDefaultPic,
-                title: "新年大促销",
-                discount: 20,
-                distype: "折扣", //1-折扣，2-立减
-                expiration: "2025/02/10 ~ 2025/12/31",
-                condition: "消费满100元，即可享受八折优惠",
-                store: "东京路51号门店"
-            });
-            setIsLoading(false);
-        }, 1000)
+    const scanCouponCode = () => {
+        QRcodeScanner.openScanner(function(res){
+            if(res.scanResult){
+                setCouponCode(res.scanResult);
+                setPkVisible(false);
+                setCouponInfo(couponLoading);
+                getCouponInfo(res.scanResult, false).then(setCouponInfo); //查询优惠券信息...
+            }
+        });
     }
     
-    
     useEffect(() => {
-        if(props.route.params?.couponID){
+        if(props.route.params?.couponCode){
             //查询优惠券信息
-            setCouponCode(props.route.params?.couponID);
-            setIsLoading(true);
+            setCouponCode(props.route.params.couponCode);
             setPkVisible(false);
-            getCouponInfo();
+            setCouponInfo(couponLoading);
+            getCouponInfo(props.route.params.couponCode, props.route.params.isInUse).then(setCouponInfo);
         }
     }, []);
     
@@ -207,13 +227,18 @@ export default function CouponIndex(props){
                 <Text style={styles.codeText}>{i18n["coupon.code"]}</Text>
             </View>
             <Text style={[styles.codeInput, !couponCode&&styles.codeEmpty, pkVisible&&styles.codeActived]} onPress={showPKBox}>{couponCode || i18n["coupon.enter.tip"]}</Text>
-            {isLoading &&
+            {!pkVisible ? (couponInfo.loading ?
                 <View style={styles.loadingTip}>
                     <ActivityIndicator color={appMainColor} size={40} />
                     <Text style={[fs14, tcMC, mgTX, taC]}>{i18n["loading"]}</Text>
                 </View>
-            }
-            {!pkVisible && couponInfo &&
+            :(couponInfo.ready ?
+                <GradientButton
+                    onPress={useThisCoupon} 
+                    style={styles.codeQuery}
+                    disabled={!couponCode}
+                    onPress={onPKConfirm}>{i18n[!couponCode ? "coupon.enter.tip" : "btn.query"]}</GradientButton>
+            :(couponInfo.cpcode ?
                 <View style={pdX}>
                     <LinearGradient style={styles.couponBox} colors={lgColors} start={lgStartEnd[0]} end={lgStartEnd[1]}>
                         <View style={styles.couponTip}>
@@ -223,7 +248,7 @@ export default function CouponIndex(props){
                         <View style={[styles.couponSemicircle, styles.couponSC1]}>{/* 优惠券去掉半个圆（上方） */}</View>
                         <View style={[styles.couponSemicircle, styles.couponSC2]}>{/* 优惠券去掉半个圆（下方） */}</View>
                         <View style={styles.couponDashedLine}>{/* 竖杠虚线 */}</View>
-                        <View style={styles.couponWatermark}><Text style={styles.couponWMText}>{couponCode}</Text></View>
+                        <View style={styles.couponWatermark}><Text style={styles.couponWMText}>NO.{couponInfo.cpcode}</Text></View>
                         <View style={fxHC}>
                             <Image source={couponInfo.picurl} style={styles.couponPic} />
                             <View>
@@ -231,23 +256,38 @@ export default function CouponIndex(props){
                                 <Text style={[fs10, tc66]}>{couponInfo.expiration}</Text>
                             </View>
                         </View>
-                        <View style={[fxR, fxJC]}>
-                            <Text style={styles.couponTypeLeft}>{couponInfo.distype /* 为了使金额保持居中，所有需要这个透明文字 */}</Text>
-                            <Text style={styles.couponDiscount}>{couponInfo.discount}%</Text>
-                            <Text style={styles.couponTypeRight}>{couponInfo.distype}</Text>
-                        </View>
-                        <Text style={styles.couponCondition}>{couponInfo.condition}</Text>
-                        <Text style={[fs12, taR, tc66]}>{i18n["coupon.store"]}&emsp;{couponInfo.store}</Text>
+                        {couponInfo.distype===DISCOUNT_TYPE_LJ ? <>
+                            <View style={[fxR, fxJC]}>
+                                <Text style={styles.couponTypeLeft}>{i18n["coupon.type2"]/* 为了使金额保持居中，所有需要这个透明文字 */}</Text>
+                                <Text style={styles.couponDiscount}>{i18n["currency.symbol"]}{couponInfo.discount}</Text>
+                                <Text style={styles.couponTypeRight}>{i18n["coupon.type2"]}</Text>
+                            </View>
+                            <Text style={styles.couponCondition}>{i18n["coupon.reduction"].cloze(couponInfo.condition, couponInfo.discount)}</Text>
+                        </> : <>
+                            <View style={[fxR, fxJC]}>
+                                <Text style={styles.couponTypeLeft}>{i18n["coupon.type1"] /* 为了使金额保持居中，所有需要这个透明文字 */}</Text>
+                                <Text style={styles.couponDiscount}>{couponInfo.discount}%</Text>
+                                <Text style={styles.couponTypeRight}>{i18n["coupon.type1"]}</Text>
+                            </View>
+                            <Text style={styles.couponCondition}>{i18n["coupon.off"].cloze(couponInfo.condition, couponInfo.discount)}</Text>
+                        </>}
+                        <Text style={[fs10, taR, tc66]}>{i18n["coupon.store"]}&emsp;{couponInfo.store}</Text>
                     </LinearGradient>
-                    <GradientButton onPress={useThisCoupon}>{i18n["btn.use"]}</GradientButton>
+                    <GradientButton onPress={useThisCoupon}>{i18n[couponInfo.inuse ? "coupon.disuse" : "btn.use"]}</GradientButton>
                 </View>
-            }
-            {!couponInfo && 
-                <GradientButton 
-                    onPress={useThisCoupon} 
-                    style={styles.codeQuery}
-                    disabled={!couponCode}
-                    onPress={onPKConfirm}>{i18n[!couponCode ? "coupon.enter.tip" : "btn.query"]}</GradientButton>
+            : /* 暂无优惠券 */
+                <View style={fxVM}>
+                    <Image source={LocalPictures.noCoupon} style={styles.couponEmpty} />
+                    <Text style={[fs18, tc66]}>{i18n["nodata"]}</Text>
+                </View>
+            ))): 
+                <>
+                    <Pressable style={[fxHC, pdX, mgTX]} android_ripple={tcCC} onPress={scanCouponCode}>
+                        <Text style={[fxG1, tcMC]}>{i18n["qrcode.identify"]}</Text>
+                        <PosPayIcon name="qrcode-scan" color={appMainColor} size={24} />
+                    </Pressable>
+                    <Text style={fxG1} onPress={() => setPkVisible(false)}>{/* 点我关闭键盘 */}</Text>
+                </>
             }
         </ScrollView>
         <PayKeyboard

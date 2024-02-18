@@ -8,11 +8,13 @@ const LocalPictures = {
     unknownPayment: require("@/images/pics/unknown_payment.png"), //如果某支付方式没有图标，请使用这张图片
     helpsQRcode: require("@/images/pics/helps_qrcode.png"),
     couponDefaultPic: require("@/images/pics/coupon_default_pic.png"),
+    noCoupon: require("@/images/pics/no_coupon.png"),
     
     //图标图片
     iconToggleDrawer: require("@/images/icons/toggle_drawer.png"), //切换抽屉图标
     
     //LOGO图片
+    logoApp: require("@/images/logos/app_logo.png"),
     logoChinaUnionpay: require("@/images/logos/china_unionpay.png"),
     logoJiaotongxiIC: require("@/images/logos/jiaotongxi_ic.png"), //交通系IC
     logoLetianEdy: require("@/images/logos/letian_edy.png"), //乐天 Edy

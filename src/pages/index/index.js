@@ -191,7 +191,7 @@ export default function IndexIndex(props){
         drawerItemList.forEach(vxo => {
             vxo.label = i18n[vxo.i18nLabel];
         });
-        console.log("修改了语言设置...");
+        console.log(">>>> 修改了语言设置...");
     }, [i18n]);
     
     if(appSettings.isEnableDrawer){//如果启用抽屉

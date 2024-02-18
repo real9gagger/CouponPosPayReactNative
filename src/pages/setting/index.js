@@ -38,6 +38,11 @@ const settingList = [
         i18nDesc: "app.lgname" //描述性文本，需要翻译
     },
     {
+        actionName: "金额设置",
+        i18nLabel: "money.header",
+        disabled: runtimeEnvironment.isProduction
+    },
+    {
         actionName: "测试中心",
         i18nLabel: "test.centre",
         i18nDesc: "test.debug.available",

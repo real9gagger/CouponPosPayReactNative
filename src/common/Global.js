@@ -2,11 +2,14 @@
  * 全局变量文件
  */
 import { Dimensions, Platform, StatusBar, PixelRatio, ToastAndroid } from "react-native";
+import { getNumbersDecimalOfMoney } from "@/store/getter";
 
 //防抖定时器ID
 let debounceTimer = 0;
 //节流开关
 let isThrottled = false;
+//金额保留的小数位数
+let moneyDecimal = -1;
 
 // 获取设备宽高
 const dimensionsInfo = Dimensions.get("window");
@@ -81,8 +84,12 @@ global.$throttle = (func, delay, ...args) => {
 }
 // 保留 N 位小数 Math.round 的升级版
 global.$mathround = (n1, n2) => {
-    const nNum =(+n1);
-    const nPow = (n2 ? Math.pow(10, n2) : 0);
+    if(moneyDecimal < 0){
+        moneyDecimal = getNumbersDecimalOfMoney();
+    }
+    
+    const nNum = (+n1);
+    const nPow = Math.pow(10, (typeof n2 === "number" && n2 >= 0) ? n2 : moneyDecimal);
     
     if(!nNum){
         return 0;
@@ -90,7 +97,17 @@ global.$mathround = (n1, n2) => {
         if(nPow){
             return Math.round(nNum * nPow) / nPow;
         } else {
-            return nNum;
+            return Math.round(nNum);
         }
     }
+}
+//保留0位小数（日元里没有小数）
+global.$tofixed = (n1) => {
+    const nNum = (+n1 || 0);
+    
+    if(moneyDecimal < 0){
+        moneyDecimal = getNumbersDecimalOfMoney();
+    }
+    
+    return nNum.toFixed(moneyDecimal);
 }

@@ -5,6 +5,7 @@ import MineAccount from "@/pages/mine/account";
 import MineHelps from "@/pages/mine/helps";
 import SettingIndex from "@/pages/setting/index";
 import SettingLanguage from "@/pages/setting/language";
+import SettingMoney from "@/pages/setting/money";
 import LoginIndex from "@/pages/login/index";
 import TestIndex from "@/pages/test/index";
 import TestDevinfo from "@/pages/test/devinfo";
@@ -80,6 +81,12 @@ const PosPayRouterList = [
         name: "语言设置",
         component: SettingLanguage,
         i18nTitle: "language.header",
+        options: {...defaultScreenOptions}
+    },
+    {
+        name: "金额设置",
+        component: SettingMoney,
+        i18nTitle: "money.header",
         options: {...defaultScreenOptions}
     },
     {

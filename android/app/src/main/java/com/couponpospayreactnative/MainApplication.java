@@ -3,6 +3,11 @@ package com.couponpospayreactnative;
 import android.app.Application;
 import android.content.Context;
 
+import com.couponpospayreactnative.printer.PrinterPackage;
+import com.couponpospayreactnative.settlement.SettlementPackage;
+import com.couponpospayreactnative.appinfo.AppPackageInfoPackage;
+import com.couponpospayreactnative.newarchitecture.MainApplicationReactNativeHost;
+
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
@@ -10,9 +15,7 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.soloader.SoLoader;
-import com.couponpospayreactnative.settlement.SettlementPackage;
-import com.couponpospayreactnative.appinfo.AppPackageInfoPackage;
-import com.couponpospayreactnative.newarchitecture.MainApplicationReactNativeHost;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -32,7 +35,8 @@ public class MainApplication extends Application implements ReactApplication {
           // packages.add(new MyReactNativePackage());
 
           packages.add(new AppPackageInfoPackage());//2024年1月4日 APP版本、权限信息
-          packages.add(new SettlementPackage());//2024年1月29日 扫码器
+          packages.add(new SettlementPackage());//2024年1月29日 结算功能
+          packages.add(new PrinterPackage());//2024年2月19日 打印、打印机相关功能
 
           return packages;
       }

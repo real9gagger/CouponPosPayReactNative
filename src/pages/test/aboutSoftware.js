@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
         fontSize: 14
     },
     verBox2: {
-        color: "#03C988",
+        color: "#0a0",
         textAlign: "center",
         paddingVertical: 5,
         fontSize: 14

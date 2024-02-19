@@ -1,6 +1,7 @@
 package com.couponpospayreactnative;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -25,6 +26,8 @@ public class MainActivity extends ReactActivity {
   public static final int REQUEST_PERMS_CODE = 88;//权限设置
   public static final int REQUEST_PAY_CODE = 99;//支付相关
 
+  public static boolean isPanasonicJTC60Device = false; //是否是松下POS机设备
+
   private Callback mActivityResultCallback = null; // 活动页返回结果时调用的 JS 回调函数
 
   private final String TAG = "PosPayLogs";
@@ -44,6 +47,15 @@ public class MainActivity extends ReactActivity {
     org.devio.rn.splashscreen.SplashScreen.show(this, true); //2024年01月04日 显示启动屏，并且全屏显示。react native 前端级别的启动屏
 
     super.onCreate(savedInstanceState);
+
+    PackageManager pm = getPackageManager();
+    try {
+      pm.getPackageInfo("com.panasonic.smartpayment.android.salesmenu", PackageManager.GET_ACTIVITIES);
+      isPanasonicJTC60Device = true;
+    } catch (PackageManager.NameNotFoundException ex) {
+      isPanasonicJTC60Device = false;
+    }
+    Log.d(TAG, "是否是 Panasonic JT-C60 POS 设备:::" + isPanasonicJTC60Device);
   }
 
   /**

@@ -3,7 +3,6 @@ package com.couponpospayreactnative.settlement;
 import static com.couponpospayreactnative.MainActivity.REQUEST_PAY_CODE;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -19,25 +18,11 @@ public class PaymentHelperModule extends ReactContextBaseJavaModule {
 
     private final String TAG = PaymentHelperModule.class.getSimpleName();
     private final ReactApplicationContext mContext;
-    private final boolean isPanasonicJTC60;
     private final String mFromPackageName = "com.panasonic.smartpayment.android.salesmenu";
     private final String mToClassName = "com.panasonic.smartpayment.android.salesmenu.MainActivity";
 
     public PaymentHelperModule(ReactApplicationContext context) {
         this.mContext = context;
-
-        PackageManager pm = context.getPackageManager();
-        boolean existsApp = false;
-        try {
-            pm.getPackageInfo(mFromPackageName, PackageManager.GET_ACTIVITIES);
-            existsApp = true;
-        } catch (PackageManager.NameNotFoundException ex) {
-            //ex.printStackTrace();
-        }
-
-        Log.d(TAG, "是否是 Panasonic JT-C60 POS 设备:::" + existsApp);
-
-        isPanasonicJTC60 = existsApp;
     }
 
     @NonNull
@@ -49,7 +34,7 @@ public class PaymentHelperModule extends ReactContextBaseJavaModule {
     //是否支持支付功能
     @ReactMethod(isBlockingSynchronousMethod = true)
     public boolean isSupport(){
-        return this.isPanasonicJTC60;
+        return MainActivity.isPanasonicJTC60Device;
     }
 
     @ReactMethod
@@ -59,7 +44,7 @@ public class PaymentHelperModule extends ReactContextBaseJavaModule {
             return;
         }
 
-        if(!isPanasonicJTC60) {
+        if(!MainActivity.isPanasonicJTC60Device) {
             Log.d(TAG, "非 Panasonic JT-C60 POS 设备，无法支付");
             callback.invoke((Object) null);
             return;

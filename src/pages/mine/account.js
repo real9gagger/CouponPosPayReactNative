@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { ScrollView, View, Text, StatusBar, StyleSheet } from "react-native";
 import { dispatchResetUserInfo } from "@/store/setter";
 import { useI18N, useUserInfo } from "@/store/getter";

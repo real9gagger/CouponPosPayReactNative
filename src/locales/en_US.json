@@ -60,6 +60,7 @@
     "payment.supports": "Payment Partner",
     "payment.payer": "Payer account",
     "payment.payee": "Payee name",
+    "payment.receipt": "Payment receipt",
     "payment.errmsg1": "Current device does not support this payment method. Please operate on POS machine!",
     "payment.errmsg2": "Transaction has been canceled",
     "payment.errmsg3": "\\\\Transaction failed, error code: $[0]",
@@ -85,7 +86,10 @@
     "money.decnum.tip": "Please enter the decimal digits to be retained",
     "money.last.tip": "Last setting to keep the decimal digits: ",
     "final.amount": "Final amount",
+    "print.time": "Print time",
+    "order.amount": "Order amount",
     
+    "operator": "Operator",
     "loading": "Loading...",
     "print": "Print",
     "printer": "Printer",

@@ -12,6 +12,7 @@ import TestDevinfo from "@/pages/test/devinfo";
 import TestAboutSoftware from "@/pages/test/aboutSoftware";
 import TestSupportPayment from "@/pages/test/supportPayment";
 import CouponIndex from "@/pages/coupon/index";
+import OrderPrintPreview from "@/pages/order/printPreview";
 
 //非Tabs页面的顶部导航栏全局配置
 const defaultScreenOptions = {
@@ -125,8 +126,13 @@ const PosPayRouterList = [
         options: noHeaderOnly
     },
     {
-        name: "优惠券信息",
+        name: "优惠券查询",
         component: CouponIndex,
+        options: noHeaderOnly
+    },
+    {
+        name: "打印预览",
+        component: OrderPrintPreview,
         options: noHeaderOnly
     },
 ];

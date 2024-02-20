@@ -68,6 +68,7 @@
     "payment.supports": "支付合作伙伴",
     "payment.payer": "付款人账号",
     "payment.payee": "收款人名称",
+    "payment.receipt": "付款回执单",
     "payment.errmsg1": "当前设备不支持该支付方式，请在POS机上操作！",
     "payment.errmsg2": "交易已取消",
     "payment.errmsg3": "\\\\交易失败，错误码：$[0]",
@@ -93,7 +94,10 @@
     "money.decnum.tip": "请输入金额要保留的小数位数",
     "money.last.tip": "上次设置保留小数位数：",
     "final.amount": "实际收款",
+    "print.time": "打印时间",
+    "order.amount": "订单金额",
     
+    "operator": "操作员",
     "loading": "正在加载…",
     "print": "打印",
     "printer": "打印机",

@@ -54,6 +54,8 @@ export function formatDate(dateObj, formatStr) {
 		dateObj = new Date();
 	} else if(typeof dateObj === "number"){
         dateObj = new Date(dateObj);
+    } else {
+        return dateObj.toString();
     }
 	
 	if(!formatStr){

@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { ScrollView, View, TextInput, Text, StatusBar, Keyboard, StyleSheet } from "react-native";
+import { ScrollView, TextInput, Text, StatusBar, Keyboard, StyleSheet } from "react-native";
 import { dispatchUpdateAppSettings } from "@/store/setter";
 import { useI18N, getNumbersDecimalOfMoney } from "@/store/getter";
 import GradientButton from "@/components/GradientButton";

@@ -182,6 +182,8 @@ function callPayment(payMoney, disMoney, paymentCode){
         console.log("交易成功:::", payRes);
         if(payRes.activityResultCode === 0){//支付成功
             payRes.action = onTransactionSuccess;
+            payRes.discountAmount = disMoney; //优惠总金额
+            payRes.orderAmount = payMoney; //订单总金额
             DeviceEventEmitter.emit(eventEmitterName, payRes); //发
         } else if(payRes.activityResultCode === 2){//取消支付
             $toast(getI18N("payment.errmsg2"));
@@ -671,7 +673,7 @@ export default function IndexHome(props){
                     }
                     
                     if(infos.nth === iNthCoupon){
-                        props.navigation.navigate("优惠券信息", { 
+                        props.navigation.navigate("优惠券查询", { 
                             couponCode: infos.txt, 
                             onGoBack: useTheCoupon,
                             isInUse: !!infos.inuse //true-说明正在使用优惠券，false-扫描识别或者没有优惠券

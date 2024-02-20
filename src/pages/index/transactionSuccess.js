@@ -4,7 +4,6 @@ import { useI18N, getUserInfo } from "@/store/getter";
 import { formatDate } from "@/utils/helper";
 import { getPaymentInfo, EMPTY_DEFAULT_TEXT } from "@/common/Statics";
 import LocalPictures from "@/common/Pictures";
-import AppPackageInfo from "@/modules/AppPackageInfo";
 import CircleTick from "@/components/CircleTick"
 import PosPayIcon from "@/components/PosPayIcon";
 
@@ -44,6 +43,10 @@ export default function IndexTransactionSuccess(props){
     const i18n = useI18N();
     const [transactionResult, setTransactionResult] = useState(null);
     
+    const gotoPrintPreview = () => {
+        props.navigation.navigate("打印预览", props.route.params);
+    }
+    
     useEffect(() => {
         const params = props.route.params;
         /* { //2024年2月2日。支付成功时的测试数据
@@ -65,14 +68,18 @@ export default function IndexTransactionSuccess(props){
         }; */
         
         if(params){
-            params.paymentInfo = getPaymentInfo(params.paymentType, params.creditCardBrand || params.eMoneyType || params.qrPayType);
-            params.payeeName = getUserInfo("posName");
-            params.transactionTimeTxt = formatDate(params.transactionTime);
-            params.currencyCode = (params.currencyCode || i18n["currency.code"]);
-            params.amountTxt = $tofixed(params.amount);
-            params.taxTxt = $tofixed(params.tax);
+            const dat = {...params}; //复制一份！！！
             
-            setTransactionResult(params);
+            dat.paymentInfo = getPaymentInfo(params.paymentType, params.creditCardBrand || params.eMoneyType || params.qrPayType);
+            dat.payeeName = getUserInfo("posName");
+            dat.transactionTime = formatDate(params.transactionTime);
+            dat.currencyCode = (params.currencyCode || i18n["currency.code"]);
+            dat.amount = $tofixed(params.amount);
+            dat.tax = $tofixed(params.tax);
+            dat.discountAmount = $tofixed(params.discountAmount);
+            dat.orderAmount = $tofixed(params.orderAmount);
+
+            setTransactionResult(dat);
         }
     }, []);
     
@@ -82,14 +89,22 @@ export default function IndexTransactionSuccess(props){
             <CircleTick progressing={2} size={80} style={styles.tickBox} color={styles.tickText.color} />
             <Text style={styles.tickText}>{i18n["transaction.success"]}</Text>
             {transactionResult && <>
-                <Text style={styles.moneyText}>+{transactionResult.amountTxt}<Text style={tcTP}>+</Text></Text>
+                <Text style={styles.moneyText}>+{transactionResult.amount}<Text style={tcTP}>+</Text></Text>
                 <View style={styles.itemBox}>
-                    <Text style={fxG1}>{i18n["transaction.amount"]}</Text>
-                    <Text><Text style={fwB}>{transactionResult.amountTxt}</Text> {transactionResult.currencyCode}</Text>
+                    <Text style={fxG1}>{i18n["order.amount"]}</Text>
+                    <Text><Text style={fwB}>{transactionResult.orderAmount}</Text> {transactionResult.currencyCode}</Text>
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["tax"]}</Text>
-                    <Text><Text style={fwB}>{transactionResult.taxTxt}</Text> {transactionResult.currencyCode}</Text>
+                    <Text><Text style={fwB}>{transactionResult.tax}</Text> {transactionResult.currencyCode}</Text>
+                </View>
+                <View style={styles.itemBox}>
+                    <Text style={fxG1}>{i18n["coupon.discount"]}</Text>
+                    <Text><Text style={fwB}>-{transactionResult.discountAmount}</Text> {transactionResult.currencyCode}</Text>
+                </View>
+                <View style={styles.itemBox}>
+                    <Text style={fxG1}>{i18n["transaction.amount"]}</Text>
+                    <Text style={tcR1}><Text style={fwB}>{transactionResult.amount}</Text> {transactionResult.currencyCode}</Text>
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["payment.method"]}</Text>
@@ -110,13 +125,13 @@ export default function IndexTransactionSuccess(props){
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["transaction.time"]}</Text>
-                    <Text>{transactionResult.transactionTimeTxt}</Text>
+                    <Text>{transactionResult.transactionTime}</Text>
                 </View>
             </>}
             <View style={[fxR, fxJB, pdTX, wiF]}>
-                <TouchableOpacity activeOpacity={0.5} style={[pdVX, fxHC]}>
-                    <Text style={[fs14, tcMC]}>{i18n["transaction.doubt"]}</Text>
-                    <PosPayIcon name="help-stroke" color={appDarkColor} size={12} offset={3} />
+                <TouchableOpacity activeOpacity={0.5} style={[pdVX, fxHC]} onPress={gotoPrintPreview}>
+                    <Text style={[fs14, tcMC]}>{i18n["print"]}</Text>
+                    <PosPayIcon name="printer-stroke" color={appDarkColor} size={12} offset={3} />
                 </TouchableOpacity>
                 <TouchableOpacity activeOpacity={0.5} style={[pdVX, fxHC]}>
                     <Text style={[fs14, tcMC]}>{i18n["transaction.detail"]}</Text>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ScrollView, View, StatusBar, Text, Image, StyleSheet, Pressable, TouchableOpacity, DevSettings } from "react-native";
 import { useI18N, useUserInfo } from "@/store/getter";
 import LocalPictures from "@/common/Pictures";

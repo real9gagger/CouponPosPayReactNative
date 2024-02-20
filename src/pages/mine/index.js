@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         backgroundColor: "#F6F1EE",
         paddingHorizontal: 15,
-        paddingVertical: 15,
+        paddingVertical: 20,
     },
     actionItem1: {
         backgroundColor: "#EFEFEF",

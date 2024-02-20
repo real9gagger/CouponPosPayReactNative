@@ -1,6 +1,6 @@
 import { ScrollView, View, Text, Image, StatusBar, StyleSheet } from "react-native";
 import { useI18N } from "@/store/getter";
-import { bankCardList, eWalletList, qrPayList } from "@/common/Statics";
+import { creditCardList, eWalletList, qrPayList } from "@/common/Statics";
 import LocalPictures from "@/common/Pictures";
 
 const styles = StyleSheet.create({
@@ -45,11 +45,11 @@ export default function TestSupportPayment(props){
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
             <Text style={[styles.titleBox, styles.titleFirst]}>{i18n["credit.card"]}</Text>
             <View style={[fxR, fxWP]}>
-                {bankCardList.map((vx, ix) => (
+                {creditCardList.map((vx, ix) => (
                     <View key={vx.pmcode} style={ix%2===0 ? styles.itemBox1 : styles.itemBox2}>
                         <View style={styles.itemContent}>
                             <Image source={LocalPictures[vx.logo]} style={styles.imgBox} />
-                            <Text>{vx.name}</Text>
+                            <Text style={fxG1}>{vx.name}</Text>
                         </View>
                     </View>
                 ))}
@@ -60,7 +60,7 @@ export default function TestSupportPayment(props){
                     <View key={vx.pmcode} style={ix%2===0 ? styles.itemBox1 : styles.itemBox2}>
                         <View style={styles.itemContent}>
                             <Image source={LocalPictures[vx.logo]} style={styles.imgBox} />
-                            <Text>{vx.name}</Text>
+                            <Text style={fxG1}>{vx.name}</Text>
                         </View>
                     </View>
                 ))}
@@ -71,7 +71,7 @@ export default function TestSupportPayment(props){
                     <View key={vx.pmcode} style={ix%2===0 ? styles.itemBox1 : styles.itemBox2}>
                         <View style={styles.itemContent}>
                             <Image source={LocalPictures[vx.logo]} style={styles.imgBox} />
-                            <Text>{vx.name}</Text>
+                            <Text style={fxG1}>{vx.name}</Text>
                         </View>
                     </View>
                 ))}

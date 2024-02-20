@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { ScrollView, View, Text, Pressable , Image, StatusBar, StyleSheet, TouchableOpacity, DeviceEventEmitter } from "react-native";
 import { useI18N, getI18N, useAppSettings } from "@/store/getter";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
-import { bankCardList, eWalletList, QR_PAYMENT_CODE, DISCOUNT_TYPE_LJ } from "@/common/Statics";
+import { eWalletList, CREDIT_CARD_PAYMENT_CODE, QR_CODE_PAYMENT_CODE, DISCOUNT_TYPE_LJ } from "@/common/Statics";
 import LocalPictures from "@/common/Pictures";
 import QRcodeScanner from "@/modules/QRcodeScanner";
 import PaymentHelper from "@/modules/PaymentHelper";
@@ -221,7 +221,6 @@ function tabBankCard(props){
     const [payAmounts, setPayAmounts] = useState("");
     const [disAmounts, setDisAmounts] = useState(0); //优惠金额
     const [cpInfos, setCpInfos] = useState(null);
-    const [paymentIndex, setPaymentIndex] = useState(0);
     const [currentInputBox, setCurrentInputBox] = useState(0);
     
     const toggleAmountInput = () => {
@@ -239,18 +238,12 @@ function tabBankCard(props){
             action: onInputToggle
         });
     }
-    const togglePayment = (idx) => {
-        return function() {
-            setPaymentIndex(idx);
-            togglePKHidden(currentInputBox);
-        }
-    }
     const scanCouponCode = () => {
         togglePKHidden(currentInputBox);
         QRcodeScanner.openScanner(onScanFinish);
     }
     const startPayMoney = () => {
-        callPayment(payAmounts, disAmounts, bankCardList[paymentIndex].pmcode);
+        callPayment(payAmounts, disAmounts, CREDIT_CARD_PAYMENT_CODE);
     }
     
     useEffect(() => {
@@ -315,15 +308,13 @@ function tabBankCard(props){
             </View>
             <View style={[fxHC, styles.rowBox]}>
                 <Text style={[fxG1, styles.paymentLabel]}>{i18n["payment.method"]}</Text>
-                <Text style={styles.paymentLabel}>{bankCardList[paymentIndex].name}</Text>
+                <Text style={styles.paymentLabel}>{i18n["credit.card"]}</Text>
             </View>
             <View style={[fxR, fxWP, pdHX]}>
-                {bankCardList.map((vx, ix) => (
-                    <TouchableOpacity key={vx.name} activeOpacity={0.5} onPress={togglePayment(ix)} style={[styles.paymentBox, paymentIndex===ix&&styles.paymentSelected]}>
-                        <Image style={whF} source={LocalPictures[vx.logo]} />
-                        <PosPayIcon visible={paymentIndex===ix} name="check-fill" color={appMainColor} size={20} style={styles.paymentChecked} />
-                    </TouchableOpacity>
-                ))}
+                <TouchableOpacity activeOpacity={0.5} style={[styles.paymentBox, styles.paymentSelected]}>
+                    <Image style={whF} source={LocalPictures.creditCardList} />
+                    <PosPayIcon name="check-fill" color={appMainColor} size={20} style={styles.paymentChecked} />
+                </TouchableOpacity>
             </View>
             <Text style={fxG1} onPress={togglePKHidden}>{/* 点我关闭键盘 */}</Text>
             <View style={pdX}>
@@ -507,7 +498,7 @@ function tabQRCode(props){
         QRcodeScanner.openScanner(onScanFinish);
     }
     const startPayMoney = () => {
-        callPayment(payAmounts, disAmounts, QR_PAYMENT_CODE);
+        callPayment(payAmounts, disAmounts, QR_CODE_PAYMENT_CODE);
     }
     const gotoSupportPayment = () => {
         DeviceEventEmitter.emit(eventEmitterName, {

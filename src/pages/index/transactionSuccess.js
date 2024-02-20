@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ScrollView, View, Text, Image, StatusBar, StyleSheet, TouchableOpacity } from "react-native";
 import { useI18N, getUserInfo } from "@/store/getter";
 import { formatDate } from "@/utils/helper";
-import { getPaymentInfo } from "@/common/Statics";
+import { getPaymentInfo, EMPTY_DEFAULT_TEXT } from "@/common/Statics";
 import LocalPictures from "@/common/Pictures";
 import AppPackageInfo from "@/modules/AppPackageInfo";
 import CircleTick from "@/components/CircleTick"
@@ -65,7 +65,7 @@ export default function IndexTransactionSuccess(props){
         }; */
         
         if(params){
-            params.paymentInfo = getPaymentInfo(params.paymentType, params.eMoneyType || params.qrPayType);
+            params.paymentInfo = getPaymentInfo(params.paymentType, params.creditCardBrand || params.eMoneyType || params.qrPayType);
             params.payeeName = getUserInfo("posName");
             params.transactionTimeTxt = formatDate(params.transactionTime);
             params.currencyCode = (params.currencyCode || i18n["currency.code"]);
@@ -98,7 +98,7 @@ export default function IndexTransactionSuccess(props){
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["payment.payer"]}</Text>
-                    <Text>{transactionResult.creditCardMaskedPAN || transactionResult.eMoneyNumber}</Text>
+                    <Text>{transactionResult.creditCardMaskedPAN || transactionResult.eMoneyNumber || EMPTY_DEFAULT_TEXT}</Text>
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["payment.payee"]}</Text>

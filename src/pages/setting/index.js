@@ -40,6 +40,7 @@ const settingList = [
     {
         actionName: "金额设置",
         i18nLabel: "money.header",
+        i18nDesc: "test.debug.available",
         disabled: runtimeEnvironment.isProduction
     },
     {

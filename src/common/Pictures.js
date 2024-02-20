@@ -9,12 +9,19 @@ const LocalPictures = {
     helpsQRcode: require("@/images/pics/helps_qrcode.png"),
     couponDefaultPic: require("@/images/pics/coupon_default_pic.png"),
     noCoupon: require("@/images/pics/no_coupon.png"),
+    creditCardPay: require("@/images/pics/credit_card_pay.png"),
+    creditCardList: require("@/images/pics/credit_card_list.png"),
     
     //图标图片
     iconToggleDrawer: require("@/images/icons/toggle_drawer.png"), //切换抽屉图标
     
     //LOGO图片
     logoApp: require("@/images/logos/app_logo.png"),
+    logoVisa: require("@/images/logos/visa.png"),
+    logoMastercard: require("@/images/logos/mastercard.png"),
+    logoJcb: require("@/images/logos/jcb.png"),
+    logoAmericanExpress: require("@/images/logos/american_express.png"),
+    logoDinersClub: require("@/images/logos/diners_club.png"),
     logoChinaUnionpay: require("@/images/logos/china_unionpay.png"),
     logoJiaotongxiIC: require("@/images/logos/jiaotongxi_ic.png"), //交通系IC
     logoLetianEdy: require("@/images/logos/letian_edy.png"), //乐天 Edy

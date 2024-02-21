@@ -10,8 +10,7 @@ const FastCss = StyleSheet.create({
     fxHM: { display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center" }, /* 水平(H)布局时，水平和垂直都居中(Middle) */
     fxVC: { display: "flex", flexDirection: "column", justifyContent: "center" }, /* 垂直(V)布局时，垂直居中(Center) */
     fxVM: { display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }, /* 垂直(V)布局时，水平和垂直都居中(Middle) */
-    fxG1: { flexGrow: 1, flexShrink: 1 },
-    fxG2: { flexGrow: 2, flexShrink: 1 },
+    fxG1: { flexGrow: 1, flexShrink: 1, flexBasis: 0 },
     fxWP: { flexWrap: "wrap" },
     fxAE: { alignItems: "flex-end" },
     fxAC: { alignItems: "center" },
@@ -140,6 +139,7 @@ const FastCss = StyleSheet.create({
     mgTX: { marginTop: BOX_MARGIN },
     mgBX: { marginBottom: BOX_MARGIN },
     
+    br0: { borderRadius: 0 },
     brX: { borderRadius: 8, overflow: "hidden" }, /* X 结尾表示默认框的圆角 */
     
     bdW0: { borderWidth: 0 },

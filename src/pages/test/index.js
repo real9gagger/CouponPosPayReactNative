@@ -1,6 +1,5 @@
 import { ScrollView, View, Text, Image, Button, StatusBar, StyleSheet, DevSettings } from "react-native";
 import LocalPictures from "@/common/Pictures";
-import ReceiptsPlus from "@/modules/ReceiptsPlus";
 
 const styles = StyleSheet.create({
     btnBox: {
@@ -37,7 +36,7 @@ export default function TestIndex(props){
     }
     
     const printCR = () => {
-        ReceiptsPlus.printCustomerReceipts();
+        props.navigation.navigate("打印预览");
     }
     
     return (
@@ -46,7 +45,7 @@ export default function TestIndex(props){
             <View><Text style={[fs20, taC, tcMC]}>请把要测试的功能放在这里</Text></View>
             <View style={styles.btnBox}><Button title="测试发送短信验证码" onPress={sendMsgCode} /></View>
             <View style={styles.btnBox}><Button title="重启应用" onPress={restartApp} /></View>
-            <View style={styles.btnBox}><Button title="打印客单" onPress={printCR} /></View>
+            <View style={styles.btnBox}><Button title="打印付款单" onPress={printCR} /></View>
             <View style={{height: 30}}>{/* 占位专用 */}</View>
             <Text style={[fs18, taC]}>测试专用优惠码</Text>
             <Image style={styles.imgBox} source={LocalPictures.couponCodeTest} resizeMode="contain" />

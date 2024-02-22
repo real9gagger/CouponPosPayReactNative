@@ -1,6 +1,6 @@
 package com.couponpospayreactnative.appinfo;
 
-import static com.couponpospayreactnative.MainActivity.REQUEST_PERMS_CODE;
+import static com.couponpospayreactnative.Constants.REQUEST_PERMS_CODE;
 
 import android.Manifest.permission;
 import android.app.Activity;
@@ -46,10 +46,12 @@ public class AppPackagePermissionModule extends ReactContextBaseJavaModule {
     public void checkAllPermissions() {
         List<String> permList = new ArrayList<>();
 
+        //位置权限
         if (this.isNotGranted(permission.ACCESS_COARSE_LOCATION)) {
             permList.add(permission.ACCESS_COARSE_LOCATION);
         }
 
+        //后台定位权限
         if (this.isNotGranted(permission.ACCESS_FINE_LOCATION)) {
             permList.add(permission.ACCESS_FINE_LOCATION);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -57,12 +59,20 @@ public class AppPackagePermissionModule extends ReactContextBaseJavaModule {
             }
         }
 
+        //相机权限
+        if (this.isNotGranted(permission.CAMERA)) {
+            permList.add(permission.WRITE_EXTERNAL_STORAGE);
+        }
+
+        //存储权限
         if (this.isNotGranted(permission.WRITE_EXTERNAL_STORAGE)) {
             permList.add(permission.WRITE_EXTERNAL_STORAGE);
         }
         if (this.isNotGranted(permission.READ_EXTERNAL_STORAGE)) {
             permList.add(permission.READ_EXTERNAL_STORAGE);
         }
+
+        //电话相关权限
         if (this.isNotGranted(permission.READ_PHONE_STATE)) {
             permList.add(permission.READ_PHONE_STATE);
         }

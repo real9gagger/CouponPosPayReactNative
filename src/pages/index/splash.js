@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { dispatchUpdateUserInfo } from "@/store/setter";
 import SplashScreen from "react-native-splash-screen";
+import AppPackagePermission from "@/modules/AppPackagePermission";
 
 //应用启动屏
 export default function IndexSplash(props){
@@ -19,6 +20,8 @@ export default function IndexSplash(props){
                 props.navigation.replace("应用首页");
             }
         });
+        
+        AppPackagePermission.checkAllPermissions(); //检查权限
     }, []);
     
     /* 正在启动... */

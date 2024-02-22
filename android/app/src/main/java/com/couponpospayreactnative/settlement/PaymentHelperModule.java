@@ -1,6 +1,6 @@
 package com.couponpospayreactnative.settlement;
 
-import static com.couponpospayreactnative.MainActivity.REQUEST_PAY_CODE;
+import static com.couponpospayreactnative.Constants.REQUEST_PAY_CODE;
 
 import android.content.Intent;
 import android.util.Log;
@@ -34,7 +34,7 @@ public class PaymentHelperModule extends ReactContextBaseJavaModule {
     //是否支持支付功能
     @ReactMethod(isBlockingSynchronousMethod = true)
     public boolean isSupport(){
-        return MainActivity.isPanasonicJTC60Device;
+        return MainActivity.isPanasonicJTC60Device();
     }
 
     @ReactMethod
@@ -44,7 +44,7 @@ public class PaymentHelperModule extends ReactContextBaseJavaModule {
             return;
         }
 
-        if(!MainActivity.isPanasonicJTC60Device) {
+        if(!MainActivity.isPanasonicJTC60Device()) {
             Log.d(TAG, "非 Panasonic JT-C60 POS 设备，无法支付");
             callback.invoke((Object) null);
             return;

@@ -1,6 +1,6 @@
 package com.couponpospayreactnative.settlement;
 
-import static com.couponpospayreactnative.MainActivity.REQUEST_QRCODE_CODE;
+import static com.couponpospayreactnative.Constants.REQUEST_QRCODE_CODE;
 
 import androidx.annotation.NonNull;
 

@@ -22,11 +22,7 @@ import java.util.Arrays;
 
 public class MainActivity extends ReactActivity {
 
-  public static final int REQUEST_QRCODE_CODE = 77;//扫描二维码
-  public static final int REQUEST_PERMS_CODE = 88;//权限设置
-  public static final int REQUEST_PAY_CODE = 99;//支付相关
-
-  public static boolean isPanasonicJTC60Device = false; //是否是松下POS机设备
+  private static boolean mIsPanasonicJTC60Device = false; //是否是松下POS机设备
 
   private Callback mActivityResultCallback = null; // 活动页返回结果时调用的 JS 回调函数
 
@@ -51,11 +47,11 @@ public class MainActivity extends ReactActivity {
     PackageManager pm = getPackageManager();
     try {
       pm.getPackageInfo("com.panasonic.smartpayment.android.salesmenu", PackageManager.GET_ACTIVITIES);
-      isPanasonicJTC60Device = true;
+      mIsPanasonicJTC60Device = true;
     } catch (PackageManager.NameNotFoundException ex) {
-      isPanasonicJTC60Device = false;
+      mIsPanasonicJTC60Device = false;
     }
-    Log.d(TAG, "是否是 Panasonic JT-C60 POS 设备:::" + isPanasonicJTC60Device);
+    Log.d(TAG, "是否是 Panasonic JT-C60 POS 设备:::" + mIsPanasonicJTC60Device);
   }
 
   /**
@@ -86,7 +82,7 @@ public class MainActivity extends ReactActivity {
   //授权后调用函数
   @Override
   public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-    if (requestCode == REQUEST_PERMS_CODE) {
+    if (requestCode == Constants.REQUEST_PERMS_CODE) {
       Log.i(TAG, "权限列表：" + Arrays.toString(permissions) + "，请求结果：" + Arrays.toString(grantResults));
     }
   }
@@ -100,7 +96,7 @@ public class MainActivity extends ReactActivity {
       return;
     }
 
-    if(requestCode != REQUEST_PAY_CODE && requestCode != REQUEST_QRCODE_CODE){
+    if(requestCode != Constants.REQUEST_PAY_CODE && requestCode != Constants.REQUEST_QRCODE_CODE){
       Log.d(TAG, "检测到未知的请求码，已忽略:::" + requestCode);
       return; //可能是 registerForActivityResult 的回调码，直接 return【重要！！！】因为这个函数比 registerForActivityResult 先调用！
     }
@@ -114,7 +110,7 @@ public class MainActivity extends ReactActivity {
 
     if (intent != null) {
       switch (requestCode) {
-        case REQUEST_PAY_CODE:
+        case Constants.REQUEST_PAY_CODE:
           //返回数据，参见：https://www.smbc-card.com/steradevelopers/develop/kessai.jsp
           args.putInt("amount", intent.getIntExtra("Amount", 0)); //交易金额
           args.putInt("tax", intent.getIntExtra("Tax", 0));//税费
@@ -130,7 +126,7 @@ public class MainActivity extends ReactActivity {
           args.putString("eMoneyType", intent.getStringExtra("EMoneyType"));//电子钱包类型编号
           args.putDouble("transactionTime", System.currentTimeMillis()); //交易完成时间
           break;
-        case REQUEST_QRCODE_CODE:
+        case Constants.REQUEST_QRCODE_CODE:
           IntentResult result = IntentIntegrator.parseActivityResult(resultCode, intent);
           args.putString("formatName", result.getFormatName());
           args.putString("errorCorrectionLevel", result.getErrorCorrectionLevel()); //纠错级别
@@ -155,6 +151,10 @@ public class MainActivity extends ReactActivity {
     mActivityResultCallback = cb;
   }
 
+  // ================================ 静态函数、类 ================================
+  public static boolean isPanasonicJTC60Device(){
+    return mIsPanasonicJTC60Device;
+  }
   public static class MainActivityDelegate extends ReactActivityDelegate {
     public MainActivityDelegate(ReactActivity activity, String mainComponentName) {
       super(activity, mainComponentName);

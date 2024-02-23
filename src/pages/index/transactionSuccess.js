@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ScrollView, View, Text, Image, StatusBar, StyleSheet, TouchableOpacity } from "react-native";
-import { useI18N, getUserInfo } from "@/store/getter";
+import { useI18N, getUserInfo, getAppSettings } from "@/store/getter";
 import { formatDate } from "@/utils/helper";
 import { getPaymentInfo, EMPTY_DEFAULT_TEXT } from "@/common/Statics";
 import LocalPictures from "@/common/Pictures";
@@ -73,7 +73,7 @@ export default function IndexTransactionSuccess(props){
             dat.paymentInfo = getPaymentInfo(params.paymentType, params.creditCardBrand || params.eMoneyType || params.qrPayType);
             dat.payeeName = getUserInfo("posName");
             dat.transactionTime = formatDate(params.transactionTime);
-            dat.currencyCode = (params.currencyCode || i18n["currency.code"]);
+            dat.currencyCode = (params.currencyCode || getAppSettings("currencyCode"));
             dat.amount = $tofixed(params.amount);
             dat.tax = $tofixed(params.tax);
             dat.discountAmount = $tofixed(params.discountAmount);

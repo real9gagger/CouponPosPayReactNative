@@ -82,9 +82,9 @@ const actionList2 = [
         pageName: "设置页"
     },
     {
-        i18nName: "printer",
+        i18nName: "print.items",
         iconName: "printer-stroke",
-        pageName: "",
+        pageName: "打印设置",
     },
     {
         i18nName: "drawer.helps",

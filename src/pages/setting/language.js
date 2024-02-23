@@ -1,7 +1,8 @@
 import { useState, useRef } from "react";
 import { TouchableHighlight, ScrollView, View, Text, StatusBar, StyleSheet } from "react-native";
 import { dispatchChangeLanguage } from "@/store/setter";
-import { useI18N, getLanguageCode, getLanguageList } from "@/store/getter";
+import { useI18N, getLanguageCode } from "@/store/getter";
+import { supportLanguageList } from "@/common/Statics";
 import PosPayIcon from "@/components/PosPayIcon";
 import GradientButton from "@/components/GradientButton";
 
@@ -15,8 +16,6 @@ const styles = StyleSheet.create({
         marginTop: 60
     }
 });
-
-const lgList = getLanguageList();
 
 export default function SettingLanguage(props){
     const initCode = useRef(getLanguageCode());
@@ -39,7 +38,7 @@ export default function SettingLanguage(props){
     return (
         <ScrollView style={pgFF}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
-            {lgList.map(vx => (
+            {supportLanguageList.map(vx => (
                 <TouchableHighlight key={vx.code} underlayColor="#f0f0f0" style={pdHX} onPress={() => setLanguage(vx)}>
                     <View style={[fxHC, styles.lgItem]}>
                         <Text style={[fxG1, fs16, vx.code===lgCode&&tcMC]}>{vx.name}</Text>

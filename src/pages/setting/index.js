@@ -28,6 +28,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 20,
         fontSize: 14
+    },
+    switchBox: {
+        height: 20,
     }
 });
 
@@ -40,6 +43,12 @@ const settingList = [
     {
         actionName: "金额设置",
         i18nLabel: "money.header",
+        i18nDesc: "test.debug.available",
+        disabled: runtimeEnvironment.isProduction
+    },
+    {
+        actionName: "货币设置",
+        i18nLabel: "currency.header",
         i18nDesc: "test.debug.available",
         disabled: runtimeEnvironment.isProduction
     },
@@ -85,12 +94,6 @@ const switchList = [
         settingKey: "isEnableSystemNavigation"
     } */
 ];
-
-const switchTrackColor = { 
-    "true": appLightColor, 
-    "false": "#ccc",
-    "thumbColor": "#eee"
-};
 
 export default function SettingIndex(props){
     const i18n = useI18N();
@@ -150,8 +153,9 @@ export default function SettingIndex(props){
                     <View style={[pdVX, fxHC, ix && styles.boxDivider]}>
                         <Text style={[fs16, fxG1]}>{i18n[vx.i18nLabel]}</Text>
                         <Switch 
+                            style={styles.switchBox}
                             value={switchItems[vx.settingKey]} 
-                            thumbColor={switchItems[vx.settingKey] ? appMainColor : switchTrackColor.thumbColor} 
+                            thumbColor={switchItems[vx.settingKey] ? appMainColor :switchTrackColor.thumbColor} 
                             trackColor={switchTrackColor} 
                             onValueChange={onSwitchChange(vx.settingKey)}/>
                     </View>
@@ -163,7 +167,7 @@ export default function SettingIndex(props){
                     <View style={[pdVX, fxHC, ix && styles.boxDivider]}>
                         <Text style={[fs16, fxG1]}>{i18n[vx.i18nLabel]}</Text>
                         <Text style={!vx.i18nDesc && !vx.descText ? dpN : [fs14, tc99]}>{vx.descText || i18n[vx.i18nDesc]}</Text>
-                        <PosPayIcon name="right-arrow" color="#aaa" size={22} />
+                        <PosPayIcon name="right-arrow" color="#aaa" size={20} />
                     </View>
                 </TouchableHighlight>
             ))}

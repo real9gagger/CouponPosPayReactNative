@@ -8,7 +8,7 @@ class TextualButton extends Component {
             return null
         }
         
-        const boxStyle = { fontSize: 16 }
+        const boxStyle = { fontSize: 14 }
         const textStyle = { textAlign: "center" }
         const isStringText = (typeof this.props.children !== "object")
         

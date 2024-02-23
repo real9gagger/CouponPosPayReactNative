@@ -67,30 +67,6 @@ function contentParser(txt){
     return output;
 }
 
-//目前支持的语言列表
-export const supportLanguageList = [
-    {
-        name: "日本語",
-        code: "ja_JP",
-        disabled: true //语言包是否已经翻译好了，true-否，false-是
-    },
-    {
-        name: "简体中文",
-        code: "zh_CN",
-        disabled: false
-    },
-    {
-        name: "正體中文",
-        code: "zh_TW",
-        disabled: true
-    },
-    {
-        name: "English",
-        code: "en_US",
-        disabled: false
-    }
-];
-
 //更改语言设置
 export function changeLanguage(lgcode){
     const lange = { i18n: null, code: lgcode };

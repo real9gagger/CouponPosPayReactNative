@@ -143,6 +143,58 @@ export const qrPayList = [
     }
 ];
 
+//目前支持的语言列表
+export const supportLanguageList = [
+    {
+        name: "日本語",
+        code: "ja_JP",
+        disabled: true //语言包是否已经翻译好了，true-否，false-是
+    },
+    {
+        name: "简体中文",
+        code: "zh_CN",
+        disabled: false
+    },
+    {
+        name: "正體中文",
+        code: "zh_TW",
+        disabled: true
+    },
+    {
+        name: "English",
+        code: "en_US",
+        disabled: false
+    }
+];
+
+//目前支持的交易货币
+export const supportCurrencyList = [
+    {
+        name: "日本円",
+        code: "JPY",
+        symbol: "￥",
+        unit: "円"
+    },
+    {
+        name: "人民币",
+        code: "CNY",
+        symbol: "￥",
+        unit: "元"
+    },
+    {
+        name: "新臺幣",
+        code: "TWD",
+        symbol: "NT$",
+        unit: "圓"
+    },
+    {
+        name: "United States Dollar",
+        code: "USD",
+        symbol: "$",
+        unit: "dollar"
+    }
+];
+
 //获取支付方式信息
 export function getPaymentInfo(pmcode, subcode){
     if(pmcode && (typeof pmcode === "string")){

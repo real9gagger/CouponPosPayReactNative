@@ -2,11 +2,16 @@ import { UPDATE_SETTINGS, UNKNOWN_ACTION } from "./types";
 
 const initialState = {
     languageCode: "", //语言编码，如：zh_CN
+    currencySymbol: "￥", //货币符号，默认日本货币符号
+    currencyCode: "JPY", //货币代号，默认日元代号
+    currencyUnit: "円", //货币单元，默认円（日元）
     isEnableDrawer: true, //启用抽屉栏
     isEnableTabbar: true, //启用底部导航栏
     isEnableHomeHeader: true, //是否显示主页标题栏
     isEnableSystemNavigation: true, //显示系统导航栏
     numbersDecimalOfMoney: 0, //金额保留的小数位数
+    paymentReceiptBottomText: "", //付款单底部自定义文本
+    paymentReceiptPrintShopLogo: true, //款单小票是否打印付店铺LOGO
 };
 
 //单个更新本地设置

@@ -220,6 +220,7 @@ function getDiscountAmount(tl, dc, dt, cd){
 //银行卡
 function tabBankCard(props){
     const i18n = useI18N();
+    const appSettings = useAppSettings();
     const [payAmounts, setPayAmounts] = useState("");
     const [disAmounts, setDisAmounts] = useState(0); //优惠金额
     const [cpInfos, setCpInfos] = useState(null);
@@ -287,10 +288,10 @@ function tabBankCard(props){
         <ScrollView style={fxG1} contentContainerStyle={mhF}>
             <View style={[fxHC, styles.moneyLabel]}>
                 <Text style={[fxG1, fs16]}>{i18n["input.amount"]}</Text>
-                <Text style={tc99}>{i18n["currency.code"]}</Text>
+                <Text style={tc99}>{appSettings.currencyCode}</Text>
             </View>
             <View style={styles.rowBox}>
-                <Text style={[styles.moneyInput, currentInputBox===iNthAmount&&styles.InputActived]} onPress={toggleAmountInput}>{i18n["currency.symbol"]}{payAmounts}</Text>
+                <Text style={[styles.moneyInput, currentInputBox===iNthAmount&&styles.InputActived]} onPress={toggleAmountInput}>{appSettings.currencySymbol}{payAmounts}</Text>
             </View>
             <Pressable style={[fxHC, styles.couponLabel]} android_ripple={tcCC} onPress={scanCouponCode}>
                 <Text style={[fxG1, fs16]}>{i18n["coupon"]}</Text>
@@ -343,6 +344,7 @@ function tabBankCard(props){
 //电子钱包
 function tabEWallet(props){
     const i18n = useI18N();
+    const appSettings = useAppSettings();
     const [payAmounts, setPayAmounts] = useState("");
     const [disAmounts, setDisAmounts] = useState(0); //优惠金额
     const [cpInfos, setCpInfos] = useState(null);
@@ -417,10 +419,10 @@ function tabEWallet(props){
         <ScrollView style={fxG1} contentContainerStyle={mhF}>
             <View style={[fxHC, styles.moneyLabel]}>
                 <Text style={[fxG1, fs16]}>{i18n["input.amount"]}</Text>
-                <Text style={tc99}>{i18n["currency.code"]}</Text>
+                <Text style={tc99}>{appSettings.currencyCode}</Text>
             </View>
             <View style={styles.rowBox}>
-                <Text style={[styles.moneyInput, currentInputBox===iNthAmount&&styles.InputActived]} onPress={toggleAmountInput}>{i18n["currency.symbol"]}{payAmounts}</Text>
+                <Text style={[styles.moneyInput, currentInputBox===iNthAmount&&styles.InputActived]} onPress={toggleAmountInput}>{appSettings.currencySymbol}{payAmounts}</Text>
             </View>
             <Pressable style={[fxHC, styles.couponLabel]} android_ripple={tcCC} onPress={scanCouponCode}>
                 <Text style={[fxG1, fs16]}>{i18n["coupon"]}</Text>
@@ -475,6 +477,7 @@ function tabEWallet(props){
 //二维码
 function tabQRCode(props){
     const i18n = useI18N();
+    const appSettings = useAppSettings();
     const [payAmounts, setPayAmounts] = useState("");
     const [disAmounts, setDisAmounts] = useState(0); //优惠金额
     const [cpInfos, setCpInfos] = useState(null);
@@ -547,10 +550,10 @@ function tabQRCode(props){
         <ScrollView style={fxG1} contentContainerStyle={mhF}>
             <View style={[fxHC, styles.moneyLabel]}>
                 <Text style={[fxG1, fs16]}>{i18n["input.amount"]}</Text>
-                <Text style={tc99}>{i18n["currency.code"]}</Text>
+                <Text style={tc99}>{appSettings.currencyCode}</Text>
             </View>
             <View style={styles.rowBox}>
-                <Text style={[styles.moneyInput, currentInputBox===iNthAmount&&styles.InputActived]} onPress={toggleAmountInput}>{i18n["currency.symbol"]}{payAmounts}</Text>
+                <Text style={[styles.moneyInput, currentInputBox===iNthAmount&&styles.InputActived]} onPress={toggleAmountInput}>{appSettings.currencySymbol}{payAmounts}</Text>
             </View>
             <Pressable style={[fxHC, styles.couponLabel]} android_ripple={tcCC} onPress={scanCouponCode}>
                 <Text style={[fxG1, fs16]}>{i18n["coupon"]}</Text>

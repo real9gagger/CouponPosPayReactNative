@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { ScrollView, View, Image, Text, StyleSheet, Pressable, ActivityIndicator } from "react-native";
-import { useI18N } from "@/store/getter";
+import { useI18N, getAppSettings } from "@/store/getter";
 import { DISCOUNT_TYPE_LJ } from "@/common/Statics";
 import LinearGradient from "react-native-linear-gradient"
 import PayKeyboard from "@/components/PayKeyboard";
@@ -161,7 +161,7 @@ function getCouponInfo(cc, iu) {
                     picurl: LocalPictures.couponDefaultPic,
                     title: "新年大促销",
                     discount: 17,
-                    distype: 1, //1-折扣，2-立减
+                    distype: 2, //1-折扣，2-立减
                     expiration: "2025/02/10 ~ 2025/12/31",
                     condition: 100, //满免条件
                     store: "东京路51号门店",
@@ -177,6 +177,7 @@ function getCouponInfo(cc, iu) {
 
 export default function CouponIndex(props){
     const i18n = useI18N();
+    const appSettings = getAppSettings();
     const pkRef = useRef();
     const [couponCode, setCouponCode] = useState("");
     const [pkVisible, setPkVisible] = useState(true);
@@ -259,7 +260,7 @@ export default function CouponIndex(props){
                         {couponInfo.distype===DISCOUNT_TYPE_LJ ? <>
                             <View style={[fxR, fxJC]}>
                                 <Text style={styles.couponTypeLeft}>{i18n["coupon.type2"]/* 为了使金额保持居中，所有需要这个透明文字 */}</Text>
-                                <Text style={styles.couponDiscount}>{i18n["currency.symbol"]}{couponInfo.discount}</Text>
+                                <Text style={styles.couponDiscount}>{appSettings.currencySymbol}{couponInfo.discount}</Text>
                                 <Text style={styles.couponTypeRight}>{i18n["coupon.type2"]}</Text>
                             </View>
                             <Text style={styles.couponCondition}>{i18n["coupon.reduction"].cloze(couponInfo.condition, couponInfo.discount)}</Text>

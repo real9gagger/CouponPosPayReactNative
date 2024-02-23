@@ -1,6 +1,5 @@
 import { useSelector } from "react-redux";
 import { store } from "./index";
-import { supportLanguageList } from "./localesReducer";
 
 /* ================ 本地语言相关 ================ */
 //只能在函数组件使用
@@ -24,19 +23,9 @@ export function getI18N(key, ...args){
 export function getLanguageCode(){
     return store.getState().localesLanguage.code;
 }
-//获取目前支持的语言列表
-export function getLanguageList(){
-    return supportLanguageList;
-}
 //获取语言名称
 export function getLanguageName(){
-    const lgcode = store.getState().localesLanguage.code;
-    const lgitem = supportLanguageList.find(vx => vx.code === lgcode);
-    if(lgitem){
-        return lgitem.name;
-    } else {
-        return lgcode;
-    }
+    return store.getState().localesLanguage.i18n["app.lgname"];
 }
 
 /* ================ 用户信息相关 ================ */

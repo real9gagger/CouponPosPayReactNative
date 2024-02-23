@@ -10,12 +10,14 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.couponpospayreactnative.MainActivity;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WritableMap;
 import com.panasonic.smartpayment.android.api.FatalException;
 import com.panasonic.smartpayment.android.api.IPaymentApi;
 import com.panasonic.smartpayment.android.api.IPaymentApiListener;
@@ -161,11 +163,11 @@ public class ReceiptsModule extends ReactContextBaseJavaModule {
             }
         }
 
-        //文件不存在，下载网络图片
+        //文件不存在，下载网络图片，此方式会阻塞进程！
         try {
             URL url = new URL(picurl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setConnectTimeout(20000); //连接超时时间 20 秒
+            conn.setConnectTimeout(10000); //连接超时时间 10 秒
             conn.setDoInput(true);
             conn.connect();
 
@@ -177,7 +179,7 @@ public class ReceiptsModule extends ReactContextBaseJavaModule {
 
             Bitmap newbmp = this.toGrayscale(oldbmp); //转成灰色图像
 
-            newbmp.compress(Bitmap.CompressFormat.JPEG, 100, fos); //通过io流的方式来压缩保存图片
+            newbmp.compress(Bitmap.CompressFormat.PNG, 100, fos); //通过io流的方式来压缩保存图片
 
             fos.flush();
             fos.close();
@@ -200,7 +202,7 @@ public class ReceiptsModule extends ReactContextBaseJavaModule {
     private Bitmap toGrayscale(Bitmap bmpOriginal) {
         int oldWidth = bmpOriginal.getWidth();   //获取位图的宽
         int oldHeight = bmpOriginal.getHeight();  //获取位图的高
-        int newWidth = 383;
+        int newWidth = 384;
         int newHeight = 0;
 
         if (oldWidth > newWidth) { //防止图片宽度超过打印纸宽度，导致报错
@@ -226,9 +228,9 @@ public class ReceiptsModule extends ReactContextBaseJavaModule {
                 int red = ((grey & 0x00FF0000) >> 16);
                 int green = ((grey & 0x0000FF00) >> 8);
                 int blue = (grey & 0x000000FF);
-                int rgba = (int) (red * 0.30 + green * 0.59 + blue * 0.11) & 0xFF;
+                int rgba = (int) (red * 0.299 + green * 0.587 + blue * 0.114) & 0xFF;
                 //pixels[nth] = ((rgba << 16) | (rgba << 8) | rgba);
-                pixels[nth] = (rgba >= 0xCC ? 0xFFFFFFFF : 0xFF000000);
+                pixels[nth] = (rgba >= 0xC0 ? 0xFFFFFF : 0x000000);
             }
         }
 
@@ -281,17 +283,48 @@ public class ReceiptsModule extends ReactContextBaseJavaModule {
         }
     }
 
-    //获取待打印的图片路径
+    //2024年2月22日 获取待打印的图片路径
     @ReactMethod
     public void getImagePath(String uri, Promise promise) {
         if (uri != null && !uri.isEmpty()) {
-            File pic = this.downloadImage(uri);
-            if (pic != null) {
-                promise.resolve(pic.getPath());
-                return;
+            //防止下载卡顿，因此开启多线程来下载图片
+            //new Thread(() -> {
+                File pic = downloadImage(uri);
+                if (pic != null) {
+                    promise.resolve(pic.getPath());
+                } else {
+                    promise.resolve(null);
+                }
+            //}).start();
+        } else {
+            promise.resolve(null);
+        }
+    }
+
+    //2024年2月23日 清空缓存图像
+    @ReactMethod
+    public void clearImageCaches(Promise promise) {
+        File dir = new File(APP_FILES_CACHE_DIR);
+        WritableMap obj = Arguments.createMap();
+        int total = 0; //文件总数
+        int deleted = 0; //被删除的文件数量
+
+        if (dir.exists() && dir.isDirectory()) {
+            File[] files = dir.listFiles();
+            if (files != null) {
+                for (File ff : files) {
+                    if (ff.delete()) {
+                        deleted++;
+                    }
+                }
+                total = files.length;
             }
         }
-        promise.resolve(null);
+
+        obj.putInt("total", total);
+        obj.putInt("deleted", deleted);
+
+        promise.resolve(obj);
     }
 
     //2024年2月19日 支付API版本信息

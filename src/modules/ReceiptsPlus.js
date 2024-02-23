@@ -115,7 +115,8 @@ function fitTextLine(txt1, txt2){
     const totalLength = (len1 + len2);
     
     if((totalLength + TEXT_GAPS) <= MAX_LETTER_NUMBER){
-        return (txt1 + SPACES_100.substr(0, MAX_LETTER_NUMBER - totalLength) + txt2);
+        const output = (txt1 + SPACES_100.substr(0, MAX_LETTER_NUMBER - totalLength) + txt2);
+        return (`<line><text scale="1">${output}</text></line>`);
     } else {
         const lim1 = Math.ceil(MAX_LETTER_NUMBER * len1 / totalLength); //按字符数量比例分配宽度（必须是2的倍数）
         const lim2 = (MAX_LETTER_NUMBER - lim1); 
@@ -135,7 +136,7 @@ function fitTextLine(txt1, txt2){
             arr0.push((arr1[ix] || gaps[0]) + (arr2[ix] || gaps[1]));
         }
         
-        return arr0.join("\n");
+        return (`<line><text scale="1">${arr0.join("\n")}</text></line>`);
     }
 }
 
@@ -145,24 +146,56 @@ function getTextCentered(txt, scale){
         return "";
     }
     
-    const maxChars = MAX_LETTER_NUMBER / (scale%2 ? 2 : 1); //根据字体大小设置每行的最大字符数
+    const temp = (scale===3 || scale===4) ? 2 : 1;
+    const maxChars = MAX_LETTER_NUMBER / temp; //根据字体大小设置每行的最大字符数
     const len = getTextSize(txt);
+    const count = (maxChars >= len ? Math.round((maxChars - len) / 2) : -1);
     
-    if(len < maxChars){//左边补空格，让它看起来居中
-        return SPACES_100.substr(0, Math.round((maxChars - len) / 2)) + txt;
-    } else {
-        return textAutoWrap(txt, maxChars, 0, 0).join("\n");
-    }
+    //字符数小数限制的字符数，左边补空格，让它看起来居中
+    const output = (count >= 0 ? (SPACES_100.substr(0, count) + txt) : textAutoWrap(txt, maxChars, 0, 0).join("\n"));
+    
+    return (`<line><text scale="${scale}">${output}</text></line>`);
+}
+
+//获取实线
+function getSolidLine(thickness){
+    return (`<ruledLines><solidLine thickness="${thickness}"><horizontal length="383" horizontalPosition="0" verticalPosition="0"/></solidLine></ruledLines>`);
+}
+
+//获取空行
+function getBlankFeed(){
+    return "<lineFeed num=\"1\" />";
+}
+
+//获取图像
+function getImageXml(src){
+    return RPHelper.getImagePath(src).then(path => {
+        if(path){
+            return (`<image horizontalPosition="1" scale="1" src="${path}" />`);
+        } else {
+            return "";
+        }
+    });
 }
 
 /* ================================ 打印基础函数结束 ================================ */
+
+/*
+    字体的 scale 对应的值：
+    1- 1倍宽高
+    2- 1倍宽度，2倍高度
+    3- 2倍宽度，1倍高度
+    4- 2倍宽高
+    5- 1倍宽度 0.5倍高度
+*/
 
 //打印顾客付款回执小票
 function printPaymentReceipts(orderInfo){
     return new Promise(async function(resolve, reject){
         const i18n = getI18N();
         const CCode = ("\x20" + orderInfo.currencyCode);
-        const imageSL = await RPHelper.getImagePath(orderInfo.shopLogo);
+        
+        const imageSL = await getImageXml(orderInfo.shopLogo);
         const titlePR = getTextCentered(i18n["payment.receipt"], 2);
         const rowOA = fitTextLine(i18n["order.amount"], orderInfo.orderAmount + CCode);
         const rowTX = fitTextLine(i18n["tax"], orderInfo.tax + CCode);
@@ -175,40 +208,47 @@ function printPaymentReceipts(orderInfo){
         const rowTT = fitTextLine(i18n["transaction.time"], orderInfo.transactionTime);
         const rowPT = fitTextLine(i18n["print.time"], orderInfo.printTime);
         const rowOP = fitTextLine(i18n["operator"], orderInfo.operatorName);
+        const rowBT = getTextCentered(orderInfo.bottomText, 5);
+        const solidLine = getSolidLine(2);
+        const blankFeed = getBlankFeed();
         
         const xml = `<?xml version="1.0" encoding="UTF-8" ?><paymentApi id="printer"><page><printElements>
-            <image horizontalPosition="1" scale="1" src="${imageSL}" />
+            ${imageSL}
             <sheet>
-                <line><text scale="2">${titlePR}</text></line>
-                <lineFeed num="1" />
-                <ruledLines><solidLine thickness="2"><horizontal length="383" horizontalPosition="0" verticalPosition="0"/></solidLine></ruledLines>
-                <line><text scale="1">${rowOA}</text></line>
-                <line><text scale="1">${rowTX}</text></line>
-                <line><text scale="1">${rowCD}</text></line>
-                <line><text scale="1">${rowTA}</text></line>
-                <ruledLines><solidLine thickness="2"><horizontal length="383" horizontalPosition="0" verticalPosition="0"/></solidLine></ruledLines>
-                <line><text scale="1">${rowPM}</text></line>
-                <line><text scale="1">${rowPR}</text></line>
-                <line><text scale="1">${rowPE}</text></line>
-                <line><text scale="1">${rowTN}</text></line>
-                <line><text scale="1">${rowTT}</text></line>
-                <ruledLines><solidLine thickness="2"><horizontal length="383" horizontalPosition="0" verticalPosition="0"/></solidLine></ruledLines>
-                <line><text scale="1">${rowPT}</text></line>
-                <line><text scale="1">${rowOP}</text></line>
+                ${titlePR}
+                ${blankFeed}
+                ${solidLine}
+                ${rowOA}${rowTX}${rowCD}${rowTA}
+                ${solidLine}
+                ${rowPM}${rowPR}${rowPE}${rowTN}${rowTT}
+                ${solidLine}
+                ${rowPT}
+                ${rowOP}
+                ${rowBT && (solidLine + blankFeed + rowBT)}
             </sheet>
         </printElements></page></paymentApi>`;
         
         RPHelper.startPrint(xml, function(msg, code){
-            console.log(msg, code, imageSL);
             if(code === 0){
                 resolve();
             } else {
-                reject(msg);
+                try{
+                    const obj = JSON.parse(msg);
+                    reject(obj?.message || msg);
+                } catch(ex){
+                    reject(msg);
+                }
             }
         });
     });
 }
 
+//清理APP打印缓存
+function clearPrintCaches(){
+    return RPHelper.clearImageCaches();
+}
+
 export default {
-    printPaymentReceipts
+    printPaymentReceipts,
+    clearPrintCaches
 }

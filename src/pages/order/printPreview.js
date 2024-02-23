@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ScrollView, View, Text, StatusBar, StyleSheet } from "react-native";
-import { useI18N, getUserInfo } from "@/store/getter";
+import { useI18N, getUserInfo, getAppSettings } from "@/store/getter";
 import { formatDate } from "@/utils/helper";
 import { getPaymentInfo, EMPTY_DEFAULT_TEXT } from "@/common/Statics";
 import ImageX from "@/components/ImageX";
@@ -61,6 +61,11 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: "normal"
     },
+    textValue3: {
+        fontSize: 10,
+        textAlign: "center",
+        paddingTop: 10
+    },
     printBtn: {
         display: "flex",
         flexDirection: "row",
@@ -110,27 +115,29 @@ export default function OrderPrintPreview(props){
     }
     //确认打印小票
     const confirmPrint = () => {
-        ReceiptsPlus.printPaymentReceipts(orderInfo);
+        ReceiptsPlus.printPaymentReceipts(orderInfo).catch($alert);
     }
     
     useEffect(() => {
         const dat = (props.route.params ? {...props.route.params} : {});
         const pmi = getPaymentInfo(dat.paymentType, dat.creditCardBrand || dat.eMoneyType || dat.qrPayType);
         const userInfo = getUserInfo();
+        const appSettings = getAppSettings();
         
         if(dat){
             dat.paymentName = (pmi?.name || dat.paymentType);
             dat.transactionTime = formatDate(dat.transactionTime);
-            dat.currencyCode = (dat.currencyCode || i18n["currency.code"]);
+            dat.currencyCode = (dat.currencyCode || appSettings.currencyCode);
             dat.creditCardMaskedPAN = (dat.creditCardMaskedPAN || dat.eMoneyNumber || EMPTY_DEFAULT_TEXT);
             dat.amount = $tofixed(dat.amount);
             dat.tax = $tofixed(dat.tax);
             dat.printTime = formatDate();
             dat.discountAmount = $tofixed(dat.discountAmount);
             dat.orderAmount = $tofixed(dat.orderAmount);
-            dat.shopLogo = userInfo.posLogo;
+            dat.shopLogo = (appSettings.paymentReceiptPrintShopLogo ? userInfo.posLogo : null);
             dat.payeeName = userInfo.posName;
             dat.operatorName = userInfo.loginAccount;
+            dat.bottomText = appSettings.paymentReceiptBottomText;
             
             setOrderInfo(dat);
         }
@@ -146,7 +153,7 @@ export default function OrderPrintPreview(props){
             contentOffset={contentXY.offsetXY}
             onLayout={onSVLayout} 
             onContentSizeChange={onCSChange}>
-            <ImageX src={orderInfo.shopLogo} style={styles.headPic} />
+            <ImageX visible={!!orderInfo.shopLogo} src={orderInfo.shopLogo} style={styles.headPic} />
             <Text style={styles.textTitle}>{i18n["payment.receipt"]}</Text>
             <View style={styles.hrLine}>{/*水平线*/}</View>
             <View style={styles.rowBox}>
@@ -195,6 +202,10 @@ export default function OrderPrintPreview(props){
                 <Text style={styles.textLabel1}>{i18n["operator"]}</Text>
                 <Text style={styles.textValue1}>{orderInfo.operatorName}</Text>
             </View>
+            {!!orderInfo.bottomText && <>
+                <View style={styles.hrLine}>{/*水平线*/}</View>
+                <Text style={styles.textValue3}>{orderInfo.bottomText}</Text>
+            </>}
         </ScrollView>
         <View style={styles.printBtn}>
             <GradientButton style={fxG1} onPress={resetContentXY} lgColors={!contentXY.scaleXY && OVERVIEW_DEFAULT_LG}>{i18n["overview"]}</GradientButton>

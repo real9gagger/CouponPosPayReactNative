@@ -105,6 +105,7 @@ export default function LoginIndex(props){
         if(username && password){
             onSubmit(true);
         }
+        //(!username && setUsername("商户")); //测试专用！！！
     }, []);
     
     return (<>

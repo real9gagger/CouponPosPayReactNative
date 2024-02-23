@@ -1,11 +1,14 @@
 import IndexIndex from "@/pages/index/index";
 import IndexSplash from "@/pages/index/splash";
+import IndexTextInputer from "@/pages/index/textInputer";
 import IndexTransactionSuccess from "@/pages/index/transactionSuccess";
 import MineAccount from "@/pages/mine/account";
 import MineHelps from "@/pages/mine/helps";
 import SettingIndex from "@/pages/setting/index";
 import SettingLanguage from "@/pages/setting/language";
 import SettingMoney from "@/pages/setting/money";
+import SettingPrint from "@/pages/setting/print";
+import SettingCurrency from "@/pages/setting/currency";
 import LoginIndex from "@/pages/login/index";
 import TestIndex from "@/pages/test/index";
 import TestDevinfo from "@/pages/test/devinfo";
@@ -91,6 +94,18 @@ const PosPayRouterList = [
         options: {...defaultScreenOptions}
     },
     {
+        name: "打印设置",
+        component: SettingPrint,
+        i18nTitle: "print.header",
+        options: {...defaultScreenOptions}
+    },
+    {
+        name: "货币设置",
+        component: SettingCurrency,
+        i18nTitle: "currency.header",
+        options: {...defaultScreenOptions}
+    },
+    {
         name: "设置页",
         component: SettingIndex,
         i18nTitle: "setting",
@@ -133,6 +148,11 @@ const PosPayRouterList = [
     {
         name: "打印预览",
         component: OrderPrintPreview,
+        options: noHeaderOnly
+    },
+    {
+        name: "文本输入器",
+        component: IndexTextInputer,
         options: noHeaderOnly
     },
 ];

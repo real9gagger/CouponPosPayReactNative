@@ -160,7 +160,7 @@ function onScanFinish(dat){
 }
 
 //调用支付功能
-function callPayment(payMoney, disMoney, paymentCode){
+function callPayment(payMoney, disMoney, couponCode, paymentCode){
     if(regZeros.test(payMoney)){
         return !$notify.info(getI18N("input.amount.tip"));
     }
@@ -179,11 +179,11 @@ function callPayment(payMoney, disMoney, paymentCode){
         tax: "0", //税费
         slipNumber: "" //单据号码，取消付款或者退款时用到
     }, function(payRes){
-        console.log("交易成功:::", payRes);
         if(payRes.activityResultCode === 0){//支付成功
             payRes.action = onTransactionSuccess;
             payRes.discountAmount = disMoney; //优惠总金额
             payRes.orderAmount = payMoney; //订单总金额
+            payRes.couponCode = (disMoney && couponCode ? couponCode : ""); //有折扣才有优惠码
             DeviceEventEmitter.emit(eventEmitterName, payRes); //发
         } else if(payRes.activityResultCode === 2){//取消支付
             $toast(getI18N("payment.errmsg2"));
@@ -246,7 +246,7 @@ function tabBankCard(props){
         QRcodeScanner.openScanner(onScanFinish);
     }
     const startPayMoney = () => {
-        callPayment(payAmounts, disAmounts, CREDIT_CARD_PAYMENT_CODE);
+        callPayment(payAmounts, disAmounts, cpInfos?.cpcode, CREDIT_CARD_PAYMENT_CODE);
     }
     
     useEffect(() => {
@@ -377,7 +377,7 @@ function tabEWallet(props){
         QRcodeScanner.openScanner(onScanFinish);
     }
     const startPayMoney = () => {
-        callPayment(payAmounts, disAmounts, eWalletList[paymentIndex].pmcode);
+        callPayment(payAmounts, disAmounts, cpInfos?.cpcode, eWalletList[paymentIndex].pmcode);
     }
     
     useEffect(() => {
@@ -503,7 +503,7 @@ function tabQRCode(props){
         QRcodeScanner.openScanner(onScanFinish);
     }
     const startPayMoney = () => {
-        callPayment(payAmounts, disAmounts, QR_CODE_PAYMENT_CODE);
+        callPayment(payAmounts, disAmounts, cpInfos?.cpcode, QR_CODE_PAYMENT_CODE);
     }
     const gotoSupportPayment = () => {
         DeviceEventEmitter.emit(eventEmitterName, {

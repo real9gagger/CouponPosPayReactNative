@@ -192,6 +192,8 @@ function getImageXml(src){
 //打印顾客付款回执小票
 function printPaymentReceipts(orderInfo){
     return new Promise(async function(resolve, reject){
+        //return RPHelper.openCustomerDisplay(resolve);
+        //return RPHelper.closeCustomerDisplay();
         const i18n = getI18N();
         const CCode = ("\x20" + orderInfo.currencyCode);
         
@@ -202,8 +204,9 @@ function printPaymentReceipts(orderInfo){
         const rowCD = fitTextLine(i18n["coupon.discount"], orderInfo.discountAmount + CCode);
         const rowTA = fitTextLine(i18n["transaction.amount"], orderInfo.amount + CCode);
         const rowPM = fitTextLine(i18n["payment.method"], orderInfo.paymentName);
-        const rowPR = fitTextLine(i18n["payment.payer"], orderInfo.creditCardMaskedPAN);
+        const rowPR = fitTextLine(i18n["payment.payer"], orderInfo.creditCardMaskedPan);
         const rowPE = fitTextLine(i18n["payment.payee"], orderInfo.payeeName);
+        const rowCC = fitTextLine(i18n["coupon.code"], orderInfo.couponCode);
         const rowTN = fitTextLine(i18n["transaction.number"], orderInfo.slipNumber);
         const rowTT = fitTextLine(i18n["transaction.time"], orderInfo.transactionTime);
         const rowPT = fitTextLine(i18n["print.time"], orderInfo.printTime);
@@ -220,7 +223,7 @@ function printPaymentReceipts(orderInfo){
                 ${solidLine}
                 ${rowOA}${rowTX}${rowCD}${rowTA}
                 ${solidLine}
-                ${rowPM}${rowPR}${rowPE}${rowTN}${rowTT}
+                ${rowPM}${rowPR}${rowPE}${rowCC}${rowTN}${rowTT}
                 ${solidLine}
                 ${rowPT}
                 ${rowOP}

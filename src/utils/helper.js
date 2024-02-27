@@ -59,7 +59,7 @@ export function formatDate(dateObj, formatStr) {
     }
 	
 	if(!formatStr){
-		formatStr = "yyyy/MM/dd hh:mm:ss";
+		formatStr = "yyyy-MM-dd hh:mm:ss";
 	}
 	
     const ooo = [

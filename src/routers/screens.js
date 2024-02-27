@@ -16,6 +16,7 @@ import TestAboutSoftware from "@/pages/test/aboutSoftware";
 import TestSupportPayment from "@/pages/test/supportPayment";
 import CouponIndex from "@/pages/coupon/index";
 import OrderPrintPreview from "@/pages/order/printPreview";
+import OrderIndex from "@/pages/order/index";
 
 //非Tabs页面的顶部导航栏全局配置
 const defaultScreenOptions = {
@@ -133,6 +134,12 @@ const PosPayRouterList = [
         name: "支付合作商",
         component: TestSupportPayment,
         i18nTitle: "payment.supports",
+        options: {...defaultScreenOptions}
+    },
+    {
+        name: "订单列表",
+        component: OrderIndex,
+        i18nTitle: "drawer.sale",
         options: {...defaultScreenOptions}
     },
     {

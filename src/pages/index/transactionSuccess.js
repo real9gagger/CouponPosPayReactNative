@@ -54,7 +54,7 @@ export default function IndexTransactionSuccess(props){
             activityResultCode:   0, 
             amount:               108, 
             creditCardBrand:      "01", 
-            creditCardMaskedPAN:  "123456******3456", //信用卡账号，如果是信用卡支付的会有账号
+            creditCardMaskedPan:  "123456******3456", //信用卡账号，如果是信用卡支付的会有账号
             currencyCode:         "JPY", 
             eMoneyNumber:         null, //电子钱包账号，如果是电子钱包支付的会有账号
             eMoneyType:           null, 
@@ -67,7 +67,7 @@ export default function IndexTransactionSuccess(props){
             transactionType:      "1"
         }; */
         
-        if(params){
+        if(params && !transactionResult){//防止重复调用
             const dat = {...params}; //复制一份！！！
             
             dat.paymentInfo = getPaymentInfo(params.paymentType, params.creditCardBrand || params.eMoneyType || params.qrPayType);
@@ -78,8 +78,10 @@ export default function IndexTransactionSuccess(props){
             dat.tax = $tofixed(params.tax);
             dat.discountAmount = $tofixed(params.discountAmount);
             dat.orderAmount = $tofixed(params.orderAmount);
-
+            
             setTransactionResult(dat);
+            console.log(dat);
+            $request("savePosAppOrder", dat); //保存订单信息！
         }
     }, []);
     
@@ -100,11 +102,16 @@ export default function IndexTransactionSuccess(props){
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["coupon.discount"]}</Text>
-                    <Text><Text style={fwB}>-{transactionResult.discountAmount}</Text> {transactionResult.currencyCode}</Text>
+                    <Text style={tcG0}><Text style={fwB}>-{transactionResult.discountAmount}</Text> {transactionResult.currencyCode}</Text>
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["transaction.amount"]}</Text>
                     <Text style={tcR1}><Text style={fwB}>{transactionResult.amount}</Text> {transactionResult.currencyCode}</Text>
+                </View>
+                <View style={styles.itemBox}>
+                    <Text style={fxG1}>{i18n["coupon.code"]}</Text>
+                    <PosPayIcon name="coupon-code" size={14} color="#f90" offset={-5} />
+                    <Text>{transactionResult.couponCode || EMPTY_DEFAULT_TEXT}</Text>
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["payment.method"]}</Text>
@@ -113,7 +120,7 @@ export default function IndexTransactionSuccess(props){
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["payment.payer"]}</Text>
-                    <Text>{transactionResult.creditCardMaskedPAN || transactionResult.eMoneyNumber || EMPTY_DEFAULT_TEXT}</Text>
+                    <Text>{transactionResult.creditCardMaskedPan || transactionResult.eMoneyNumber || EMPTY_DEFAULT_TEXT}</Text>
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["payment.payee"]}</Text>

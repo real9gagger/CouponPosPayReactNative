@@ -128,7 +128,7 @@ export default function OrderPrintPreview(props){
             dat.paymentName = (pmi?.name || dat.paymentType);
             dat.transactionTime = formatDate(dat.transactionTime);
             dat.currencyCode = (dat.currencyCode || appSettings.currencyCode);
-            dat.creditCardMaskedPAN = (dat.creditCardMaskedPAN || dat.eMoneyNumber || EMPTY_DEFAULT_TEXT);
+            dat.creditCardMaskedPan = (dat.creditCardMaskedPan || dat.eMoneyNumber || EMPTY_DEFAULT_TEXT);
             dat.amount = $tofixed(dat.amount);
             dat.tax = $tofixed(dat.tax);
             dat.printTime = formatDate();
@@ -179,11 +179,15 @@ export default function OrderPrintPreview(props){
             </View>
             <View style={styles.rowBox}>
                 <Text style={styles.textLabel1}>{i18n["payment.payer"]}</Text>
-                <Text style={styles.textValue1}>{orderInfo.creditCardMaskedPAN}</Text>
+                <Text style={styles.textValue1}>{orderInfo.creditCardMaskedPan}</Text>
             </View>
             <View style={styles.rowBox}>
                 <Text style={styles.textLabel1}>{i18n["payment.payee"]}</Text>
                 <Text style={styles.textValue1}>{orderInfo.payeeName}</Text>
+            </View>
+            <View style={styles.rowBox}>
+                <Text style={styles.textLabel1}>{i18n["coupon.code"]}</Text>
+                <Text style={styles.textValue1}>{orderInfo.couponCode || EMPTY_DEFAULT_TEXT}</Text>
             </View>
             <View style={styles.rowBox}>
                 <Text style={styles.textLabel1}>{i18n["transaction.number"]}</Text>

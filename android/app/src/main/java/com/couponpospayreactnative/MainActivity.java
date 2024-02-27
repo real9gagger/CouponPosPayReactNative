@@ -118,12 +118,12 @@ public class MainActivity extends ReactActivity {
           args.putString("paymentType", intent.getStringExtra("PaymentType")); //支付类型 01-银联，02-电子钱包，03-扫描支付
           args.putString("slipNumber", intent.getStringExtra("SlipNumber")); //单据号码
           args.putString("transactionType", intent.getStringExtra("TransactionType")); //交易类型 1-付款，2-取消付款，3-退款
-          args.putString("creditCardBrand", intent.getStringExtra("CreditCardBrand"));//信用卡品牌
-          args.putString("creditCardMaskedPAN", intent.getStringExtra("CreditCardMaskedPAN"));//信用卡号
+          args.putString("creditCardBrand", intent.getStringExtra("CreditCardBrand"));//信用卡品牌类型，如 11,12,13...
+          args.putString("creditCardMaskedPan", intent.getStringExtra("CreditCardMaskedPAN"));//信用卡号
           args.putString("currencyCode", intent.getStringExtra("CurrencyCode")); //货币符号（JPY）
           args.putString("eMoneyNumber", intent.getStringExtra("EMoneyNumber"));//电子钱包会员编号
-          args.putString("qrPayType", intent.getStringExtra("QRPayType"));//二维码支付方式，如支付宝、微信
-          args.putString("eMoneyType", intent.getStringExtra("EMoneyType"));//电子钱包类型编号
+          args.putString("qrPayType", intent.getStringExtra("QRPayType"));//二维码支付方式，如支付宝、微信等
+          args.putString("eMoneyType", intent.getStringExtra("EMoneyType"));//电子钱包类型，如 01,02,03...
           args.putDouble("transactionTime", System.currentTimeMillis()); //交易完成时间
           break;
         case Constants.REQUEST_QRCODE_CODE:

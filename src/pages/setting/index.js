@@ -145,7 +145,7 @@ export default function SettingIndex(props){
     }, []);
     
     return (<>
-        <ScrollView style={fxG1} contentContainerStyle={mhF}>
+        <ScrollView style={pgEE} contentContainerStyle={mhF}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
             <View style={styles.blankBox}>{/*==== 占位专用 ====*/}</View>
             {switchList.map((vx, ix) => (

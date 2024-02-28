@@ -146,8 +146,7 @@ export default function OrderPrintPreview(props){
     return (<>
         <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
         <View style={styles.topGap}>{/* 占位用 */}</View>
-        <ScrollView 
-            style={pgEE} 
+        <ScrollView style={pgEE} 
             scrollEnabled={!contentXY.scaleXY} 
             contentContainerStyle={[styles.contentContainer, contentXY.scaleXY]} 
             contentOffset={contentXY.offsetXY}
@@ -175,7 +174,7 @@ export default function OrderPrintPreview(props){
             <View style={styles.hrLine}>{/*水平线*/}</View>
             <View style={styles.rowBox}>
                 <Text style={styles.textLabel1}>{i18n["payment.method"]}</Text>
-                <Text style={styles.textValue1}>{orderInfo.paymentName}</Text>
+                <Text style={styles.textValue1}>{orderInfo.paymentName || EMPTY_DEFAULT_TEXT}</Text>
             </View>
             <View style={styles.rowBox}>
                 <Text style={styles.textLabel1}>{i18n["payment.payer"]}</Text>
@@ -191,7 +190,7 @@ export default function OrderPrintPreview(props){
             </View>
             <View style={styles.rowBox}>
                 <Text style={styles.textLabel1}>{i18n["transaction.number"]}</Text>
-                <Text style={styles.textValue1}>{orderInfo.slipNumber}</Text>
+                <Text style={styles.textValue1}>{orderInfo.slipNumber || EMPTY_DEFAULT_TEXT}</Text>
             </View>
             <View style={styles.rowBox}>
                 <Text style={styles.textLabel1}>{i18n["transaction.time"]}</Text>

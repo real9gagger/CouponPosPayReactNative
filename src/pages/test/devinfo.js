@@ -67,11 +67,11 @@ export default function TestDevinfo(props){
     }, []);
     
     return (
-        <ScrollView style={fxG1} contentContainerStyle={pdX}>
+        <ScrollView style={pgEE} contentContainerStyle={pdX}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
             <View style={[pdHX, brX, bgFF]}>
-                {infoList.map(vx => (
-                    <View key={vx.itemKey} style={[fxHC, styles.infoBox]}>
+                {infoList.map((vx, ix) => (
+                    <View key={vx.itemKey} style={[fxHC, ix ? styles.infoBox : pdVX]}>
                         <Text style={[fxG1, fs14]}>{vx.itemKey}</Text>
                         <Text style={fs14}>{vx.itemValue}</Text>
                     </View>

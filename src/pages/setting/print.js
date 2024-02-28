@@ -39,6 +39,9 @@ export default function SettingPrint(props){
             onGoBack: onBotTextChange
         });
     };
+    const printPV = () => {
+        props.navigation.navigate("打印预览");
+    };
     
     return (
         <ScrollView style={pgEE} keyboardShouldPersistTaps="handled">
@@ -59,6 +62,11 @@ export default function SettingPrint(props){
                     trackColor={switchTrackColor} 
                     onValueChange={onPSLChange} />
             </View>
+            <View style={[pdHX, bgFF]}><View style={styles.boxDivider}>{/*==== 分割线 ====*/}</View></View>
+            <Pressable style={styles.itemBox} android_ripple={tcBB} onPress={printPV}>
+                <Text style={[fs16, fxG1]}>{i18n["preview"]}</Text>
+                <PosPayIcon name="right-arrow" color="#aaa" size={20} />
+            </Pressable>
         </ScrollView>
     );
 }

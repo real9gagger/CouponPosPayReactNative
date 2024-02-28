@@ -17,10 +17,11 @@ const styles = StyleSheet.create({
         zIndex: 2
     },
     nodataBox: {
-        lineHeight: 150,
+        lineHeight: 125,
         fontSize: 18,
         color: "#000",
-        fontWeight: "bold"
+        fontWeight: "bold",
+        opacity: 0
     }
 });
 
@@ -40,7 +41,7 @@ export default function MineHelps(props){
     }
     
     return (
-        <ScrollView contentContainerStyle={[fxC, fxAC, mhF]}>
+        <ScrollView style={pgEE} contentContainerStyle={[fxC, fxAC, mhF]}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
             <Text style={styles.nodataBox}>{i18n["nodata"]}</Text>
             <View style={styles.qrBox}>

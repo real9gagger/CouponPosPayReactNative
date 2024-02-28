@@ -38,7 +38,7 @@ export default function SettingMoney(props){
                 autoFocus={true}
             />
             <Text style={[fs14, taR]}>{i18n["money.last.tip"]}<Text style={[fwB, tcMC]}>{lastDec.current}</Text></Text>
-            <GradientButton onPress={onConfirm} style={{marginTop: 50, marginBottom: 10}}>{i18n["btn.confirm"]}</GradientButton>
+            <GradientButton onPress={onConfirm} style={{marginTop: 50, marginBottom: 15}}>{i18n["btn.confirm"]}</GradientButton>
             <Text style={[fs14, taC, tcR1]}>{i18n["setting.restart.tip"]}</Text>
         </ScrollView>
     )

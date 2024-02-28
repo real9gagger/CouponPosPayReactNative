@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: StyleSheet.hairlineWidth,
         paddingVertical: 15
     },
-    paymentLogo: {
+    pmLogo: {
         width: 16,
         height: 16,
         marginRight: 18,
@@ -72,6 +72,7 @@ export default function IndexTransactionSuccess(props){
             
             dat.paymentInfo = getPaymentInfo(params.paymentType, params.creditCardBrand || params.eMoneyType || params.qrPayType);
             dat.payeeName = getUserInfo("posName");
+            dat.createBy = getUserInfo("loginAccount");
             dat.transactionTime = formatDate(params.transactionTime);
             dat.currencyCode = (params.currencyCode || getAppSettings("currencyCode"));
             dat.amount = $tofixed(params.amount);
@@ -80,8 +81,9 @@ export default function IndexTransactionSuccess(props){
             dat.orderAmount = $tofixed(params.orderAmount);
             
             setTransactionResult(dat);
-            console.log(dat);
-            $request("savePosAppOrder", dat); //保存订单信息！
+            
+            //保存订单信息！
+            $request("savePosAppOrder", dat);
         }
     }, []);
     
@@ -102,7 +104,7 @@ export default function IndexTransactionSuccess(props){
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["coupon.discount"]}</Text>
-                    <Text style={tcG0}><Text style={fwB}>-{transactionResult.discountAmount}</Text> {transactionResult.currencyCode}</Text>
+                    <Text><Text style={fwB}>-{transactionResult.discountAmount}</Text> {transactionResult.currencyCode}</Text>
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["transaction.amount"]}</Text>
@@ -115,7 +117,7 @@ export default function IndexTransactionSuccess(props){
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["payment.method"]}</Text>
-                    <Image style={styles.paymentLogo} source={transactionResult.paymentInfo ? LocalPictures[transactionResult.paymentInfo.logo] : LocalPictures.unknownPayment} />
+                    <Image style={styles.pmLogo} source={transactionResult.paymentInfo ? LocalPictures[transactionResult.paymentInfo.logo] : LocalPictures.unknownPayment} />
                     <Text>{transactionResult.paymentInfo ? transactionResult.paymentInfo.name : transactionResult.paymentType}</Text>
                 </View>
                 <View style={styles.itemBox}>
@@ -141,7 +143,7 @@ export default function IndexTransactionSuccess(props){
                     <PosPayIcon name="printer-stroke" color={appDarkColor} size={12} offset={3} />
                 </TouchableOpacity>
                 <TouchableOpacity activeOpacity={0.5} style={[pdVX, fxHC]}>
-                    <Text style={[fs14, tcMC]}>{i18n["transaction.detail"]}</Text>
+                    <Text style={[fs14, tcMC]}>{i18n["transaction.details"]}</Text>
                     <PosPayIcon name="right-arrow-double" color={appDarkColor} size={12} offset={3} />
                 </TouchableOpacity>
             </View>

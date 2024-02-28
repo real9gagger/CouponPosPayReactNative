@@ -1,3 +1,4 @@
+import { StyleSheet } from "react-native";
 import IndexIndex from "@/pages/index/index";
 import IndexSplash from "@/pages/index/splash";
 import IndexTextInputer from "@/pages/index/textInputer";
@@ -17,6 +18,7 @@ import TestSupportPayment from "@/pages/test/supportPayment";
 import CouponIndex from "@/pages/coupon/index";
 import OrderPrintPreview from "@/pages/order/printPreview";
 import OrderIndex from "@/pages/order/index";
+import OrderDetails from "@/pages/order/details";
 
 //非Tabs页面的顶部导航栏全局配置
 const defaultScreenOptions = {
@@ -25,7 +27,11 @@ const defaultScreenOptions = {
         // 背景颜色
         backgroundColor: "#fff",
         // 去掉标题栏底部阴影效果
-        elevation: 0
+        elevation: 0,
+        //底部边框宽度
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        //底部边框颜色
+        borderBottomColor: "#eee"
     },
     headerTitleStyle: {
         //标题字体大小
@@ -140,6 +146,12 @@ const PosPayRouterList = [
         name: "订单列表",
         component: OrderIndex,
         i18nTitle: "drawer.sale",
+        options: {...defaultScreenOptions}
+    },
+    {
+        name: "订单详情",
+        component: OrderDetails,
+        i18nTitle: "order.details",
         options: {...defaultScreenOptions}
     },
     {

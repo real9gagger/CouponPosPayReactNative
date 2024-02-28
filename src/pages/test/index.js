@@ -40,7 +40,7 @@ export default function TestIndex(props){
     }
     
     return (
-        <ScrollView style={pdX}>
+        <ScrollView style={pgEE} contentContainerStyle={pdX}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
             <View><Text style={[fs20, taC, tcMC]}>请把要测试的功能放在这里</Text></View>
             <View style={styles.btnBox}><Button title="测试发送短信验证码" onPress={sendMsgCode} /></View>

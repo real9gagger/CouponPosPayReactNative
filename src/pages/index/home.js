@@ -188,7 +188,7 @@ function callPayment(payMoney, disMoney, couponCode, paymentCode){
         } else if(payRes.activityResultCode === 2){//取消支付
             $toast(getI18N("payment.errmsg2"));
         } else {//支付失败
-            $alert(getI18N("payment.errmsg3", payRes.errorCode || "E0000"))
+            $alert(getI18N("payment.errmsg3", payRes.errorCode));
         }
     });
 }

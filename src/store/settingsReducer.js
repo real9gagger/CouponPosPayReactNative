@@ -1,6 +1,7 @@
 import { UPDATE_SETTINGS, UNKNOWN_ACTION } from "./types";
 
 const initialState = {
+    generalTaxRate: 0, //通用税率（%）
     languageCode: "", //语言编码，如：zh_CN
     currencySymbol: "￥", //货币符号，默认日本货币符号
     currencyCode: "JPY", //货币代号，默认日元代号
@@ -12,6 +13,7 @@ const initialState = {
     numbersDecimalOfMoney: 0, //金额保留的小数位数
     paymentReceiptBottomText: "", //付款单底部自定义文本
     paymentReceiptPrintShopLogo: true, //款单小票是否打印付店铺LOGO
+    customerDisplayShowPayAmountInfo: true, //结账时副屏显示付款金额
 };
 
 //单个更新本地设置

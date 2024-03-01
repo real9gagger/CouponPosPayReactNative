@@ -1,30 +1,32 @@
-import { useRef, useState } from "react";
-import { ScrollView, TextInput, Text, StatusBar, Keyboard, StyleSheet } from "react-native";
+import { useEffect, useState } from "react";
+import { ScrollView, TextInput, Text, StatusBar, StyleSheet } from "react-native";
 import { dispatchUpdateAppSettings } from "@/store/setter";
 import { useI18N, getNumbersDecimalOfMoney } from "@/store/getter";
-import GradientButton from "@/components/GradientButton";
 
+const NUM99 = "99.9999999999";
 const styles = StyleSheet.create({
     inputBox: {
         borderBottomColor: appMainColor,
         borderBottomWidth: 1,
-        marginBottom: 5,
+        marginBottom: 2.5,
         fontSize: 24,
-        fontWeight: "bold"
+        fontWeight: "bold",
+        textAlign: "right"
     }
 });
 
-
 export default function SettingMoney(props){
     const i18n = useI18N();
-    const lastDec = useRef(getNumbersDecimalOfMoney().toString());
-    const [decNum, setDecNum] = useState(lastDec.current);
+    const [decNum, setDecNum] = useState("0");
     
     const onConfirm = () => {
-        Keyboard.dismiss();
-        dispatchUpdateAppSettings("numbersDecimalOfMoney", +decNum || 0);
+        dispatchUpdateAppSettings("numbersDecimalOfMoney", Math.floor(+decNum || 0));
         props.navigation.goBack();
     }
+    
+    useEffect(() => {
+        setDecNum(getNumbersDecimalOfMoney().toString());
+    }, []);
     
     return (
         <ScrollView style={pgEE} contentContainerStyle={pdX} keyboardShouldPersistTaps="handled">
@@ -34,12 +36,13 @@ export default function SettingMoney(props){
                 style={styles.inputBox}
                 defaultValue={decNum}
                 onChangeText={setDecNum}
+                onSubmitEditing={onConfirm}
                 keyboardType="number-pad"
+                maxLength={1}
                 autoFocus={true}
             />
-            <Text style={[fs14, taR]}>{i18n["money.last.tip"]}<Text style={[fwB, tcMC]}>{lastDec.current}</Text></Text>
-            <GradientButton onPress={onConfirm} style={{marginTop: 50, marginBottom: 15}}>{i18n["btn.confirm"]}</GradientButton>
-            <Text style={[fs14, taC, tcR1]}>{i18n["setting.restart.tip"]}</Text>
+            <Text style={[fs10, taR, tc99]}>{i18n["preview"]}: {NUM99.substr(0, +decNum ? 3 : 2)}{NUM99.substr(3, +decNum)}</Text>
+            <Text style={[fs14, taC, tcR1, pdVX]}>{i18n["setting.restart.tip"]}</Text>
         </ScrollView>
     )
 }

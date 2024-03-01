@@ -74,7 +74,7 @@ const actionList2 = [
     {
         i18nName: "customer.display",
         iconName: "customer-display",
-        pageName: "",
+        pageName: "顾客屏幕",
     },
     {
         i18nName: "setting",

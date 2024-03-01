@@ -45,7 +45,9 @@ export function getUserInfo(key){
         return store.getState().userInfo;
     }
 }
-
+export function getUserPosName(){
+    return store.getState().userInfo.posName;
+}
 /* ================ APP设置相关 ================ */
 //使用APP设置，函数组件中使用
 export function useAppSettings(){
@@ -60,4 +62,7 @@ export function getAppSettings(key){
 }
 export function getNumbersDecimalOfMoney(key){
     return (store.getState().appSettings.numbersDecimalOfMoney || 0);
+}
+export function getGeneralTaxRate(){
+    return (+store.getState().appSettings.generalTaxRate || 0);
 }

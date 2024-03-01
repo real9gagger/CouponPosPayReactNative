@@ -301,7 +301,7 @@ const IconCheckFill = (props) => {
         </Svg>
     )
 }
-//顾客屏幕
+//顾客屏幕图标
 const IconCustomerDisplay = (props) => {
     return (
         <Svg {...props}>

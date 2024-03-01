@@ -38,7 +38,8 @@ const styles = StyleSheet.create({
     },
     tabbarLabel0: {
         fontSize: 10,
-        marginTop: 0
+        marginTop: 0,
+        color: "#666"
     },
     tabbarLabel1: {
         fontSize: 10,

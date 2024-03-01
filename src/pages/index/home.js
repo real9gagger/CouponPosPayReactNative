@@ -121,18 +121,17 @@ const styles = StyleSheet.create({
         zIndex: 1
     },
     paymentScaning: {
-        padding: 15,
-        marginTop: 15
-    },
-    paymentQrcode: {
+        marginTop: 25,
         width: 60,
         height: 60
     },
-    paymentSupports: {
-        paddingVertical: 15,
-        color: "#666",
-        fontSize: 12,
-        paddingRight: 5
+    paymentDetails: {
+        paddingVertical: 10, 
+        paddingHorizontal: 15,
+        backgroundColor: "#eee", 
+        marginHorizontal: 15, 
+        marginBottom: -5, 
+        borderRadius: 10
     }
 });
 const renderScene = SceneMap({ tabBankCard, tabEWallet, tabQRCode });
@@ -146,7 +145,6 @@ const regZeros = /^0*$/;
 const iNthNone = 0;
 const iNthAmount = 1;
 const iNthCoupon = 2;
-
 
 //扫描二维码结束后调用
 function onScanFinish(dat){
@@ -204,8 +202,8 @@ function togglePKHidden(evt){
     }
 }
 
-//获取折扣了多少钱，返回的是【正数】
-function getDiscountAmount(tl, dc, dt, cd){
+//计算折扣了多少钱，返回的是【正数】
+function calcDiscountAmount(tl, dc, dt, cd){
     if(tl < cd){//不满足消费条件
         return 0;
     }
@@ -217,12 +215,22 @@ function getDiscountAmount(tl, dc, dt, cd){
     }
 }
 
+//计算税费
+function calcTaxAmount(tl, dc, rt){
+    if(!tl || !rt){
+        return 0;
+    }
+    
+    return $mathround((tl - dc) * (rt / 100)); //先减去优惠金额在计算
+}
+
 //银行卡
 function tabBankCard(props){
     const i18n = useI18N();
     const appSettings = useAppSettings();
     const [payAmounts, setPayAmounts] = useState("");
     const [disAmounts, setDisAmounts] = useState(0); //优惠金额
+    const [taxAmounts, setTaxAmounts] = useState(0); //税费总额
     const [cpInfos, setCpInfos] = useState(null);
     const [currentInputBox, setCurrentInputBox] = useState(0);
     
@@ -276,11 +284,9 @@ function tabBankCard(props){
     }, []);
     
     useEffect(() => {
-        if(cpInfos){
-            setDisAmounts(getDiscountAmount(payAmounts, cpInfos.discount, cpInfos.distype, cpInfos.condition));
-        } else {
-            setDisAmounts(0);
-        }
+        const beAGoodMan = (cpInfos ? calcDiscountAmount(payAmounts, cpInfos.discount, cpInfos.distype, cpInfos.condition) : 0);
+        setDisAmounts(beAGoodMan);
+        setTaxAmounts(calcTaxAmount(payAmounts, beAGoodMan, appSettings.generalTaxRate));
     }, [payAmounts, cpInfos]);
     
     //银行卡支付界面
@@ -320,22 +326,26 @@ function tabBankCard(props){
                 </TouchableOpacity>
             </View>
             <Text style={fxG1} onPress={togglePKHidden}>{/* 点我关闭键盘 */}</Text>
+            {!!payAmounts && <View style={styles.paymentDetails}>
+                <View style={fxHC}>
+                    <Text style={[fs12, fxG1]}>{i18n["input.amount"]}</Text>
+                    <Text style={[fs12, fwB]}>{$tofixed(payAmounts)}</Text>
+                </View>
+                <View style={fxHC}>
+                    <Text style={[fs12, fxG1]}>{i18n["tax"]}</Text>
+                    <Text style={[fs12, fwB]}>{$tofixed(taxAmounts)}</Text>
+                </View>
+                <View style={fxHC}>
+                    <Text style={[fs12, fxG1]}>{i18n["coupon.discount"]}</Text>
+                    <Text style={[fs12, fwB, tcG0]}>-{$tofixed(disAmounts)}</Text>
+                </View>
+                <View style={fxHC}>
+                    <Text style={[fs12, fxG1]}>{i18n["final.amount"]}</Text>
+                    <Text style={[fs12, fwB, tcR1]}>{$tofixed(payAmounts - disAmounts)}</Text>
+                </View>
+            </View>}
             <View style={pdX}>
-                {!!payAmounts && <>
-                    <View style={fxHC}>
-                        <Text style={[fs16, fxG1]}>{i18n["input.amount"]}</Text>
-                        <Text style={[fwB, fs16, tcMC]}>{$tofixed(payAmounts)}</Text>
-                    </View>
-                    <View style={fxHC}>
-                        <Text style={[fs16, fxG1]}>{i18n["coupon.discount"]}</Text>
-                        <Text style={[fwB, fs16, tcG0]}>-{$tofixed(disAmounts)}</Text>
-                    </View>
-                    <View style={fxHC}>
-                        <Text style={[fs16, fxG1]}>{i18n["final.amount"]}</Text>
-                        <Text style={[fwB, fs16, tcR1]}>{$tofixed(payAmounts - disAmounts)}</Text>
-                    </View>
-                </>}
-                <GradientButton onPress={startPayMoney} style={mgTX}>{i18n["btn.collect"]}</GradientButton>
+                <GradientButton onPress={startPayMoney}>{i18n["btn.collect"]}</GradientButton>
             </View>
         </ScrollView>
     );
@@ -408,7 +418,7 @@ function tabEWallet(props){
     
     useEffect(() => {
         if(cpInfos){
-            setDisAmounts(getDiscountAmount(payAmounts, cpInfos.discount, cpInfos.distype, cpInfos.condition));
+            setDisAmounts(calcDiscountAmount(payAmounts, cpInfos.discount, cpInfos.distype, cpInfos.condition));
         } else {
             setDisAmounts(0);
         }
@@ -453,22 +463,26 @@ function tabEWallet(props){
                 ))}
             </View>
             <Text style={fxG1} onPress={togglePKHidden}>{/* 点我关闭键盘 */}</Text>
+            {!!payAmounts && <View style={styles.paymentDetails}>
+                <View style={fxHC}>
+                    <Text style={[fs12, fxG1]}>{i18n["input.amount"]}</Text>
+                    <Text style={[fs12, fwB]}>{$tofixed(payAmounts)}</Text>
+                </View>
+                <View style={fxHC}>
+                    <Text style={[fs12, fxG1]}>{i18n["tax"]}</Text>
+                    <Text style={[fs12, fwB]}>{$tofixed(0)}</Text>
+                </View>
+                <View style={fxHC}>
+                    <Text style={[fs12, fxG1]}>{i18n["coupon.discount"]}</Text>
+                    <Text style={[fs12, fwB, tcG0]}>-{$tofixed(disAmounts)}</Text>
+                </View>
+                <View style={fxHC}>
+                    <Text style={[fs12, fxG1]}>{i18n["final.amount"]}</Text>
+                    <Text style={[fs12, fwB, tcR1]}>{$tofixed(payAmounts - disAmounts)}</Text>
+                </View>
+            </View>}
             <View style={pdX}>
-                {!!payAmounts && <>
-                    <View style={fxHC}>
-                        <Text style={[fs16, fxG1]}>{i18n["input.amount"]}</Text>
-                        <Text style={[fwB, fs16, tcMC]}>{$tofixed(payAmounts)}</Text>
-                    </View>
-                    <View style={fxHC}>
-                        <Text style={[fs16, fxG1]}>{i18n["coupon.discount"]}</Text>
-                        <Text style={[fwB, fs16, tcG0]}>-{$tofixed(disAmounts)}</Text>
-                    </View>
-                    <View style={fxHC}>
-                        <Text style={[fs16, fxG1]}>{i18n["final.amount"]}</Text>
-                        <Text style={[fwB, fs16, tcR1]}>{$tofixed(payAmounts - disAmounts)}</Text>
-                    </View>
-                </>}
-                <GradientButton onPress={startPayMoney} style={mgTX}>{i18n["btn.collect"]}</GradientButton>
+                <GradientButton onPress={startPayMoney}>{i18n["btn.collect"]}</GradientButton>
             </View>
         </ScrollView>
     );
@@ -539,7 +553,7 @@ function tabQRCode(props){
     
     useEffect(() => {
         if(cpInfos){
-            setDisAmounts(getDiscountAmount(payAmounts, cpInfos.discount, cpInfos.distype, cpInfos.condition));
+            setDisAmounts(calcDiscountAmount(payAmounts, cpInfos.discount, cpInfos.distype, cpInfos.condition));
         } else {
             setDisAmounts(0);
         }
@@ -573,31 +587,33 @@ function tabQRCode(props){
             </View>
             <View style={[fxHC, styles.rowBox]}>
                 <Text style={[fxG1, styles.paymentLabel]}>{i18n["payment.method"]}</Text>
-                <Text style={[styles.paymentLabel, tcCC]}>{i18n["qrcode.scan.tip"]}</Text>
+                <Text style={[styles.paymentLabel, tc99]} onPress={gotoSupportPayment}>{i18n["payment.supports"]}</Text>
+                <PosPayIcon name="right-arrow-double" style={{marginTop: 10}} color="#999" size={14} offset={2} />
             </View>
-            <TouchableOpacity style={[fxVM, styles.paymentScaning]} activeOpacity={0.5} onPress={startPayMoney}>
-                <Image style={styles.paymentQrcode} source={LocalPictures.scanQRcode} />
-                <Text style={[tcMC, taC, mgTX]}>{i18n["qrcode.collect"]}</Text>
-            </TouchableOpacity>
-            {!!payAmounts && <View style={pdX}>
+            <View style={fxVM}>
+                <ImageButton style={styles.paymentScaning} source={LocalPictures.scanQRcode} onPress={startPayMoney} />
+                <Text style={[tcMC, mgTX]}>{i18n["qrcode.collect"]}</Text>
+            </View>
+            <View style={fxG1}>{/* 占位专用 */}</View>
+            {!!payAmounts && <View style={styles.paymentDetails}>
                 <View style={fxHC}>
-                    <Text style={[fs16, fxG1]}>{i18n["input.amount"]}</Text>
-                    <Text style={[fwB, fs16, tcMC]}>{$tofixed(payAmounts)}</Text>
+                    <Text style={[fs12, fxG1]}>{i18n["input.amount"]}</Text>
+                    <Text style={[fs12, fwB]}>{$tofixed(payAmounts)}</Text>
                 </View>
                 <View style={fxHC}>
-                    <Text style={[fs16, fxG1]}>{i18n["coupon.discount"]}</Text>
-                    <Text style={[fwB, fs16, tcG0]}>-{$tofixed(disAmounts)}</Text>
+                    <Text style={[fs12, fxG1]}>{i18n["tax"]}</Text>
+                    <Text style={[fs12, fwB]}>{$tofixed(0)}</Text>
                 </View>
                 <View style={fxHC}>
-                    <Text style={[fs16, fxG1]}>{i18n["final.amount"]}</Text>
-                    <Text style={[fwB, fs16, tcR1]}>{$tofixed(payAmounts - disAmounts)}</Text>
+                    <Text style={[fs12, fxG1]}>{i18n["coupon.discount"]}</Text>
+                    <Text style={[fs12, fwB, tcG0]}>-{$tofixed(disAmounts)}</Text>
+                </View>
+                <View style={fxHC}>
+                    <Text style={[fs12, fxG1]}>{i18n["final.amount"]}</Text>
+                    <Text style={[fs12, fwB, tcR1]}>{$tofixed(payAmounts - disAmounts)}</Text>
                 </View>
             </View>}
-            <View style={fxG1}>{/* 占位专用 */}</View>
-            <TouchableOpacity style={fxHM} activeOpacity={0.5} onPress={gotoSupportPayment}>
-                <Text style={styles.paymentSupports}>{i18n["payment.supports"]}</Text>
-                <PosPayIcon name="right-arrow-double" color={styles.paymentSupports.color} size={12} />
-            </TouchableOpacity>
+            <View style={{height: 20}}>{/* 占位用 */}</View>
         </ScrollView>
     );
 }

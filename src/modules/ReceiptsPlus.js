@@ -238,8 +238,7 @@ function printPaymentReceipts(orderInfo){
                 resolve();
             } else {
                 try{
-                    const obj = JSON.parse(msg);
-                    reject(obj?.message || msg);
+                    reject(JSON.parse(msg).message || msg);
                 } catch(ex){
                     reject(msg);
                 }

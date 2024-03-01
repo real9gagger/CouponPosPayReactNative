@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { TouchableHighlight, ScrollView, View, Text, Switch, StatusBar, StyleSheet } from "react-native";
-import { useI18N, getAppSettings } from "@/store/getter";
+import { useI18N, useAppSettings } from "@/store/getter";
 import { dispatchUpdateAppSettings } from "@/store/setter";
 import PosPayIcon from "@/components/PosPayIcon";
 import GradientButton from "@/components/GradientButton";
@@ -38,42 +38,45 @@ const settingList = [
     {
         actionName: "语言设置",
         i18nLabel: "language.header",
-        i18nDesc: "app.lgname" //描述性文本，需要翻译
+        disabled: false
+    },
+    {
+        actionName: "税率设置",
+        i18nLabel: "tax.rate",
+        disabled: runtimeEnvironment.isProduction
     },
     {
         actionName: "金额设置",
         i18nLabel: "money.header",
-        i18nDesc: "test.debug.available",
         disabled: runtimeEnvironment.isProduction
     },
     {
         actionName: "货币设置",
         i18nLabel: "currency.header",
-        i18nDesc: "test.debug.available",
         disabled: runtimeEnvironment.isProduction
-    },
+    }
+];
+
+const infoList = [
     {
         actionName: "测试中心",
         i18nLabel: "test.centre",
-        i18nDesc: "test.debug.available",
+        descText: "test.debug.available",
         disabled: runtimeEnvironment.isProduction
     },
     {
         actionName: "设备信息",
-        i18nLabel: "test.devinfo",
-        i18nDesc: ""
+        i18nLabel: "test.devinfo"
     },
     {
         actionName: "支付合作商",
-        i18nLabel: "payment.supports",
-        i18nDesc: ""
+        i18nLabel: "payment.supports"
     },
     {
         actionName: "关于软件",
         i18nLabel: "about.software",
-        i18nDesc: "",
         descText: AppPackageInfo.getFullVersion() //描述性文本，不需要翻译
-    },
+    }
 ];
 
 const switchList = [
@@ -97,11 +100,13 @@ const switchList = [
 
 export default function SettingIndex(props){
     const i18n = useI18N();
-    const appSettings = getAppSettings();
+    const appSettings = useAppSettings();
     const [switchItems, setSwitchItems] = useState({});
     
     const onItemPress = (actionName) => {
-        props.navigation.navigate(actionName);
+        return function(){
+            props.navigation.navigate(actionName);
+        };
     }
     
     const onSwitchChange = (settingKey) => {
@@ -136,14 +141,22 @@ export default function SettingIndex(props){
     
     useEffect(() => {
         const myItems = { isSomeItemHasBeenChanged: false }; //是否至少有一项被修改过了
-        
         for(const vx of switchList){
             myItems[vx.settingKey] = !!appSettings[vx.settingKey];
         }
-
         setSwitchItems(myItems);
     }, []);
     
+    //更新一些信息！
+    for(const vxo of settingList){
+        switch(vxo.actionName){
+            case "语言设置": vxo.descText = i18n["app.lgname"]; break;
+            case "税率设置": vxo.descText = appSettings.generalTaxRate + "%"; break;
+            case "金额设置": vxo.descText = appSettings.numbersDecimalOfMoney.toString(); break;
+            case "货币设置": vxo.descText = appSettings.currencyCode; break;
+        }
+    }
+
     return (<>
         <ScrollView style={pgEE} contentContainerStyle={mhF}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
@@ -163,10 +176,20 @@ export default function SettingIndex(props){
             ))}
             <View style={styles.blankBox}>{/*==== 占位专用 ====*/}</View>
             {settingList.map((vx, ix) => (
-                <TouchableHighlight key={vx.actionName} style={vx.disabled ? dpN : [pdHX, bgFF]} underlayColor="#eee" onPress={() => onItemPress(vx.actionName)}>
+                <TouchableHighlight key={vx.actionName} style={vx.disabled ? dpN : [pdHX, bgFF]} underlayColor="#eee" onPress={onItemPress(vx.actionName)}>
                     <View style={[pdVX, fxHC, ix && styles.boxDivider]}>
                         <Text style={[fs16, fxG1]}>{i18n[vx.i18nLabel]}</Text>
-                        <Text style={!vx.i18nDesc && !vx.descText ? dpN : [fs14, tc99]}>{vx.descText || i18n[vx.i18nDesc]}</Text>
+                        <Text style={!vx.descText ? dpN : [fs14, tc99]}>{vx.descText}</Text>
+                        <PosPayIcon name="right-arrow" color="#aaa" size={20} />
+                    </View>
+                </TouchableHighlight>
+            ))}
+            <View style={styles.blankBox}>{/*==== 占位专用 ====*/}</View>
+            {infoList.map((vx, ix) => (
+                <TouchableHighlight key={vx.actionName} style={vx.disabled ? dpN : [pdHX, bgFF]} underlayColor="#eee" onPress={onItemPress(vx.actionName)}>
+                    <View style={[pdVX, fxHC, ix && styles.boxDivider]}>
+                        <Text style={[fs16, fxG1]}>{i18n[vx.i18nLabel]}</Text>
+                        <Text style={!vx.descText ? dpN : [fs14, tc99]}>{i18n[vx.descText] || vx.descText}</Text>
                         <PosPayIcon name="right-arrow" color="#aaa" size={20} />
                     </View>
                 </TouchableHighlight>

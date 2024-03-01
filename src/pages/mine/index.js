@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ScrollView, View, StatusBar, Text, Image, StyleSheet, Pressable, TouchableOpacity, DevSettings } from "react-native";
 import { useI18N, useUserInfo } from "@/store/getter";
 import LocalPictures from "@/common/Pictures";
@@ -96,7 +96,7 @@ const actionList2 = [
 export default function MineIndex(props){
     const i18n = useI18N();
     const userInfo = useUserInfo();
-    const [userAvatar, setUserAvatar] = useState(userInfo.posLogo ? { uri: userInfo.posLogo } : LocalPictures.defaultUserAvatar);
+    const [userAvatar, setUserAvatar] = useState(LocalPictures.defaultUserAvatar);
     
     const restartApp = () => {
         DevSettings.reload();
@@ -114,6 +114,12 @@ export default function MineIndex(props){
             $toast(i18n["unimplemented.tip"]);
         }
     }
+    
+    useEffect(() => {
+        if(userInfo.posLogo){
+            setUserAvatar({ uri: userInfo.posLogo });
+        }
+    }, [userInfo]);
     
     return (
         <ScrollView style={pgFF} contentContainerStyle={pdX}>

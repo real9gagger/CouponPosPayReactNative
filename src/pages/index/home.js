@@ -684,7 +684,6 @@ export default function IndexHome(props){
                     }
                     break;
                 case onTransactionSuccess:
-                    delete infos.action; //删除冗余信息
                     setInputIndex(iNthNone); //交易成功，重置一些信息
                     props.navigation.navigate("支付成功", infos); //如果交易成功，则跳转到交易成功页面
                     break;

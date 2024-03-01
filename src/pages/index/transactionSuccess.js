@@ -47,6 +47,10 @@ export default function IndexTransactionSuccess(props){
         props.navigation.navigate("打印预览", props.route.params);
     }
     
+    const gotoOrderDetails = () => {
+        props.navigation.navigate("订单详情", transactionResult);
+    }
+    
     useEffect(() => {
         const params = props.route.params;
         /* { //2024年2月2日。支付成功时的测试数据
@@ -69,10 +73,14 @@ export default function IndexTransactionSuccess(props){
         
         if(params && !transactionResult){//防止重复调用
             const dat = {...params}; //复制一份！！！
+            const uif = getUserInfo();
+            const pmi = getPaymentInfo(params.paymentType, params.creditCardBrand || params.eMoneyType || params.qrPayType);
             
-            dat.paymentInfo = getPaymentInfo(params.paymentType, params.creditCardBrand || params.eMoneyType || params.qrPayType);
-            dat.payeeName = getUserInfo("posName");
-            dat.createBy = getUserInfo("loginAccount");
+            dat.paymentName = pmi?.name;
+            dat.paymentLogo = pmi?.logo;
+            dat.payeeName = uif.posName;
+            dat.createBy = uif.loginAccount;
+            dat.posId = uif.posId;
             dat.transactionTime = formatDate(params.transactionTime);
             dat.currencyCode = (params.currencyCode || getAppSettings("currencyCode"));
             dat.amount = $tofixed(params.amount);
@@ -117,8 +125,8 @@ export default function IndexTransactionSuccess(props){
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["payment.method"]}</Text>
-                    <Image style={styles.pmLogo} source={transactionResult.paymentInfo ? LocalPictures[transactionResult.paymentInfo.logo] : LocalPictures.unknownPayment} />
-                    <Text>{transactionResult.paymentInfo ? transactionResult.paymentInfo.name : transactionResult.paymentType}</Text>
+                    <Image style={styles.pmLogo} source={LocalPictures[transactionResult.paymentLogo] || LocalPictures.unknownPayment} />
+                    <Text>{transactionResult.paymentName || transactionResult.paymentType}</Text>
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["payment.payer"]}</Text>
@@ -142,7 +150,7 @@ export default function IndexTransactionSuccess(props){
                     <Text style={[fs14, tcMC]}>{i18n["print"]}</Text>
                     <PosPayIcon name="printer-stroke" color={appDarkColor} size={12} offset={3} />
                 </TouchableOpacity>
-                <TouchableOpacity activeOpacity={0.5} style={[pdVX, fxHC]}>
+                <TouchableOpacity activeOpacity={0.5} style={[pdVX, fxHC]} onPress={gotoOrderDetails}>
                     <Text style={[fs14, tcMC]}>{i18n["transaction.details"]}</Text>
                     <PosPayIcon name="right-arrow-double" color={appDarkColor} size={12} offset={3} />
                 </TouchableOpacity>

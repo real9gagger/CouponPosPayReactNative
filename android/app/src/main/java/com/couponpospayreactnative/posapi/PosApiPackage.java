@@ -1,4 +1,4 @@
-package com.couponpospayreactnative.printer;
+package com.couponpospayreactnative.posapi;
 
 import androidx.annotation.NonNull;
 
@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class PrinterPackage implements ReactPackage {
+public class PosApiPackage implements ReactPackage {
     @NonNull
     @Override
     public List<NativeModule> createNativeModules(@NonNull ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
-        modules.add(new ReceiptsModule(reactContext));
+        modules.add(new PosApiModule(reactContext));
         return modules;
     }
 

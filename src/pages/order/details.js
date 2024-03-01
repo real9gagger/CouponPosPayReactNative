@@ -116,7 +116,7 @@ export default function OrderDetails(props){
                     </View>
                     <View style={styles.itemBox}>
                         <Text style={fxG1}>{i18n["operation.time"]}</Text>
-                        <Text>{orderInfo.createTime}</Text>
+                        <Text>{orderInfo.createTime || orderInfo.transactionTime}</Text>
                     </View>
                     <View style={[styles.itemBox, {borderBottomWidth: 0}]}>
                         <Text style={fxG1}>{i18n["remarks"]}</Text>
@@ -124,7 +124,7 @@ export default function OrderDetails(props){
                     </View>
                 </View>
                 <View style={[fxR, mgTX]}>
-                    <GradientButton disabled={!orderInfo} style={fxG1} onPress={printOrder}>{i18n["print"]}</GradientButton>
+                    <GradientButton disabled={!orderInfo} style={fxG1} onPress={printOrder}>{i18n["reprint"]}</GradientButton>
                     <GradientButton disabled={!orderInfo} style={[fxG1, mgLX]} onPress={refundMoney}>{i18n["transaction.refund"]}</GradientButton>
                 </View>
             </>: <Text style={[pdX, tc99, fs16, taC]}>{i18n["nodata"]}</Text>}

@@ -3,7 +3,7 @@ package com.couponpospayreactnative;
 import android.app.Application;
 import android.content.Context;
 
-import com.couponpospayreactnative.printer.PrinterPackage;
+import com.couponpospayreactnative.posapi.PosApiPackage;
 import com.couponpospayreactnative.settlement.SettlementPackage;
 import com.couponpospayreactnative.appinfo.AppPackageInfoPackage;
 import com.couponpospayreactnative.newarchitecture.MainApplicationReactNativeHost;
@@ -36,7 +36,7 @@ public class MainApplication extends Application implements ReactApplication {
 
           packages.add(new AppPackageInfoPackage());//2024年1月4日 APP版本、权限信息
           packages.add(new SettlementPackage());//2024年1月29日 结算功能
-          packages.add(new PrinterPackage());//2024年2月19日 打印、打印机相关功能
+          packages.add(new PosApiPackage());//2024年2月19日 打印、打印机相关功能
 
           return packages;
       }

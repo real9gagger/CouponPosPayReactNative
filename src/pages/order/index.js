@@ -38,7 +38,6 @@ export default function OrderIndex(props){
     
     useEffect(() => {
         $request("getPosAppOrderList").then(res => {
-            console.log(res);
             const list = (res || []);
             for(const vx of list){
                 const pmi = getPaymentInfo(vx.paymentType, vx.creditCardBrand || vx.eMoneyType || vx.qrPayType);
@@ -85,13 +84,8 @@ export default function OrderIndex(props){
                         </View>
                     </View>
                     <View style={[fxG1, fxVM]}>
-                        {vx.paymentLogo ? <>
-                            <Image style={styles.logoBox} source={LocalPictures[vx.paymentLogo]} />
-                            <Text style={styles.nameLabel}>{vx.paymentName}</Text>
-                        </> : <>
-                            <Image style={styles.logoBox} source={LocalPictures.unknownPayment} />
-                            <Text style={styles.nameLabel}>{i18n["unknown"]}</Text>
-                        </>}
+                        <Image style={styles.logoBox} source={LocalPictures[vx.paymentLogo] || LocalPictures.unknownPayment} />
+                        <Text style={styles.nameLabel}>{vx.paymentName || i18n["unknown"]}</Text>
                     </View>
                 </TouchableOpacity>
             ))}

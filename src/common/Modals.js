@@ -41,14 +41,14 @@ const styles = StyleSheet.create({
     },
     dialogTitle: {
         textAlign: "center",
-        fontSize: 18,
+        fontSize: 16,
         color: "#666",
         paddingTop: 15,
         marginBottom: -10
     },
     dialogMsg: {
         textAlign: "center",
-        fontSize: 18,
+        fontSize: 16,
         color: "#000",
         paddingVertical: 30,
         paddingHorizontal: 15
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     },
     okText: {
         textAlign: "center",
-        fontSize: 18,
+        fontSize: 16,
         color: appMainColor,
         fontWeight: "bold"
     },
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     },
     cancelText: {
         textAlign: "center",
-        fontSize: 18,
+        fontSize: 16,
         color: "#333",
         fontWeight: "bold"
     },

@@ -1,4 +1,4 @@
-package com.couponpospayreactnative.printer;
+package com.couponpospayreactnative.posapi;
 
 import static com.couponpospayreactnative.Constants.APP_FILES_CACHE_DIR;
 
@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 
 import com.couponpospayreactnative.BuildConfig;
 import com.couponpospayreactnative.MainActivity;
+import com.couponpospayreactnative.R;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -23,6 +24,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.panasonic.smartpayment.android.api.FatalException;
 import com.panasonic.smartpayment.android.api.ICustomerDisplay;
 import com.panasonic.smartpayment.android.api.ICustomerDisplayListener;
+import com.panasonic.smartpayment.android.api.IInstalledInformation;
 import com.panasonic.smartpayment.android.api.IPaymentApi;
 import com.panasonic.smartpayment.android.api.IPaymentApiListener;
 import com.panasonic.smartpayment.android.api.IPaymentDeviceManager;
@@ -38,15 +40,16 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class ReceiptsModule extends ReactContextBaseJavaModule {
+public class PosApiModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
 
     private IReceiptPrinter mReceiptPrinter;
     private ICustomerDisplay mCustomerDisplay;
+    private IInstalledInformation mInstalledInfo;
     private Callback mPrintCallback;
-    private Callback mCpOpenedCallback;
-    private String mVersionInfo; //版本信息
+    private Callback mCdOpenedCallback;
+    private boolean isCdOpened = false;
 
-    private final String TAG = ReceiptsModule.class.getSimpleName();
+    private final String TAG = PosApiModule.class.getSimpleName();
     private final String PACKAGE_NAME = BuildConfig.APPLICATION_ID;
     private final PaymentApi mPaymentApi;
     private final ReactApplicationContext mContext;
@@ -56,34 +59,34 @@ public class ReceiptsModule extends ReactContextBaseJavaModule {
             // Set PaymentConfig need
             try {
                 // Get PaymentApi instance.
-                IPaymentApi paymentApi = mPaymentApi.getPaymentApi();
+                IPaymentApi pmApi = mPaymentApi.getPaymentApi();
                 // Get PaymentDeviceManager instance.
-                IPaymentDeviceManager paymentDeviceManager = paymentApi.getPaymentDeviceManager();
+                IPaymentDeviceManager paymentDeviceManager = pmApi.getPaymentDeviceManager();
                 // Get ReceiptPrinter instance.
                 mReceiptPrinter = paymentDeviceManager.getReceiptPrinter();
                 mCustomerDisplay = paymentDeviceManager.getCustomerDisplay();
-
-                mVersionInfo =
-                        ("@:SdkVersion: " + mPaymentApi.getSdkVersion()
-                                + ", ServiceVersion: " + paymentApi.getServiceVersion()
-                                + ", DeviceManagerVersion: " + paymentDeviceManager.getVersion()
-                        );
+                mInstalledInfo = pmApi.getInstalledInformation();
 
                 Log.d(TAG, "连接支付接口成功...");
             } catch (Exception ex) {
                 ex.printStackTrace();
                 mReceiptPrinter = null;
                 mCustomerDisplay = null;
-                mVersionInfo = ex.getMessage();
+                mInstalledInfo = null;
+                mPrintCallback = null;
+                mCdOpenedCallback = null;
                 Log.d(TAG, "连接支付接口出错:::" + ex.getMessage());
             }
         }
 
         @Override
         public void onApiDisconnected() {
-            closeCustomerDisplay();
+            closeCustomerDisplay(false);
             mReceiptPrinter = null;
             mCustomerDisplay = null;
+            mInstalledInfo = null;
+            mPrintCallback = null;
+            mCdOpenedCallback = null;
             Log.d(TAG, "支付接口断开连接...");
         }
     };
@@ -110,44 +113,22 @@ public class ReceiptsModule extends ReactContextBaseJavaModule {
                 showDefaultCustomerDisplay();
             }
 
-            if (mCpOpenedCallback != null) {
-                mCpOpenedCallback.invoke(bo, "open complete: " + bo);
-                mCpOpenedCallback = null; //立即重置
+            if (mCdOpenedCallback != null) {
+                mCdOpenedCallback.invoke(bo ? (String)null : mContext.getResources().getString(R.string.customer_display_open_failed));
+                mCdOpenedCallback = null; //立即重置
             }
-        }
-    };
-    private final LifecycleEventListener mLifecycleEventListener = new LifecycleEventListener() {
-        @Override
-        public void onHostResume() {
-            Log.d(TAG, "调用了小票打印的 onHostResume...");
-            ReceiptsModule.this.intiAPIService();
-        }
 
-        @Override
-        public void onHostPause() {
-            Log.d(TAG, "调用了小票打印的 onHostPause...");
-        }
-
-        @Override
-        public void onHostDestroy() {
-            try {
-                closeCustomerDisplay();
-                mPaymentApi.term(mContext);
-                //mContext.removeLifecycleEventListener(mLifecycleEventListener); //不必移除监听器，避免热启动时无法触发事件
-                Log.d(TAG, "销毁了支付/打印接口...");
-            } catch (Exception ex) {
-                Log.d(TAG, "销毁支付接口出错:::" + ex.getMessage());
-            }
+            isCdOpened = bo;
         }
     };
 
-    public ReceiptsModule(ReactApplicationContext context) {
+    public PosApiModule(ReactApplicationContext context) {
         super(context);
 
         mContext = context;
         mPaymentApi = new PaymentApi();
         if (MainActivity.isPanasonicJTC60Device()) {
-            context.addLifecycleEventListener(mLifecycleEventListener);
+            context.addLifecycleEventListener(this);
         }
     }
 
@@ -279,7 +260,7 @@ public class ReceiptsModule extends ReactContextBaseJavaModule {
             );
             mCustomerDisplay.doDisplayScreen(PACKAGE_NAME,
                     "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" +
-                    "<customerDisplayApi id=\"defaultCP\">" +
+                    "<customerDisplayApi id=\"defaultCD\">" +
                     "    <screenPattern>1</screenPattern>" +
                     "    <imageArea><imageAreaNumber>1</imageAreaNumber><imageNumber>0</imageNumber></imageArea>" +
                     "</customerDisplayApi>"
@@ -295,15 +276,15 @@ public class ReceiptsModule extends ReactContextBaseJavaModule {
             AssetManager am = mContext.getResources().getAssets();
             String[] filePaths = am.list("customer_display");
             if (filePaths != null && filePaths.length > 0) {
-                File cpDir = new File(mContext.getExternalCacheDir().getPath() + "/customer_display");
-                if (!cpDir.exists() && !cpDir.mkdir()) {
-                    Log.d(TAG, "创建副屏图像保存目录失败:::" + cpDir.getPath());
+                File cdDir = new File(mContext.getExternalCacheDir().getPath() + "/customer_display");
+                if (!cdDir.exists() && !cdDir.mkdir()) {
+                    Log.d(TAG, "创建副屏图像保存目录失败:::" + cdDir.getPath());
                     return;
                 }
 
-                //Log.d(TAG, "副屏图像保存目录:::" + cpDir.getPath());
+                //Log.d(TAG, "副屏图像保存目录:::" + cdDir.getPath());
                 for (String fp : filePaths) {
-                    File theFile = new File(cpDir, fp);
+                    File theFile = new File(cdDir, fp);
                     if (!theFile.exists()) {
                         byte[] buffer = new byte[8192];
                         int readLength = -1;
@@ -323,13 +304,35 @@ public class ReceiptsModule extends ReactContextBaseJavaModule {
         }
     }
 
-    /* ================================ 打印相关 ================================ */
-
     @NonNull
     @Override
     public String getName() {
-        return "ReceiptsDP"; //东鹏提神了，就以 “DP” 为后缀
+        return "PosApi";
     }
+
+    @Override
+    public void onHostResume() {
+        Log.d(TAG, "调用了小票打印的 onHostResume...");
+        PosApiModule.this.intiAPIService();
+    }
+
+    @Override
+    public void onHostPause() {
+        Log.d(TAG, "调用了小票打印的 onHostPause...");
+    }
+
+    @Override
+    public void onHostDestroy() {
+        try {
+            closeCustomerDisplay(false);
+            mPaymentApi.term(mContext);
+            Log.d(TAG, "销毁了支付/打印接口...");
+        } catch (Exception ex) {
+            Log.d(TAG, "销毁支付接口出错:::" + ex.getMessage());
+        }
+    }
+
+    /* ================================ 打印相关 ================================ */
 
     //2024年2月19日 是否可以打印
     @ReactMethod(isBlockingSynchronousMethod = true)
@@ -349,7 +352,7 @@ public class ReceiptsModule extends ReactContextBaseJavaModule {
                 if (mReceiptPrinter != null) {
                     mReceiptPrinter.printReceipt(xml, mReceiptPrinterListener);
                 } else {
-                    errMsg = "Unable to connect to the printer!";
+                    errMsg = mContext.getResources().getString(R.string.pinter_connection_failed);
                 }
             } catch (FatalException ex) {
                 ex.printStackTrace();
@@ -361,8 +364,7 @@ public class ReceiptsModule extends ReactContextBaseJavaModule {
                 errMsg = ex.getMessage();
             }
         } else {
-            errMsg = "Printing data is empty!";
-            Log.d(TAG, "打印数据为空!!!");
+            errMsg = mContext.getResources().getString(R.string.pinter_xml_is_empty);
         }
 
         if (errMsg != null && mPrintCallback != null) {
@@ -417,38 +419,49 @@ public class ReceiptsModule extends ReactContextBaseJavaModule {
 
     /* ================================ 副屏相关 ================================ */
 
+    //2024年2月29日 是否有副屏
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public boolean hasCustomerDisplay() {
+        return (mCustomerDisplay != null);
+    }
+
     //2024年2月26日 打开副屏显示器
     @ReactMethod
     public void openCustomerDisplay(Callback callback) {
-        mCpOpenedCallback = callback;
+        mCdOpenedCallback = callback;
         try {
             if (mCustomerDisplay != null) {
-                mCustomerDisplay.registerCustomerDisplayListeners(PACKAGE_NAME, mCustomerDisplayListener);
-                mCustomerDisplay.openCustomerDisplay(PACKAGE_NAME);
+                if (!isCdOpened) {
+                    mCustomerDisplay.registerCustomerDisplayListeners(PACKAGE_NAME, mCustomerDisplayListener);
+                    mCustomerDisplay.openCustomerDisplay(PACKAGE_NAME);
+                } else if (mCdOpenedCallback != null) {
+                    mCdOpenedCallback.invoke((String)null);
+                    mCdOpenedCallback = null; //立即重置
+                }
             } else {
-                throw new Exception("Unable to connect to the customer display!");
+                throw new Exception(mContext.getResources().getString(R.string.customer_display_connection_failed));
             }
         } catch (Exception ex) {
-            Log.d(TAG, "副屏打开出错:::" + ex.getMessage());
-            if (mCpOpenedCallback != null) {
-                mCpOpenedCallback.invoke(false, ex.getMessage());
-                mCpOpenedCallback = null; //立即重置
+            ex.printStackTrace();
+            if (mCdOpenedCallback != null) {
+                mCdOpenedCallback.invoke(ex.getMessage());
+                mCdOpenedCallback = null; //立即重置
             }
         }
     }
 
-    //2024年2月26日 关闭副屏显示器
+    //2024年2月26日 关闭副屏显示器，布尔参数：是否强制关闭！
     @ReactMethod
-    public void closeCustomerDisplay() {
+    public void closeCustomerDisplay(boolean forced) {
         try {
-            mCpOpenedCallback = null;
-            if (mCustomerDisplay != null) {
+            mCdOpenedCallback = null;
+            if (mCustomerDisplay != null && (isCdOpened || forced)) {//如果副屏没有关闭或者需要强制关闭！
                 mCustomerDisplay.closeCustomerDisplay(PACKAGE_NAME, true);
                 mCustomerDisplay.unregisterCustomerDisplayListeners(PACKAGE_NAME);
             }
+            isCdOpened = false;
         } catch (Exception ex) {
             ex.printStackTrace();
-            Log.d(TAG, "关闭副屏出错:::" + ex.getMessage());
         }
     }
 
@@ -460,17 +473,44 @@ public class ReceiptsModule extends ReactContextBaseJavaModule {
                 mCustomerDisplay.doDisplayScreen(PACKAGE_NAME, content);
                 promise.resolve(0);
             } catch (Exception ex) {
-                Log.d(TAG, "设置内容出错:::" + ex.getMessage());
+                ex.printStackTrace();
                 promise.reject(ex.getMessage());
             }
         } else {
-            promise.reject("Unable to connect to the customer display!");
+            promise.reject(mContext.getResources().getString(R.string.customer_display_connection_failed));
         }
     }
 
-    //2024年2月19日 支付API版本信息
+    //2024年2月29日 副屏是否开启中
     @ReactMethod(isBlockingSynchronousMethod = true)
-    public String getVersionInfo() {
-        return mVersionInfo;
+    public boolean isCustomerDisplayOpened(){
+        return isCdOpened;
+    }
+
+    /* ================================ API版本相关信息 ================================ */
+    //2024年2月29日 获取安装信息
+    @ReactMethod
+    public void getInstalledInfo(Promise promise) {
+        if (mInstalledInfo != null) {
+            promise.resolve(getInstalledInfoSync());
+        } else {
+            promise.reject(mContext.getResources().getString(R.string.installed_info_is_null));
+        }
+    }
+
+    //2024年2月29日 获取安装信息（同步）
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public WritableMap getInstalledInfoSync() {
+        if (mInstalledInfo != null) {
+            WritableMap data = Arguments.createMap();
+            data.putString("tid", mInstalledInfo.getTerminalInfo(IInstalledInformation.ValueType.TID)); //终端识别番号
+            data.putString("sysver", mInstalledInfo.getTerminalInfo(IInstalledInformation.ValueType.SYSTEM_VERSION)); //系统版本
+            data.putString("sno", mInstalledInfo.getTerminalInfo(IInstalledInformation.ValueType.SERIAL_NUMBER)); //终端序列号
+            data.putString("mno", mInstalledInfo.getMerchantInfo(IInstalledInformation.ValueType.MERCHANT_NUMBER)); //加盟店番号
+            data.putString("sdkver", mPaymentApi.getSdkVersion()); //支付 API 版本
+            return data;
+        } else {
+            return null;
+        }
     }
 }

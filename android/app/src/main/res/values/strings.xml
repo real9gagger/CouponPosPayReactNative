@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">PosPay</string>
-    <string name="launch_screen_pic_content_description">启动屏封面</string>
+    <string name="launch_screen_pic_content_description">Launch screen cover</string>
     <string name="launch_screen_copyright_content">powered by xcarbon.cc</string>
+    <string name="customer_display_connection_failed">Unable to connect to the customer display!</string>
+    <string name="customer_display_open_failed">Customer display open failed!</string>
+    <string name="pinter_connection_failed">Unable to connect to the printer!</string>
+    <string name="pinter_xml_is_empty">Printing xml is empty!</string>
+    <string name="installed_info_is_null">Can not get the installed information!</string>
 </resources>

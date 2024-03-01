@@ -2,7 +2,7 @@ import { NativeModules } from "react-native";
 import { getI18N } from "@/store/getter";
 
 //小票打印机助手
-const RPHelper = NativeModules.ReceiptsDP;
+const RPHelper = NativeModules.PosApi;
 
 /* ================================ 打印基础函数开始 ================================ */
 const MAX_LETTER_NUMBER = 32;//每行最多允许多少个【半角字符】
@@ -158,13 +158,18 @@ function getTextCentered(txt, scale){
 }
 
 //获取实线
-function getSolidLine(thickness){
-    return (`<ruledLines><solidLine thickness="${thickness}"><horizontal length="383" horizontalPosition="0" verticalPosition="0"/></solidLine></ruledLines>`);
+function getSolidLine(){
+    return ("<ruledLines><solidLine thickness=\"2\"><horizontal length=\"383\" horizontalPosition=\"0\" verticalPosition=\"0\" /></solidLine></ruledLines>");
 }
 
 //获取空行
 function getBlankFeed(){
     return "<lineFeed num=\"1\" />";
+}
+
+//获取切纸命令（测试环境不切纸）
+function getCutCommand(){
+    return (runtimeEnvironment.isProduction ? "<paperCut paperCuttingMethod=\"partialcut\" />" : "");
 }
 
 //获取图像
@@ -192,17 +197,14 @@ function getImageXml(src){
 //打印顾客付款回执小票
 function printPaymentReceipts(orderInfo){
     return new Promise(async function(resolve, reject){
-        //return RPHelper.openCustomerDisplay(resolve);
-        //return RPHelper.closeCustomerDisplay();
         const i18n = getI18N();
-        const CCode = ("\x20" + orderInfo.currencyCode);
         
         const imageSL = await getImageXml(orderInfo.shopLogo);
         const titlePR = getTextCentered(i18n["payment.receipt"], 2);
-        const rowOA = fitTextLine(i18n["order.amount"], orderInfo.orderAmount + CCode);
-        const rowTX = fitTextLine(i18n["tax"], orderInfo.tax + CCode);
-        const rowCD = fitTextLine(i18n["coupon.discount"], orderInfo.discountAmount + CCode);
-        const rowTA = fitTextLine(i18n["transaction.amount"], orderInfo.amount + CCode);
+        const rowOA = fitTextLine(i18n["order.amount"], `${orderInfo.orderAmount} ${orderInfo.currencyCode}`);
+        const rowTX = fitTextLine(i18n["tax"], `${orderInfo.tax} ${orderInfo.currencyCode}`);
+        const rowCD = fitTextLine(i18n["coupon.discount"], `${orderInfo.discountAmount} ${orderInfo.currencyCode}`);
+        const rowTA = fitTextLine(i18n["transaction.amount"], `${orderInfo.amount} ${orderInfo.currencyCode}`);
         const rowPM = fitTextLine(i18n["payment.method"], orderInfo.paymentName);
         const rowPR = fitTextLine(i18n["payment.payer"], orderInfo.creditCardMaskedPan);
         const rowPE = fitTextLine(i18n["payment.payee"], orderInfo.payeeName);
@@ -212,8 +214,9 @@ function printPaymentReceipts(orderInfo){
         const rowPT = fitTextLine(i18n["print.time"], orderInfo.printTime);
         const rowOP = fitTextLine(i18n["operator"], orderInfo.operatorName);
         const rowBT = getTextCentered(orderInfo.bottomText, 5);
-        const solidLine = getSolidLine(2);
+        const solidLine = getSolidLine();
         const blankFeed = getBlankFeed();
+        const cutCommand = getCutCommand();
         
         const xml = `<?xml version="1.0" encoding="UTF-8" ?><paymentApi id="printer"><page><printElements>
             ${imageSL}
@@ -221,15 +224,14 @@ function printPaymentReceipts(orderInfo){
                 ${titlePR}
                 ${blankFeed}
                 ${solidLine}
-                ${rowOA}${rowTX}${rowCD}${rowTA}
+                ${rowOA + rowTX + rowCD + rowTA}
                 ${solidLine}
-                ${rowPM}${rowPR}${rowPE}${rowCC}${rowTN}${rowTT}
+                ${rowPM + rowPR + rowPE + rowCC + rowTN + rowTT}
                 ${solidLine}
-                ${rowPT}
-                ${rowOP}
+                ${rowPT + rowOP}
                 ${rowBT && (solidLine + blankFeed + rowBT)}
             </sheet>
-        </printElements></page></paymentApi>`;
+        </printElements>${cutCommand}</page></paymentApi>`;
         
         RPHelper.startPrint(xml, function(msg, code){
             if(code === 0){

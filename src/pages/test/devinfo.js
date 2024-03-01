@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ScrollView, View, Text, StatusBar, StyleSheet, Dimensions, PixelRatio, Platform } from "react-native";
+import { ScrollView, View, Text, StatusBar, StyleSheet, Dimensions, PixelRatio, Platform, NativeModules } from "react-native";
 import AppPackageInfo from "@/modules/AppPackageInfo";
 
 const styles = StyleSheet.create({
@@ -18,6 +18,7 @@ export default function TestDevinfo(props){
         const winInfo = Dimensions.get("window");
         const infos = [];
         const precision = 8; //数字保留多少位小数
+        const insInfo = NativeModules.PosApi.getInstalledInfoSync() || {};
         
         for(const key in winInfo){
             const item = { itemKey: "window." + key };
@@ -51,6 +52,13 @@ export default function TestDevinfo(props){
             if(item.itemValue){
                 infos.push(item);
             }
+        }
+        
+        for(const key in insInfo){
+            infos.push({
+                itemKey: "installed." + key,
+                itemValue: insInfo[key]
+            });
         }
         
         infos.push({

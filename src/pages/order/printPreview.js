@@ -41,7 +41,8 @@ const styles = StyleSheet.create({
     },
     textTitle: {
         fontSize: 20,
-        paddingVertical: 20,
+        paddingTop: 5,
+        paddingBottom: 15,
         fontWeight: "bold",
         textAlign: "center"
     },
@@ -123,7 +124,7 @@ export default function OrderPrintPreview(props){
         const pmi = getPaymentInfo(dat.paymentType, dat.creditCardBrand || dat.eMoneyType || dat.qrPayType);
         const userInfo = getUserInfo();
         const appSettings = getAppSettings();
-        
+
         if(dat){
             dat.paymentName = (pmi?.name || dat.paymentType);
             dat.transactionTime = formatDate(dat.transactionTime);

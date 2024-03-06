@@ -85,7 +85,8 @@ export default function commonRequest(apiName, postData){
             break;
         default:  //没有指明方式，也没有参数，则默认为 GET
             methodType[0] = "GET";
-            methodType[1] = "application/x-www-form-urlencoded"; 
+            methodType[1] = "application/x-www-form-urlencoded";
+            methodType[2] = true; //以查询字符串方式提交数据
             break;
     }
     
@@ -96,6 +97,7 @@ export default function commonRequest(apiName, postData){
             "Content-Type": methodType[1],
             "Authorization": (accessToken ? `Bearer ${accessToken}` : "")
         },
-        data: postData
+        data: (!methodType[2] ? postData : undefined),
+        params: (!methodType[2] ? undefined : postData)
     });
 }

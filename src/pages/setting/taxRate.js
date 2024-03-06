@@ -49,6 +49,7 @@ export default function SettingTaxRate(props){
                 autoFocus={true}
             />
             <Text style={styles.percentageBox}>%</Text>
+            <Text style={[mgTX, tc99, taR, fs12]}>{i18n["tax.formula"]}</Text>
         </ScrollView>
     )
 }

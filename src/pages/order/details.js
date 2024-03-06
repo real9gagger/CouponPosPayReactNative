@@ -50,11 +50,15 @@ export default function OrderDetails(props){
             transactionType: "3", //1-付款，2-取消付款，3-退款
             slipNumber: orderInfo.slipNumber //单据号码，取消付款或者退款时用到
         }, function(payRes){
-            if(payRes.activityResultCode === 0){//支付成功
-                console.log("退款成功！！！", payRes);
-            } else if(payRes.activityResultCode === 2){//取消支付
+            if(payRes.activityResultCode === 0){//退款成功
+                $request("posAppRefund", { id: orderInfo.id, slipNumber: orderInfo.slipNumber }).then(res => {
+                    orderInfo.transactionType = 3;
+                    setOrderInfo({...orderInfo});
+                    $toast(i18n["refund.success"]);
+                });
+            } else if(payRes.activityResultCode === 2){//取消退款
                 //$toast(i18n["payment.errmsg2"]);
-            } else {//支付失败
+            } else {//退款失败
                 $alert(i18n["payment.errmsg3"].cloze(payRes.errorCode));
             }
         });
@@ -125,7 +129,7 @@ export default function OrderDetails(props){
                 </View>
                 <View style={[fxR, mgTX]}>
                     <GradientButton disabled={!orderInfo} style={fxG1} onPress={printOrder}>{i18n["reprint"]}</GradientButton>
-                    <GradientButton disabled={!orderInfo} style={[fxG1, mgLX]} onPress={refundMoney}>{i18n["transaction.refund"]}</GradientButton>
+                    <GradientButton disabled={orderInfo?.transactionType!=1} style={[fxG1, mgLX]} onPress={refundMoney}>{i18n["transaction.refund"]}</GradientButton>
                 </View>
             </>: <Text style={[pdX, tc99, fs16, taC]}>{i18n["nodata"]}</Text>}
         </ScrollView>

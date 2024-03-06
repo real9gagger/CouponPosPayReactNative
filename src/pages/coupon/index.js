@@ -210,6 +210,9 @@ export default function CouponIndex(props){
             }
         });
     }
+    const gotoAdds = () => {
+        props.navigation.navigate("优惠券录入");
+    }
     
     useEffect(() => {
         if(props.route.params?.couponCode){
@@ -283,9 +286,13 @@ export default function CouponIndex(props){
                 </View>
             ))): 
                 <>
-                    <Pressable style={[fxHC, pdX, mgTX]} android_ripple={tcCC} onPress={scanCouponCode}>
+                    <Pressable style={[fxHC, pdX]} android_ripple={tcCC} onPress={scanCouponCode}>
                         <Text style={[fxG1, tcMC]}>{i18n["qrcode.identify"]}</Text>
-                        <PosPayIcon name="qrcode-scan" color={appMainColor} size={24} />
+                        <PosPayIcon name="qrcode-scan" color={appMainColor} size={20} />
+                    </Pressable>
+                    <Pressable style={[fxHC, pdX]} android_ripple={tcCC} onPress={gotoAdds}>
+                        <Text style={[fxG1, tcMC]}>{i18n["coupon.add"]}</Text>
+                        <PosPayIcon name="manual-add" color={appMainColor} size={20} />
                     </Pressable>
                     <Text style={fxG1} onPress={() => setPkVisible(false)}>{/* 点我关闭键盘 */}</Text>
                 </>

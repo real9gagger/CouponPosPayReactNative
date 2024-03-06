@@ -43,7 +43,7 @@ const settingList = [
     {
         actionName: "税率设置",
         i18nLabel: "tax.rate",
-        disabled: runtimeEnvironment.isProduction
+        disabled: false
     },
     {
         actionName: "金额设置",

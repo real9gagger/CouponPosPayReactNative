@@ -14,4 +14,6 @@ export default {
     getPostInfo: '/pos/pos/getPostInfo', //商户账户获取商户详情
     savePosAppOrder: '/order/order/savePosAppOrder?__RM__=POST', //保存订单信息
     getPosAppOrderList: '/order/order/getPosAppOrderList', //获取订单列表
+    posAppRefund: '/order/order/posAppRefund', //订单退款
+    getOrderStatistics: '/order/order/getPosAppStatisticalDetail', //订单统计接口
 }

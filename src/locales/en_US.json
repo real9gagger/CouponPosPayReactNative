@@ -59,6 +59,7 @@
     "coupon.type1": "Off",
     "coupon.type2": "Saving",
     "coupon.discount": "Discount",
+    "coupon.add": "Manual add",
     "payment.method": "Payment method",
     "payment.supports": "Payment Partners",
     "payment.payer": "Payer account",
@@ -68,6 +69,7 @@
     "payment.errmsg1": "Current device does not support this operation. Please operate on POS machine!",
     "payment.errmsg2": "Transaction has been canceled",
     "payment.errmsg3": "\\\\Transaction failed, error code: $[0]",
+    "refund.success": "Refund Successful",
     "transaction.success": "Transaction Successful",
     "transaction.fail": "Transaction Failed",
     "transaction.amount": "Transaction amount",
@@ -107,6 +109,7 @@
     "currency.header": "Currency Setting",
     "operation.time": "Operation time",
     "tax.rate": "Tax Rate",
+    "tax.formula": "Tax = (Order Amount - Discount) × Tax Rate",
     
     "preview": "Preview",
     "remarks": "Remarks",

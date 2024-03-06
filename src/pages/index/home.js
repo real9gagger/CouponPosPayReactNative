@@ -158,7 +158,7 @@ function onScanFinish(dat){
 }
 
 //调用支付功能
-function callPayment(payMoney, disMoney, couponCode, paymentCode){
+function callPayment(payMoney, disMoney, taxMoney, couponCode, paymentCode){
     if(regZeros.test(payMoney)){
         return !$notify.info(getI18N("input.amount.tip"));
     }
@@ -170,11 +170,11 @@ function callPayment(payMoney, disMoney, couponCode, paymentCode){
     
     //以下属性数据类型都是字符串！
     PaymentHelper.startPay({
+        transactionType: "1", //1-付款，2-取消付款，3-退款
         transactionMode: (runtimeEnvironment.isProduction ? "1" : "2"), //1-正常，2-练习
         paymentType: paymentCode,
         amount: $tofixed(payMoney - disMoney), //至少一块钱，否则报错
-        transactionType: "1", //1-付款，2-取消付款，3-退款
-        tax: "0", //税费
+        tax: taxMoney, //税费
         slipNumber: "" //单据号码，取消付款或者退款时用到
     }, function(payRes){
         if(payRes.activityResultCode === 0){//支付成功
@@ -182,6 +182,8 @@ function callPayment(payMoney, disMoney, couponCode, paymentCode){
             payRes.discountAmount = disMoney; //优惠总金额
             payRes.orderAmount = payMoney; //订单总金额
             payRes.couponCode = (disMoney && couponCode ? couponCode : ""); //有折扣才有优惠码
+            payRes.remark = (runtimeEnvironment.isProduction ? "" : "开发测试的数据");
+            payRes.tax = (payRes.tax || taxMoney);
             DeviceEventEmitter.emit(eventEmitterName, payRes); //发
         } else if(payRes.activityResultCode === 2){//取消支付
             $toast(getI18N("payment.errmsg2"));
@@ -215,13 +217,21 @@ function calcDiscountAmount(tl, dc, dt, cd){
     }
 }
 
-//计算税费
+//计算税费和优惠金额（返回字符串）
 function calcTaxAmount(tl, dc, rt){
     if(!tl || !rt){
-        return 0;
+        const temp = $tofixed(0);
+        return {
+            T_X: temp,
+            F_A: temp
+        };
+    } else {
+        const temp = (tl - dc) * (rt / 100); //先减去优惠金额在计算
+        return {
+            T_X: $tofixed(temp),
+            F_A: $tofixed(tl - dc + temp)
+        };
     }
-    
-    return $mathround((tl - dc) * (rt / 100)); //先减去优惠金额在计算
 }
 
 //银行卡
@@ -230,9 +240,9 @@ function tabBankCard(props){
     const appSettings = useAppSettings();
     const [payAmounts, setPayAmounts] = useState("");
     const [disAmounts, setDisAmounts] = useState(0); //优惠金额
-    const [taxAmounts, setTaxAmounts] = useState(0); //税费总额
     const [cpInfos, setCpInfos] = useState(null);
     const [currentInputBox, setCurrentInputBox] = useState(0);
+    const taxAndFa = calcTaxAmount(payAmounts, disAmounts, appSettings.generalTaxRate);
     
     const toggleAmountInput = () => {
         DeviceEventEmitter.emit(eventEmitterName, { 
@@ -254,7 +264,7 @@ function tabBankCard(props){
         QRcodeScanner.openScanner(onScanFinish);
     }
     const startPayMoney = () => {
-        callPayment(payAmounts, disAmounts, cpInfos?.cpcode, CREDIT_CARD_PAYMENT_CODE);
+        callPayment(payAmounts, disAmounts, taxAndFa.T_X, cpInfos?.cpcode, CREDIT_CARD_PAYMENT_CODE);
     }
     
     useEffect(() => {
@@ -284,9 +294,11 @@ function tabBankCard(props){
     }, []);
     
     useEffect(() => {
-        const beAGoodMan = (cpInfos ? calcDiscountAmount(payAmounts, cpInfos.discount, cpInfos.distype, cpInfos.condition) : 0);
-        setDisAmounts(beAGoodMan);
-        setTaxAmounts(calcTaxAmount(payAmounts, beAGoodMan, appSettings.generalTaxRate));
+        if(cpInfos){
+            setDisAmounts(calcDiscountAmount(payAmounts, cpInfos.discount, cpInfos.distype, cpInfos.condition));
+        } else {
+            setDisAmounts(0);
+        }
     }, [payAmounts, cpInfos]);
     
     //银行卡支付界面
@@ -329,19 +341,20 @@ function tabBankCard(props){
             {!!payAmounts && <View style={styles.paymentDetails}>
                 <View style={fxHC}>
                     <Text style={[fs12, fxG1]}>{i18n["input.amount"]}</Text>
-                    <Text style={[fs12, fwB]}>{$tofixed(payAmounts)}</Text>
+                    <Text style={fs12}><Text style={fwB}>{$tofixed(payAmounts)}</Text> {appSettings.currencyCode}</Text>
                 </View>
                 <View style={fxHC}>
-                    <Text style={[fs12, fxG1]}>{i18n["tax"]}</Text>
-                    <Text style={[fs12, fwB]}>{$tofixed(taxAmounts)}</Text>
+                    <Text style={fs12}>{i18n["tax"]}</Text>
+                    <Text style={[fs12, tc99, fxG1]}>&nbsp;({appSettings.generalTaxRate}%)</Text>
+                    <Text style={fs12}><Text style={fwB}>{taxAndFa.T_X}</Text> {appSettings.currencyCode}</Text>
                 </View>
                 <View style={fxHC}>
                     <Text style={[fs12, fxG1]}>{i18n["coupon.discount"]}</Text>
-                    <Text style={[fs12, fwB, tcG0]}>-{$tofixed(disAmounts)}</Text>
+                    <Text style={[fs12, tcG0]}><Text style={fwB}>-{$tofixed(disAmounts)}</Text> {appSettings.currencyCode}</Text>
                 </View>
                 <View style={fxHC}>
                     <Text style={[fs12, fxG1]}>{i18n["final.amount"]}</Text>
-                    <Text style={[fs12, fwB, tcR1]}>{$tofixed(payAmounts - disAmounts)}</Text>
+                    <Text style={[fs12, tcR1]}><Text style={fwB}>{taxAndFa.F_A}</Text> {appSettings.currencyCode}</Text>
                 </View>
             </View>}
             <View style={pdX}>
@@ -360,6 +373,7 @@ function tabEWallet(props){
     const [cpInfos, setCpInfos] = useState(null);
     const [paymentIndex, setPaymentIndex] = useState(0);
     const [currentInputBox, setCurrentInputBox] = useState(0);
+    const taxAndFa = calcTaxAmount(payAmounts, disAmounts, appSettings.generalTaxRate);
     
     const toggleAmountInput = () => {
         DeviceEventEmitter.emit(eventEmitterName, {
@@ -387,7 +401,7 @@ function tabEWallet(props){
         QRcodeScanner.openScanner(onScanFinish);
     }
     const startPayMoney = () => {
-        callPayment(payAmounts, disAmounts, cpInfos?.cpcode, eWalletList[paymentIndex].pmcode);
+        callPayment(payAmounts, disAmounts, taxAndFa.T_X, cpInfos?.cpcode, eWalletList[paymentIndex].pmcode);
     }
     
     useEffect(() => {
@@ -466,19 +480,20 @@ function tabEWallet(props){
             {!!payAmounts && <View style={styles.paymentDetails}>
                 <View style={fxHC}>
                     <Text style={[fs12, fxG1]}>{i18n["input.amount"]}</Text>
-                    <Text style={[fs12, fwB]}>{$tofixed(payAmounts)}</Text>
+                    <Text style={fs12}><Text style={fwB}>{$tofixed(payAmounts)}</Text> {appSettings.currencyCode}</Text>
                 </View>
                 <View style={fxHC}>
-                    <Text style={[fs12, fxG1]}>{i18n["tax"]}</Text>
-                    <Text style={[fs12, fwB]}>{$tofixed(0)}</Text>
+                    <Text style={fs12}>{i18n["tax"]}</Text>
+                    <Text style={[fs12, tc99, fxG1]}>&nbsp;({appSettings.generalTaxRate}%)</Text>
+                    <Text style={fs12}><Text style={fwB}>{taxAndFa.T_X}</Text> {appSettings.currencyCode}</Text>
                 </View>
                 <View style={fxHC}>
                     <Text style={[fs12, fxG1]}>{i18n["coupon.discount"]}</Text>
-                    <Text style={[fs12, fwB, tcG0]}>-{$tofixed(disAmounts)}</Text>
+                    <Text style={[fs12, tcG0]}><Text style={fwB}>-{$tofixed(disAmounts)}</Text> {appSettings.currencyCode}</Text>
                 </View>
                 <View style={fxHC}>
                     <Text style={[fs12, fxG1]}>{i18n["final.amount"]}</Text>
-                    <Text style={[fs12, fwB, tcR1]}>{$tofixed(payAmounts - disAmounts)}</Text>
+                    <Text style={[fs12, tcR1]}><Text style={fwB}>{taxAndFa.F_A}</Text> {appSettings.currencyCode}</Text>
                 </View>
             </View>}
             <View style={pdX}>
@@ -496,6 +511,7 @@ function tabQRCode(props){
     const [disAmounts, setDisAmounts] = useState(0); //优惠金额
     const [cpInfos, setCpInfos] = useState(null);
     const [currentInputBox, setCurrentInputBox] = useState(0);
+    const taxAndFa = calcTaxAmount(payAmounts, disAmounts, appSettings.generalTaxRate);
     
     const toggleAmountInput = () => {
         DeviceEventEmitter.emit(eventEmitterName, {
@@ -517,7 +533,7 @@ function tabQRCode(props){
         QRcodeScanner.openScanner(onScanFinish);
     }
     const startPayMoney = () => {
-        callPayment(payAmounts, disAmounts, cpInfos?.cpcode, QR_CODE_PAYMENT_CODE);
+        callPayment(payAmounts, disAmounts, taxAndFa.T_X, cpInfos?.cpcode, QR_CODE_PAYMENT_CODE);
     }
     const gotoSupportPayment = () => {
         DeviceEventEmitter.emit(eventEmitterName, {
@@ -598,19 +614,20 @@ function tabQRCode(props){
             {!!payAmounts && <View style={styles.paymentDetails}>
                 <View style={fxHC}>
                     <Text style={[fs12, fxG1]}>{i18n["input.amount"]}</Text>
-                    <Text style={[fs12, fwB]}>{$tofixed(payAmounts)}</Text>
+                    <Text style={fs12}><Text style={fwB}>{$tofixed(payAmounts)}</Text> {appSettings.currencyCode}</Text>
                 </View>
                 <View style={fxHC}>
-                    <Text style={[fs12, fxG1]}>{i18n["tax"]}</Text>
-                    <Text style={[fs12, fwB]}>{$tofixed(0)}</Text>
+                    <Text style={fs12}>{i18n["tax"]}</Text>
+                    <Text style={[fs12, tc99, fxG1]}>&nbsp;({appSettings.generalTaxRate}%)</Text>
+                    <Text style={fs12}><Text style={fwB}>{taxAndFa.T_X}</Text> {appSettings.currencyCode}</Text>
                 </View>
                 <View style={fxHC}>
                     <Text style={[fs12, fxG1]}>{i18n["coupon.discount"]}</Text>
-                    <Text style={[fs12, fwB, tcG0]}>-{$tofixed(disAmounts)}</Text>
+                    <Text style={[fs12, tcG0]}><Text style={fwB}>-{$tofixed(disAmounts)}</Text> {appSettings.currencyCode}</Text>
                 </View>
                 <View style={fxHC}>
                     <Text style={[fs12, fxG1]}>{i18n["final.amount"]}</Text>
-                    <Text style={[fs12, fwB, tcR1]}>{$tofixed(payAmounts - disAmounts)}</Text>
+                    <Text style={[fs12, tcR1]}><Text style={fwB}>{taxAndFa.F_A}</Text> {appSettings.currencyCode}</Text>
                 </View>
             </View>}
             <View style={{height: 20}}>{/* 占位用 */}</View>

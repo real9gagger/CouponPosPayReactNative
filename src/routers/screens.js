@@ -18,9 +18,11 @@ import TestDevinfo from "@/pages/test/devinfo";
 import TestAboutSoftware from "@/pages/test/aboutSoftware";
 import TestSupportPayment from "@/pages/test/supportPayment";
 import CouponIndex from "@/pages/coupon/index";
+import CouponAdds from "@/pages/coupon/adds";
 import OrderPrintPreview from "@/pages/order/printPreview";
 import OrderIndex from "@/pages/order/index";
 import OrderDetails from "@/pages/order/details";
+import OrderStatistics from "@/pages/order/statistics";
 
 //非Tabs页面的顶部导航栏全局配置
 const defaultScreenOptions = {
@@ -169,6 +171,12 @@ const PosPayRouterList = [
         options: {...defaultScreenOptions}
     },
     {
+        name: "订单统计",
+        component: OrderStatistics,
+        i18nTitle: "statistics",
+        options: {...defaultScreenOptions}
+    },
+    {
         name: "支付成功",
         component: IndexTransactionSuccess,
         options: noHeaderOnly
@@ -176,6 +184,11 @@ const PosPayRouterList = [
     {
         name: "优惠券查询",
         component: CouponIndex,
+        options: noHeaderOnly
+    },
+    {
+        name: "优惠券录入",
+        component: CouponAdds,
         options: noHeaderOnly
     },
     {

@@ -4,6 +4,7 @@ import asyncStorage from "@react-native-async-storage/async-storage";
 import localesReducer from "./localesReducer";
 import userReducer from "./userReducer";
 import settingsReducer from "./settingsReducer";
+import couponReducer from "./couponReducer";
 
 const persistConfig = {
     key: "root",
@@ -21,6 +22,7 @@ const allReducers = combineReducers({
     localesLanguage: localesReducer, //本地化设置，不需要保存在缓存里
     userInfo: userReducer, //用户信息
     appSettings: settingsReducer, //APP设置
+    couponData: couponReducer, //优惠券相关数据
 });
 
 const store = createStore(persistReducer(persistConfig, allReducers));

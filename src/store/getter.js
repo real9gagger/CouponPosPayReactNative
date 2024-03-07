@@ -48,6 +48,7 @@ export function getUserInfo(key){
 export function getUserPosName(){
     return store.getState().userInfo.posName;
 }
+
 /* ================ APP设置相关 ================ */
 //使用APP设置，函数组件中使用
 export function useAppSettings(){
@@ -65,4 +66,23 @@ export function getNumbersDecimalOfMoney(key){
 }
 export function getGeneralTaxRate(){
     return (+store.getState().appSettings.generalTaxRate || 0);
+}
+
+/* ================ 优惠券相关 ================ */
+export function isCouponInUse(code){
+    if(!code){
+        return false;
+    }
+    
+    const lu = store.getState().couponData.lastUsed;
+    return (!!lu && lu.cpcode === code);
+}
+//获取正在使用的优惠券信息
+export function getCouponInUse(code){
+    if(!code){
+        return null;
+    }
+    
+    const lu = store.getState().couponData.lastUsed;
+    return (lu && lu.cpcode === code ? lu : null);
 }

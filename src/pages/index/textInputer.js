@@ -41,9 +41,7 @@ export default function IndexTextInputer(props){
     }
     
     const doneText = () => {
-        if(props.route.params?.onGoBack){
-            props.route.params.onGoBack(txt || "");
-        }
+        props.route.params?.onGoBack(txt || "");
         Keyboard.dismiss();
         props.navigation.goBack();
     }

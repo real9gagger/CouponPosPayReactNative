@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { ScrollView, View, Image, Text, StyleSheet, Pressable, ActivityIndicator } from "react-native";
-import { useI18N, getAppSettings } from "@/store/getter";
+import { useI18N, getAppSettings, getUserPosName, getCouponInUse } from "@/store/getter";
+import { dispatchSetLastUsed } from "@/store/setter";
 import { DISCOUNT_TYPE_LJ } from "@/common/Statics";
 import LinearGradient from "react-native-linear-gradient"
 import PayKeyboard from "@/components/PayKeyboard";
@@ -153,25 +154,25 @@ const couponLoading = {loading: true}; //正在查询优惠券信息
 const couponReady = {ready: true};//已输入优惠码，可查询
 
 //查询优惠券信息
-function getCouponInfo(cc, iu) {
+function getCouponInfo(cc) {
     return new Promise(function(resolve, reject){
-        setTimeout(() => {
-            if("02468".indexOf(cc[cc.length - 1]) >= 0){
-                resolve({
-                    picurl: LocalPictures.couponDefaultPic,
-                    title: "新年大促销",
-                    discount: 17,
-                    distype: 2, //1-折扣，2-立减
-                    expiration: "2025/02/10 ~ 2025/12/31",
-                    condition: 100, //满免条件
-                    store: "东京路51号门店",
-                    cpcode: cc,
-                    inuse: iu //in use 是否正在使用
-                });
-            } else {
-                resolve({});
-            }
-        }, 500);
+        const items = cc.split("#");
+        if(items.length >= 8){
+            const output = {
+                picurl: null,
+                title: items[1],
+                cpcode: items[1],
+                distype: (+items[2] || 0), //1-折扣，2-立减，其他值-未知
+                discount: (+items[3] || 0) * 100,
+                condition: (+items[6] || 0), //满免条件
+                expiration: (items[8] + " ~ " + items[9]),
+                distributor: "" //分销员编号
+            };
+            resolve(output);
+        } else {
+            //去服务器查询
+            resolve({});
+        }
     });
 }
 
@@ -193,34 +194,48 @@ export default function CouponIndex(props){
         }
         setPkVisible(false);
         setCouponInfo(couponLoading);
-        getCouponInfo(couponCode, false).then(setCouponInfo); //查询优惠券信息...
+        getCouponInfo(couponCode).then(setCouponInfo); //查询优惠券信息...
     }
     const useThisCoupon = () => {
-        //带参数返回上一页
-        props.route.params?.onGoBack(couponInfo.cpcode && !couponInfo.inuse ? couponInfo : null);
+        if(couponInfo.cpcode && !couponInfo.inuse){
+            dispatchSetLastUsed(couponInfo);
+            props.route.params?.onGoBack(couponInfo);
+        } else {
+            dispatchSetLastUsed(null);
+            props.route.params?.onGoBack(null);
+        }
         props.navigation.goBack();
     }
     const scanCouponCode = () => {
         QRcodeScanner.openScanner(function(res){
             if(res.scanResult){
-                setCouponCode(res.scanResult);
                 setPkVisible(false);
+                setCouponCode(res.scanResult);
                 setCouponInfo(couponLoading);
-                getCouponInfo(res.scanResult, false).then(setCouponInfo); //查询优惠券信息...
+                getCouponInfo(res.scanResult).then(setCouponInfo); //查询优惠券信息...
             }
         });
     }
-    const gotoAdds = () => {
-        props.navigation.navigate("优惠券录入");
+    const onAddNewCoupon = (cpinfo) => {
+        setPkVisible(false);
+        setCouponInfo(cpinfo);
+    }
+    const gotoCouponAdds = () => {
+        props.navigation.navigate("优惠券录入", { onGoBack: onAddNewCoupon });
     }
     
     useEffect(() => {
         if(props.route.params?.couponCode){
-            //查询优惠券信息
-            setCouponCode(props.route.params.couponCode);
+            const couponCache = getCouponInUse(props.route.params.couponCode);
+            if(couponCache){
+                setCouponCode(couponCache.cpcode);
+                setCouponInfo({...couponCache, inuse: true});
+            } else {
+                setCouponCode(props.route.params.couponCode);
+                setCouponInfo(couponLoading);
+                getCouponInfo(props.route.params.couponCode).then(setCouponInfo); //查询优惠券信息...
+            }
             setPkVisible(false);
-            setCouponInfo(couponLoading);
-            getCouponInfo(props.route.params.couponCode, props.route.params.isInUse).then(setCouponInfo);
         }
     }, []);
     
@@ -230,7 +245,7 @@ export default function CouponIndex(props){
                 <PosPayIcon name="coupon-code" size={styles.codeText.fontSize} color={styles.codeText.color} />
                 <Text style={styles.codeText}>{i18n["coupon.code"]}</Text>
             </View>
-            <Text style={[styles.codeInput, !couponCode&&styles.codeEmpty, pkVisible&&styles.codeActived]} onPress={showPKBox}>{couponCode || i18n["coupon.enter.tip"]}</Text>
+            <Text style={[styles.codeInput, !couponCode&&styles.codeEmpty, pkVisible&&styles.codeActived]} numberOfLines={1} onPress={showPKBox}>{couponCode || i18n["coupon.enter.tip"]}</Text>
             {!pkVisible ? (couponInfo.loading ?
                 <View style={styles.loadingTip}>
                     <ActivityIndicator color={appMainColor} size={40} />
@@ -254,7 +269,7 @@ export default function CouponIndex(props){
                         <View style={styles.couponDashedLine}>{/* 竖杠虚线 */}</View>
                         <View style={styles.couponWatermark}><Text style={styles.couponWMText}>NO.{couponInfo.cpcode}</Text></View>
                         <View style={fxHC}>
-                            <Image source={couponInfo.picurl} style={styles.couponPic} />
+                            <Image source={couponInfo.picurl || LocalPictures.couponDefaultPic} style={styles.couponPic} />
                             <View>
                                 <Text style={styles.couponTitle}>{couponInfo.title}</Text>
                                 <Text style={[fs10, tc66]}>{couponInfo.expiration}</Text>
@@ -275,7 +290,7 @@ export default function CouponIndex(props){
                             </View>
                             <Text style={styles.couponCondition}>{i18n["coupon.off"].cloze(couponInfo.condition, couponInfo.discount)}</Text>
                         </>}
-                        <Text style={[fs10, taR, tc66]}>{i18n["coupon.store"]}&emsp;{couponInfo.store}</Text>
+                        <Text style={[fs10, taR, tc66]}>{i18n["coupon.store"]}&emsp;{getUserPosName()}</Text>
                     </LinearGradient>
                     <GradientButton onPress={useThisCoupon}>{i18n[couponInfo.inuse ? "coupon.disuse" : "btn.use"]}</GradientButton>
                 </View>
@@ -290,8 +305,8 @@ export default function CouponIndex(props){
                         <Text style={[fxG1, tcMC]}>{i18n["qrcode.identify"]}</Text>
                         <PosPayIcon name="qrcode-scan" color={appMainColor} size={20} />
                     </Pressable>
-                    <Pressable style={[fxHC, pdX]} android_ripple={tcCC} onPress={gotoAdds}>
-                        <Text style={[fxG1, tcMC]}>{i18n["coupon.add"]}</Text>
+                    <Pressable style={[fxHC, pdX]} android_ripple={tcCC} onPress={gotoCouponAdds}>
+                        <Text style={[fxG1, tcMC]}>{i18n["coupon.adds.manually"]}</Text>
                         <PosPayIcon name="manual-add" color={appMainColor} size={20} />
                     </Pressable>
                     <Text style={fxG1} onPress={() => setPkVisible(false)}>{/* 点我关闭键盘 */}</Text>

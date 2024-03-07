@@ -177,6 +177,12 @@ const PosPayRouterList = [
         options: {...defaultScreenOptions}
     },
     {
+        name: "优惠券录入",
+        component: CouponAdds,
+        i18nTitle: "coupon.adds",
+        options: {...defaultScreenOptions}
+    },
+    {
         name: "支付成功",
         component: IndexTransactionSuccess,
         options: noHeaderOnly
@@ -184,11 +190,6 @@ const PosPayRouterList = [
     {
         name: "优惠券查询",
         component: CouponIndex,
-        options: noHeaderOnly
-    },
-    {
-        name: "优惠券录入",
-        component: CouponAdds,
         options: noHeaderOnly
     },
     {

@@ -10,3 +10,9 @@ export const SET_ACCESSTOKEN = "SET_ACCESSTOKEN";//set access token
 
 //本地设置
 export const UPDATE_SETTINGS = "UPDATE_SETTINGS";
+
+//优惠券相关
+export const SET_LAST_COUPON = "SET_LAST_COUPON";
+export const ADD_A_COUPON = "ADD_A_COUPON";
+export const DELETE_A_COUPON = "DELETE_A_COUPON";
+export const DELETE_ALL_COUPON = "DELETE_ALL_COUPON";

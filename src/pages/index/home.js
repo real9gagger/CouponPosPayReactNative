@@ -255,7 +255,6 @@ function tabBankCard(props){
         DeviceEventEmitter.emit(eventEmitterName, {
             nth: iNthCoupon,
             txt: (cpInfos?.cpcode || ""),
-            inuse: !!cpInfos,
             action: onInputToggle
         });
     }
@@ -322,7 +321,7 @@ function tabBankCard(props){
                 :<>
                     <View style={styles.couponInfo}>
                         <Text style={[fs14, fwB]}>{cpInfos.title}&nbsp;<PosPayIcon name="check-fill" color={disAmounts ? tcG0.color : tc99.color} size={14} /></Text>
-                        <Text style={[fs12, disAmounts ? tcG0 : tc99]}>{i18n[cpInfos.distype===DISCOUNT_TYPE_LJ ? "coupon.reduction" : "coupon.off"].cloze(100, cpInfos.discount)}</Text>
+                        <Text style={[fs12, disAmounts ? tcG0 : tc99]}>{i18n[cpInfos.distype===DISCOUNT_TYPE_LJ ? "coupon.reduction" : "coupon.off"].cloze(cpInfos.condition, cpInfos.discount)}</Text>
                     </View>
                     <Text style={[styles.couponInput, currentInputBox===iNthCoupon&&styles.InputActived]} onPress={toggleCouponInput}>-{disAmounts}</Text>
                 </>}
@@ -386,7 +385,6 @@ function tabEWallet(props){
         DeviceEventEmitter.emit(eventEmitterName, {
             nth: iNthCoupon,
             txt: (cpInfos?.cpcode || ""),
-            inuse: !!cpInfos,
             action: onInputToggle
         });
     }
@@ -459,7 +457,7 @@ function tabEWallet(props){
                 :<>
                     <View style={styles.couponInfo}>
                         <Text style={[fs14, fwB]}>{cpInfos.title}&nbsp;<PosPayIcon name="check-fill" color={disAmounts ? tcG0.color : tc99.color} size={14} /></Text>
-                        <Text style={[fs12, disAmounts ? tcG0 : tc99]}>{i18n[cpInfos.distype===DISCOUNT_TYPE_LJ ? "coupon.reduction" : "coupon.off"].cloze(100, cpInfos.discount)}</Text>
+                        <Text style={[fs12, disAmounts ? tcG0 : tc99]}>{i18n[cpInfos.distype===DISCOUNT_TYPE_LJ ? "coupon.reduction" : "coupon.off"].cloze(cpInfos.condition, cpInfos.discount)}</Text>
                     </View>
                     <Text style={[styles.couponInput, currentInputBox===iNthCoupon&&styles.InputActived]} onPress={toggleCouponInput}>-{disAmounts}</Text>
                 </>}
@@ -524,7 +522,6 @@ function tabQRCode(props){
         DeviceEventEmitter.emit(eventEmitterName, {
             nth: iNthCoupon,
             txt: (cpInfos?.cpcode || ""),
-            inuse: !!cpInfos,
             action: onInputToggle
         });
     }
@@ -596,7 +593,7 @@ function tabQRCode(props){
                 :<>
                     <View style={styles.couponInfo}>
                         <Text style={[fs14, fwB]}>{cpInfos.title}&nbsp;<PosPayIcon name="check-fill" color={disAmounts ? tcG0.color : tc99.color} size={14} /></Text>
-                        <Text style={[fs12, disAmounts ? tcG0 : tc99]}>{i18n[cpInfos.distype===DISCOUNT_TYPE_LJ ? "coupon.reduction" : "coupon.off"].cloze(100, cpInfos.discount)}</Text>
+                        <Text style={[fs12, disAmounts ? tcG0 : tc99]}>{i18n[cpInfos.distype===DISCOUNT_TYPE_LJ ? "coupon.reduction" : "coupon.off"].cloze(cpInfos.condition, cpInfos.discount)}</Text>
                     </View>
                     <Text style={[styles.couponInput, currentInputBox===iNthCoupon&&styles.InputActived]} onPress={toggleCouponInput}>-{disAmounts}</Text>
                 </>}
@@ -712,7 +709,6 @@ export default function IndexHome(props){
                         props.navigation.navigate("优惠券查询", { 
                             couponCode: infos.txt, 
                             onGoBack: useTheCoupon,
-                            isInUse: !!infos.inuse //true-说明正在使用优惠券，false-扫描识别或者没有优惠券
                         });
                     }
                     break;

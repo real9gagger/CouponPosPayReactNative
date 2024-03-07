@@ -2,6 +2,7 @@ import { store } from "./index"; //使用 useDispatch 报错，因此直接使�
 import { changeLanguage, initiLanguage } from "./localesReducer";
 import { updateUserInfo, resetUserInfo, setAccessToken } from "./userReducer";
 import { updateAppSettings, updateLanguageSettings } from "./settingsReducer";
+import { setLastUsed } from "./couponReducer";
 
 /* ================ 本地语言相关 ================ */
 export function dispatchChangeLanguage(lgcode){
@@ -35,4 +36,9 @@ export function dispatchSetAccessToken(token, expin, account, password){
 /* ================ 本地设置项 ================ */
 export function dispatchUpdateAppSettings(key, value){
     store.dispatch(updateAppSettings(key, value));
+}
+
+/* ================ 优惠券相关 ================ */
+export function dispatchSetLastUsed(info){
+    store.dispatch(setLastUsed(info));
 }

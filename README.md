@@ -40,7 +40,7 @@
 > 说明如何修改第三方项目，建议给出具体的步骤说明  
 > 【以下修改可以改善第三方组件的体验】  
 > 【！！！每次添加新插件后，以下配置都可能被覆盖，需要重新修改！！！】  
-* 【图片预览点击空白无法关闭问题】打开 /node_modules/react-native-image-viewing/ImageViewing.js。转到第42行，将 View 改为 TouchableOpacity（需要 import），并添加两个属性 “ activeOpacity={1} onPress={onRequestCloseEnhanced} ”。
+* 【图片预览点击空白无法关闭问题】打开 /node_modules/react-native-image-viewing/dist/ImageViewing.js。转到第42行，将 View 改为 TouchableOpacity（需要 import），并添加两个属性 “ activeOpacity={1} onPress={onRequestCloseEnhanced} ”。
 * 【Android 8+ 启动屏无法全屏问题】打开 /node_modules/react-native-splash-screen/android/src/main/java/org/devio/rn/splashscreen/SplashScreen.java 找到 setActivityAndroidP 函数。在 if(Build.VERSION.SDK_INT >= 28){...} 语句后面加上如下代码：（2024年1月26日 使用的是 react-native-splash-screen 3.3.0 版本）
 ```java
 else {
@@ -56,6 +56,7 @@ else {
     }
 } //！！！需要 import android.view.View;
 ```
+* 【日期选择控件中的“日”对应的框宽度太小】打开 /node_modules/react-native-date-picker/android/src/main/res/values/styles.xml 将样式 “android_native_small” 中的 “android:layout_width” 改为 64dp
 
 ## 测试说明
 > 如果有测试相关内容需要说明，请填写在这里  

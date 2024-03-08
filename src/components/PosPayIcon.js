@@ -339,6 +339,23 @@ const IconManualAdd = (props) => {
         </Svg>
     )
 }
+//列表模式筛选
+const IconFilterList = (props) => {
+    return (
+        <Svg {...props}>
+            <Path d="M794.102 819.99C759.68 852.247 713.397 872 662.5 872 556.185 872 470 785.815 470 679.5S556.185 487 662.5 487 855 573.185 855 679.5c0 23.663-4.27 46.328-12.08 67.268l99.814 67.842c20.098 13.66 25.316 41.026 11.656 61.124-13.66 20.098-41.026 25.316-61.124 11.656l-99.164-67.4zM84 147c-24.3 0-44-19.7-44-44s19.7-44 44-44h834c24.3 0 44 19.7 44 44s-19.7 44-44 44H84z m0 498.5c-24.3 0-44-19.7-44-44s19.7-44 44-44h251c24.3 0 44 19.7 44 44s-19.7 44-44 44H84z m0-249c-24.3 0-44-19.7-44-44s19.7-44 44-44h834c24.3 0 44 19.7 44 44s-19.7 44-44 44H84z m0 499c-24.3 0-44-19.7-44-44s19.7-44 44-44h251c24.3 0 44 19.7 44 44s-19.7 44-44 44H84zM662.5 784c57.714 0 104.5-46.786 104.5-104.5S720.214 575 662.5 575 558 621.786 558 679.5 604.786 784 662.5 784z" />
+        </Svg>
+    )
+}
+//查询参数
+const IconQueryParams = (props) => {
+    return (
+        <Svg {...props}>
+            <Path d="M56.888889 56.888889v910.222222h910.222222V56.888889z m853.333333 853.333333H113.777778V113.777778h796.444444z" />
+            <Path d="M431.217778 472.746667a91.591111 91.591111 0 0 0-173.795556 0h-76.8v56.888889H256a91.875556 91.875556 0 0 0 174.364444 0h413.297778v-56.888889z m-87.04 63.146666a34.702222 34.702222 0 1 1 34.702222-34.417777 34.417778 34.417778 0 0 1-34.702222 34.417777zM755.768889 271.075556a91.591111 91.591111 0 0 0-173.795556 0H180.622222v56.888888h401.066667a91.875556 91.875556 0 0 0 174.364444 0h87.608889v-56.888888z m-87.04 63.146666a34.702222 34.702222 0 0 1 0-69.12 34.702222 34.702222 0 1 1 0 69.12zM654.222222 673.28a91.306667 91.306667 0 0 0-173.511111 0H180.622222v56.888889h299.235556a91.591111 91.591111 0 0 0 174.08 0h189.724444v-56.888889z m-86.755555 63.146667a34.702222 34.702222 0 1 1 34.702222-34.417778 34.702222 34.702222 0 0 1-35.271111 34.417778z" />
+        </Svg>
+    )
+}
 /* ================================ 分割线 ================================ */
 //转换成 svg 的属性
 function getSvgProps(props){
@@ -364,6 +381,53 @@ function getSvgProps(props){
     }
     
     return svgProps
+}
+
+//获取所有图标名称【添加图标时记得在此处追加图标名称】
+export function getAllIconName(){
+    return [
+        "wifi-connected",
+        "message-circle",
+        "right-arrow-double",
+        "right-arrow",
+        "zoom-plus",
+        "zoom-minus",
+        "my-location",
+        "success-solid",
+        "error-solid",
+        "warning-solid",
+        "info-solid",
+        "close-x",
+        "check-v",
+        "check-confirm",
+        "check-fill",
+        "login-account",
+        "login-lock",
+        "eye-open",
+        "eye-close",
+        "pay-backspace",
+        "collapse-keyboard",
+        "delete-x",
+        "sale-flag",
+        "return-goods",
+        "printer-stroke",
+        "printing",
+        "sub-total",
+        "system-setting",
+        "help-stroke",
+        "turn-off",
+        "bank-card",
+        "e-wallet",
+        "qrcode-pay",
+        "qrcode-scan",
+        "internationalization",
+        "customer-display",
+        "coupon-code",
+        "edit-pen",
+        "manual-add",
+        "filter-list",
+        "query-params",
+    ]
 }
 
 //APP字体图标集。为了避免APP大小太大，不建议使用第三方组件的图标
@@ -416,7 +480,9 @@ class PosPayIcon extends Component {
             case "coupon-code": return IconCouponCode(svgProps)
             case "edit-pen": return IconEditPen(svgProps)
             case "manual-add": return IconManualAdd(svgProps)
-            default: return null
+            case "filter-list": return IconFilterList(svgProps)
+            case "query-params": return IconQueryParams(svgProps)
+            default: return null //【添加图标后，必须在 getAllIconName 函数里追加图标名称！！！】
         }
     }
 }

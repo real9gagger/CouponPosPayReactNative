@@ -53,24 +53,6 @@ export default function IndexTransactionSuccess(props){
     
     useEffect(() => {
         const params = props.route.params;
-        /* { //2024年2月2日。支付成功时的测试数据
-            activityRequestCode:  99, 
-            activityResultCode:   0, 
-            amount:               108, 
-            creditCardBrand:      "01", 
-            creditCardMaskedPan:  "123456******3456", //信用卡账号，如果是信用卡支付的会有账号
-            currencyCode:         "JPY", 
-            eMoneyNumber:         null, //电子钱包账号，如果是电子钱包支付的会有账号
-            eMoneyType:           null, 
-            errorCode:            "", 
-            paymentType:          "01", 
-            qrPayType:            null, 
-            slipNumber:           "99999", 
-            tax:                  0, 
-            transactionTime:      1706862993364, 
-            transactionType:      "1"
-        }; */
-        
         if(params && !transactionResult){//防止重复调用
             const dat = {...params}; //复制一份！！！
             const uif = getUserInfo();

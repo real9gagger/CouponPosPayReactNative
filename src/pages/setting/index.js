@@ -65,6 +65,12 @@ const infoList = [
         disabled: runtimeEnvironment.isProduction
     },
     {
+        actionName: "软件图标",
+        i18nLabel: "app.icons",
+        descText: "test.debug.available",
+        disabled: runtimeEnvironment.isProduction
+    },
+    {
         actionName: "设备信息",
         i18nLabel: "test.devinfo"
     },

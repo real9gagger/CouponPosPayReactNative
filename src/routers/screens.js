@@ -17,6 +17,7 @@ import TestIndex from "@/pages/test/index";
 import TestDevinfo from "@/pages/test/devinfo";
 import TestAboutSoftware from "@/pages/test/aboutSoftware";
 import TestSupportPayment from "@/pages/test/supportPayment";
+import TestPospayIcons from "@/pages/test/pospayIcons";
 import CouponIndex from "@/pages/coupon/index";
 import CouponAdds from "@/pages/coupon/adds";
 import OrderPrintPreview from "@/pages/order/printPreview";
@@ -156,6 +157,12 @@ const PosPayRouterList = [
         name: "支付合作商",
         component: TestSupportPayment,
         i18nTitle: "payment.supports",
+        options: {...defaultScreenOptions}
+    },
+    {
+        name: "软件图标",
+        component: TestPospayIcons,
+        i18nTitle: "app.icons",
         options: {...defaultScreenOptions}
     },
     {

@@ -15,6 +15,7 @@
     "app.alias": "旅游商户营销平台",
     "app.lgname": "简体中文",
     "app.clean.caches": "清理软件缓存",
+    "app.icons": "软件图标",
     "tabbar.home": "结算",
     "tabbar.mine": "个人中心",
     "btn.ok": "好",
@@ -128,7 +129,10 @@
     "operation.time": "操作时间",
     "tax.rate": "税率",
     "tax.formula": "税 = (订单金额 - 优惠) × 税率",
+    "options.any": "全部",
     
+    "optional": "选填",
+    "filter": "筛选",
     "begindate": "起始日期",
     "enddate": "终止日期",
     "required": "必填项",

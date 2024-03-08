@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ScrollView, View, Text, Image, StatusBar, StyleSheet } from "react-native";
 import { useI18N } from "@/store/getter";
-import { EMPTY_DEFAULT_TEXT } from "@/common/Statics";
+import { EMPTY_DEFAULT_TEXT, TRANSACTION_TYPE_REFUND } from "@/common/Statics";
 import LocalPictures from "@/common/Pictures";
 import PosPayIcon from "@/components/PosPayIcon";
 import GradientButton from "@/components/GradientButton";
@@ -47,12 +47,12 @@ export default function OrderDetails(props){
         
         PaymentHelper.startPay({
             transactionMode: (runtimeEnvironment.isProduction ? "1" : "2"), //1-正常，2-练习
-            transactionType: "3", //1-付款，2-取消付款，3-退款
+            transactionType: TRANSACTION_TYPE_REFUND, //1-付款，2-取消付款，3-退款
             slipNumber: orderInfo.slipNumber //单据号码，取消付款或者退款时用到
         }, function(payRes){
             if(payRes.activityResultCode === 0){//退款成功
                 $request("posAppRefund", { id: orderInfo.id, slipNumber: orderInfo.slipNumber }).then(res => {
-                    orderInfo.transactionType = 3;
+                    orderInfo.transactionType = TRANSACTION_TYPE_REFUND;
                     setOrderInfo({...orderInfo});
                     $toast(i18n["refund.success"]);
                 });
@@ -65,13 +65,13 @@ export default function OrderDetails(props){
     }
     
     return (
-        <ScrollView style={pgEE} contentContainerStyle={{padding: 10}}>
+        <ScrollView style={pgEE} contentContainerStyle={pdS}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
             {!!orderInfo ? <>
                 <View style={[bgFF, brX, pdHX]}>
                     <View style={styles.itemBox}>
                         <Text style={fxG1}>{i18n["transaction.type"]}</Text>
-                        {orderInfo.transactionType==1
+                        {orderInfo.transactionType!==TRANSACTION_TYPE_REFUND
                         ? <Text style={tcG0}>{i18n["transaction.receive"]}</Text>
                         : <Text style={tcR1}>{i18n["transaction.refund"]}</Text>
                         }
@@ -129,7 +129,7 @@ export default function OrderDetails(props){
                 </View>
                 <View style={[fxR, mgTX]}>
                     <GradientButton disabled={!orderInfo} style={fxG1} onPress={printOrder}>{i18n["reprint"]}</GradientButton>
-                    <GradientButton disabled={orderInfo?.transactionType!=1} style={[fxG1, mgLX]} onPress={refundMoney}>{i18n["transaction.refund"]}</GradientButton>
+                    <GradientButton disabled={orderInfo?.transactionType===TRANSACTION_TYPE_REFUND} style={[fxG1, mgLX]} onPress={refundMoney}>{i18n["transaction.refund"]}</GradientButton>
                 </View>
             </>: <Text style={[pdX, tc99, fs16, taC]}>{i18n["nodata"]}</Text>}
         </ScrollView>

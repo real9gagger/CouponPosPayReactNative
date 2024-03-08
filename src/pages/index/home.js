@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { ScrollView, View, Text, Pressable , Image, StatusBar, StyleSheet, TouchableOpacity, DeviceEventEmitter } from "react-native";
 import { useI18N, getI18N, useAppSettings } from "@/store/getter";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
-import { eWalletList, CREDIT_CARD_PAYMENT_CODE, QR_CODE_PAYMENT_CODE, DISCOUNT_TYPE_LJ } from "@/common/Statics";
+import { eWalletList, CREDIT_CARD_PAYMENT_CODE, QR_CODE_PAYMENT_CODE, DISCOUNT_TYPE_LJ, TRANSACTION_TYPE_RECEIVE } from "@/common/Statics";
 import LocalPictures from "@/common/Pictures";
 import QRcodeScanner from "@/modules/QRcodeScanner";
 import PaymentHelper from "@/modules/PaymentHelper";
@@ -170,7 +170,7 @@ function callPayment(payMoney, disMoney, taxMoney, couponCode, paymentCode){
     
     //以下属性数据类型都是字符串！
     PaymentHelper.startPay({
-        transactionType: "1", //1-付款，2-取消付款，3-退款
+        transactionType: TRANSACTION_TYPE_RECEIVE, //1-付款，2-取消付款，3-退款
         transactionMode: (runtimeEnvironment.isProduction ? "1" : "2"), //1-正常，2-练习
         paymentType: paymentCode,
         amount: $tofixed(payMoney - disMoney), //至少一块钱，否则报错

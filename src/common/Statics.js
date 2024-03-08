@@ -1,10 +1,14 @@
 /**************** 一些静态数据 ****************/
 
-export const CREDIT_CARD_PAYMENT_CODE = "01";
-export const QR_CODE_PAYMENT_CODE = "03";
+export const CREDIT_CARD_PAYMENT_CODE = "01";//信用卡
+export const E_MONEY_PAYMENT_CODE = "02"; //电子钱包
+export const QR_CODE_PAYMENT_CODE = "03";//二维码
 export const EMPTY_DEFAULT_TEXT = "--"; // 空数据时的替代文本
 export const DISCOUNT_TYPE_ZK = 1; //优惠类型：折扣
 export const DISCOUNT_TYPE_LJ = 2; //优惠类型：立减
+export const TRANSACTION_TYPE_RECEIVE = "1"; //收款
+export const TRANSACTION_TYPE_CANCEL = "2"; //取消收款
+export const TRANSACTION_TYPE_REFUND = "3"; //退款
 
 //信用卡付款方式
 export const creditCardList = [

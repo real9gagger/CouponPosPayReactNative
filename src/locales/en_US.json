@@ -7,6 +7,7 @@
     "app.alias": "Tourism Merchant Marketing Platform",
     "app.lgname": "English",
     "app.clean.caches": "Clean app caches",
+    "app.icons": "App Icons",
     "tabbar.home": "Settlement",
     "tabbar.mine": "Mine",
     "btn.ok": "OK",
@@ -120,7 +121,10 @@
     "operation.time": "Operation time",
     "tax.rate": "Tax Rate",
     "tax.formula": "Tax = (Order Amount - Discount) × Tax Rate",
+    "options.any": "Any",
     
+    "optional": "Optional",
+    "filter": "Filter",
     "begindate": "Begin date",
     "enddate": "End date",
     "required": "Required",

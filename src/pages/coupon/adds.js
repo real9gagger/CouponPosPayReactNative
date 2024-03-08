@@ -162,7 +162,7 @@ export default function CouponAdds(props){
             <View style={styles.itemBox}>
                 <Text style={[fs12, inputNth===0xDD88&&tcMC]}>{couponType===DISCOUNT_TYPE_ZK ? i18n["coupon.off.rate"] : i18n["coupon.reduction.amount"]}</Text>
                 <TextInput 
-                    style={[styles.inputBox, {paddingRight: 15}, inputNth===0xDD88&&styles.inputActivated]} 
+                    style={[styles.inputBox, pdRX, inputNth===0xDD88&&styles.inputActivated]} 
                     keyboardType="number-pad" 
                     defaultValue={couponDiscount} 
                     onChangeText={setCouponDiscount}
@@ -175,7 +175,7 @@ export default function CouponAdds(props){
             <View style={styles.itemBox}>
                 <Text style={[fs12, inputNth===0xCC99&&tcMC]}>{i18n["coupon.condition"]}</Text>
                 <TextInput 
-                    style={[styles.inputBox, {paddingRight: 15}, inputNth===0xCC99&&styles.inputActivated]} 
+                    style={[styles.inputBox, pdRX, inputNth===0xCC99&&styles.inputActivated]} 
                     keyboardType="number-pad" 
                     defaultValue={couponCondition} 
                     onChangeText={setCouponCondition}
@@ -217,7 +217,7 @@ export default function CouponAdds(props){
                     onFocus={onInputFocus(0xEE44)} />
             </View>
             <View style={fxG1}>{/* 占位专用 */}</View>
-            <GradientButton style={{marginVertical: 15}} onPress={onAddCoupon}>{i18n["btn.confirm"]}</GradientButton>
+            <GradientButton style={mgVS} onPress={onAddCoupon}>{i18n["btn.confirm"]}</GradientButton>
         </ScrollView>
     );
 }

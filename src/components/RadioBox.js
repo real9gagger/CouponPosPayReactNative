@@ -44,7 +44,7 @@ class RadioBox extends Component {
         }
         
         return (
-            <TouchableOpacity activeOpacity={this.props.activeOpacity || 0.5} onPress={this.props.onPress} style={[styles.containerBox, this.props.style]}>
+            <TouchableOpacity activeOpacity={0.5} onPress={this.props.onPress} style={[styles.containerBox, this.props.style]}>
                 <View style={outerStyle}><View style={innerStyle}></View></View>
                 <Text style={labelStyle}>{this.props.label}</Text>
             </TouchableOpacity>

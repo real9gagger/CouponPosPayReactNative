@@ -10,6 +10,7 @@ const FastCss = StyleSheet.create({
     fxHM: { display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center" }, /* 水平(H)布局时，水平和垂直都居中(Middle) */
     fxVC: { display: "flex", flexDirection: "column", justifyContent: "center" }, /* 垂直(V)布局时，垂直居中(Center) */
     fxVM: { display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }, /* 垂直(V)布局时，水平和垂直都居中(Middle) */
+    fxG0: { flexGrow: 0, flexShrink: 0, flexBasis: "auto" },
     fxG1: { flexGrow: 1, flexShrink: 1, flexBasis: 0 },
     fxWP: { flexWrap: "wrap" },
     fxAE: { alignItems: "flex-end" },
@@ -129,6 +130,13 @@ const FastCss = StyleSheet.create({
     pdRX: { paddingRight: BOX_PADDING },
     pdTX: { paddingTop: BOX_PADDING },
     pdBX: { paddingBottom: BOX_PADDING },
+    pdS: { padding: BOX_MARGIN }, /* S - Smaller */
+    pdHS: { paddingHorizontal: BOX_MARGIN },
+    pdVS: { paddingVertical: BOX_MARGIN },
+    pdLS: { paddingLeft: BOX_MARGIN },
+    pdRS: { paddingRight: BOX_MARGIN },
+    pdTS: { paddingTop: BOX_MARGIN },
+    pdBS: { paddingBottom: BOX_MARGIN },
     
     mg0: { margin: 0 },
     mgX: { margin: BOX_MARGIN }, /* X 结尾表示默认框的外边距 */
@@ -138,6 +146,13 @@ const FastCss = StyleSheet.create({
     mgRX: { marginRight: BOX_MARGIN },
     mgTX: { marginTop: BOX_MARGIN },
     mgBX: { marginBottom: BOX_MARGIN },
+    mgS: { margin: BOX_PADDING }, /* S - super */
+    mgHS: { marginHorizontal: BOX_PADDING },
+    mgVS: { marginVertical: BOX_PADDING },
+    mgLS: { marginLeft: BOX_PADDING },
+    mgRS: { marginRight: BOX_PADDING },
+    mgTS: { marginTop: BOX_PADDING },
+    mgBS: { marginBottom: BOX_PADDING },
     
     br0: { borderRadius: 0 },
     brX: { borderRadius: 8, overflow: "hidden" }, /* X 结尾表示默认框的圆角 */

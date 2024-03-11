@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
     }
 })
 
-//自定义的勾选框按钮 check box quality
+//自定义的勾选框按钮
 class CheckBox extends Component {
     constructor(props) {
         super(props)

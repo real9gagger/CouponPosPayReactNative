@@ -37,7 +37,7 @@ instance.interceptors.response.use(function (response) {
                 $toast(resData.msg);
             }
         }
-        return Promise.reject("[" + resCode + "]" + resData.msg);
+        return Promise.reject("[" + resCode + "] " + resData.msg);
     }
 }, function (err) {
     //console.log("失败响应", err)

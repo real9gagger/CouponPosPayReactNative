@@ -76,7 +76,7 @@ const drawerItemList = [
         iconName: "sale-flag"
     },
     {
-        key: "业务-退货",
+        key: "业务-退款",
         i18nLabel: "drawer.returns",
         iconName: "return-goods"
     },
@@ -86,19 +86,9 @@ const drawerItemList = [
         iconName: "printing"
     },
     {
-        key: "合计",
-        i18nLabel: "summation",
-        iconName: ""
-    },
-    {
-        key: "合计-日计",
-        i18nLabel: "drawer.summary",
+        key: "业务-统计",
+        i18nLabel: "statistics",
         iconName: "sub-total"
-    },
-    {
-        key: "合计-打印",
-        i18nLabel: "print",
-        iconName: "printing"
     },
     {
         key: "系统",
@@ -109,6 +99,16 @@ const drawerItemList = [
         key: "系统-设置",
         i18nLabel: "setting",
         iconName: "system-setting"
+    },
+    {
+        key: "系统-副屏",
+        i18nLabel: "customer.display",
+        iconName: "customer-display"
+    },
+    {
+        key: "系统-打印",
+        i18nLabel: "print.items",
+        iconName: "printer-stroke"
     },
     {
         key: "系统-帮助",
@@ -143,12 +143,13 @@ function CustomDrawerContent(props) {
     //抽屉列表中的项点击
     function onDrawerItemPress(itemKey){
         switch(itemKey){
-            case "业务-销售": break;
-            case "业务-退货": break;
-            case "业务-打印": break;
-            case "合计-日计": break;
-            case "合计-打印": break;
+            case "业务-销售": props.navigation.navigate("订单列表"); break;
+            case "业务-退款": props.navigation.navigate("订单退款"); break;
+            case "业务-打印": props.navigation.navigate("订单打印"); break;
+            case "业务-统计": props.navigation.navigate("订单统计"); break;
             case "系统-设置": props.navigation.navigate("设置页"); break;
+            case "系统-副屏": props.navigation.navigate("顾客屏幕"); break;
+            case "系统-打印": props.navigation.navigate("打印设置"); break;
             case "系统-帮助": props.navigation.navigate("帮助页"); break;
             case "系统-退出": BackHandler.exitApp(); break;
         }

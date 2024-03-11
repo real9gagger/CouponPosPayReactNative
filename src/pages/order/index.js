@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, StatusBar, ActivityIndicator, StyleSheet } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, RefreshControl, StatusBar, StyleSheet } from "react-native";
 import { useI18N } from "@/store/getter";
 import { getPaymentInfo } from "@/common/Statics";
 import { CREDIT_CARD_PAYMENT_CODE, E_MONEY_PAYMENT_CODE, QR_CODE_PAYMENT_CODE, TRANSACTION_TYPE_RECEIVE, TRANSACTION_TYPE_REFUND } from "@/common/Statics";
@@ -10,9 +10,14 @@ import PopupX from "@/components/PopupX";
 import RadioBox from "@/components/RadioBox";
 import CheckBox from "@/components/CheckBox";
 import GradientButton from "@/components/GradientButton";
+import LoadingTip from "@/components/LoadingTip";
 import DatePicker from "react-native-date-picker";
 
 const styles = StyleSheet.create({
+    contentBox: {
+        paddingHorizontal: 10,
+        paddingVertical: 5
+    },
     itemBox: {
         display: "flex",
         flexDirection: "row",
@@ -67,6 +72,7 @@ const styles = StyleSheet.create({
     paramsBox: {
         backgroundColor: "#fff",
         paddingHorizontal: 10,
+        paddingVertical: 10,
         borderBottomColor: "#ddd",
         borderBottomWidth: StyleSheet.hairlineWidth
     }
@@ -75,20 +81,34 @@ const styles = StyleSheet.create({
 function getOrderListByParams(params){
     return $request("getPosAppOrderList", params).then(res => {
         const list = (res || []);
+        const pmap = {};
+        
         for(const vx of list){
-            const pmi = getPaymentInfo(vx.paymentType, vx.creditCardBrand || vx.eMoneyType || vx.qrPayType);
-            if(pmi){
-                vx.paymentName = pmi.name;
-                vx.paymentLogo = pmi.logo;
+            const subType = (vx.creditCardBrand || vx.eMoneyType || vx.qrPayType);
+            const pmKey = `${vx.paymentType}_${subType}`;
+            
+            if(!!pmap[pmKey]){
+                const pmInfo = pmap[pmKey];
+                vx.paymentName = pmInfo.name;
+                vx.paymentLogo = pmInfo.logo;
+            } else {
+                const pmInfo = getPaymentInfo(vx.paymentType, subType);
+                if(pmInfo){
+                    vx.paymentName = pmInfo.name;
+                    vx.paymentLogo = pmInfo.logo;
+                    pmap[pmKey] = pmInfo;
+                }
             }
         }
+        
         return list;
     });
 }
 
 export default function OrderIndex(props){
     const i18n = useI18N();
-    const [orderList, setOrderList] = useState(null);
+    const ltRef = useRef(null);
+    const [orderList, setOrderList] = useState([]);
     const [isPopupShow, setIsPopupShow] = useState(false);
     const [tdi, setTDI] = useState([0, null, null, "", ""]); // transaction date info。索引0- 日期选择框绑定是开始（1）还是结束（2）或者不显示选择框（0），1-开始日期Date对象，2-结束日期Date对象，3-开始日期字符串，4-结束日期字符串
     const [osn, setOSN] = useState(null); //order slip number
@@ -179,8 +199,14 @@ export default function OrderIndex(props){
         }
     }
     const queryOrders = () => {
+        if(!ltRef.current.canLoad()){
+            return;
+        } else {
+            ltRef.current.setLoading(true);
+        }
+        
         const params = {
-            pageNum: 1,
+            pageNum: ltRef.current.pageIndex,
             pageSize: 20,
             startTime: tdi[1] ? formatDate(tdi[1], "yyyy-MM-dd 00:00:00") : null,
             endTime: tdi[2] ? formatDate(tdi[2], "yyyy-MM-dd 23:59:59") : null,
@@ -190,37 +216,58 @@ export default function OrderIndex(props){
         };
         const txts = [];
         
-        (!!params.startTime || !!params.endTime) && txts.push(getTdiName(params.startTime, params.endTime));
-        !!params.slipNumber && txts.push(params.slipNumber);
-        !!params.transactionType && txts.push(getTtcName(params.transactionType));
-        !!params.paymentType && txts.push(getPmiName(params.paymentType));
+        if(ltRef.current.isFirstPage()){
+            (!!params.startTime || !!params.endTime) && txts.push(getTdiName(params.startTime, params.endTime));
+            (!!params.slipNumber) && txts.push(params.slipNumber);
+            (!!params.transactionType) && txts.push(getTtcName(params.transactionType));
+            (!!params.paymentType) && txts.push(getPmiName(params.paymentType));
+            
+            setOrderList([]);
+            setIsPopupShow(false);
+            setParamsText(txts.join(","));
+        }
         
-        //console.log(params)
-        setOrderList(null);
-        getOrderListByParams(params).then(setOrderList);
-        setIsPopupShow(false);
-        setParamsText(txts.join(","));
+        getOrderListByParams(params).then(res => {
+            if(ltRef.current.isFirstPage()){
+                setOrderList(res);
+            } else {
+                setOrderList([...orderList, ...res]);
+            }
+            ltRef.current.setNoMore(params.pageSize, res.length);
+        }).catch(ltRef.current.setErrMsg);
+    }
+    const onSVScroll = (evt) => {
+        const { layoutMeasurement, contentOffset, contentSize } = evt.nativeEvent;
+        if(ltRef.current.isScrollDown(contentOffset.y) && ltRef.current.canLoad()){
+            const isCloseToBottom = (layoutMeasurement.height + contentOffset.y) >= (contentSize.height - 40); // 这里的 40 可以根据需要调整
+            if (isCloseToBottom) {
+                ltRef.current.nextPage();
+                queryOrders();
+            }
+        }
+        ltRef.current.setScrollTop(contentOffset.y);
+    }
+    const onSearchOrders = () => {
+        ltRef.current.resetState();
+        queryOrders();
     }
     
     useEffect(queryOrders, []);
     
     return (<>
-        <View style={[fxHC, styles.paramsBox]}>
-            <PosPayIcon name="query-params" size={16} offset={-5} />
-            <Text style={[fxG1, fs14, pdVS, pdRX]} numberOfLines={1}>{paramsText || i18n["options.any"]}</Text>
-            <Text style={[fs14, pdVS]} onPress={onPopupShow}>{i18n["filter"]}</Text>
-            <PosPayIcon name="filter-list" size={16} offset={5} onPress={onPopupShow} style={{marginBottom: -2}} />
-        </View>
-        <ScrollView style={pgEE} contentContainerStyle={{padding: 10}}>
-            <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
-            {!orderList ? 
-                <View>
-                    <ActivityIndicator color={appMainColor} size={30} />
-                    <Text style={[fs14, tcMC, mgTX, taC]}>{i18n["loading"]}</Text>
-                </View>
-            :(!orderList.length ? 
-                <Text style={[fs14, tc99, taC, pdVX]}>{i18n["nodata"]}</Text>
-            :orderList.map((vx, ix) => 
+        <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
+        <TouchableOpacity style={[fxHC, styles.paramsBox]} onPress={onPopupShow} activeOpacity={0.6}>
+            <PosPayIcon name="query-params" size={14} offset={-5} />
+            <Text style={[fxG1, fs12, pdRX]} numberOfLines={1}>{paramsText || i18n["options.any"]}</Text>
+            <Text style={fs12}>{i18n["filter"]}</Text>
+            <PosPayIcon name="filter-list" size={14} offset={5} style={{marginBottom: -2}} />
+        </TouchableOpacity>
+        <ScrollView 
+            style={pgEE} 
+            contentContainerStyle={styles.contentBox}
+            onScroll={onSVScroll}
+            refreshControl={<RefreshControl refreshing={false} onRefresh={queryOrders} />}>
+            {orderList.map((vx, ix) => 
                 <TouchableOpacity key={vx.id} style={styles.itemBox} onPress={() => onItemPress(vx)} activeOpacity={0.5}>
                     <View style={styles.itemLeft}>
                         <View style={fxHC}>
@@ -248,7 +295,13 @@ export default function OrderIndex(props){
                         <Text style={styles.nameLabel}>{vx.paymentName || i18n["unknown"]}</Text>
                     </View>
                 </TouchableOpacity>
-            ))}
+            )}
+            <LoadingTip ref={ltRef}
+                noMoreText={i18n["nomore"]}
+                noDataText={i18n["nodata"]}
+                retryLabel={i18n["retry"]}
+                errorTitle={i18n["loading.error"]}
+                onRetry={queryOrders} />
         </ScrollView>
         <PopupX showMe={isPopupShow} onClose={onPopupClose} title={i18n["filter"]}>
             <View style={pdHX}>
@@ -256,7 +309,7 @@ export default function OrderIndex(props){
                 <View style={fxHC}>
                     <Text style={[styles.dateBox, !tdi[3] && tcAA]} onPress={onTdiOpen(1)}>{tdi[3] || i18n["begindate"]}</Text>
                     <Text style={[mgHX, fs14]}>~</Text>
-                    <Text style={[styles.dateBox, !tdi[3] && tcAA]} onPress={onTdiOpen(2)}>{tdi[4] || i18n["enddate"]}</Text>
+                    <Text style={[styles.dateBox, !tdi[4] && tcAA]} onPress={onTdiOpen(2)}>{tdi[4] || i18n["enddate"]}</Text>
                 </View>
                 
                 <Text style={styles.labelBox}>{i18n["transaction.number"]}</Text>
@@ -278,7 +331,7 @@ export default function OrderIndex(props){
             </View>
             <View style={[fxR, pdX, {marginTop: 80}]}>
                 <GradientButton style={fxG1} onPress={onPopupClose}>{i18n["btn.cancel"]}</GradientButton>
-                <GradientButton style={[fxG1, mgLS]} onPress={queryOrders}>{i18n["btn.confirm"]}</GradientButton>
+                <GradientButton style={[fxG1, mgLS]} onPress={onSearchOrders}>{i18n["btn.confirm"]}</GradientButton>
             </View>
         </PopupX>
         <DatePicker

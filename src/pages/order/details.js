@@ -5,7 +5,6 @@ import { EMPTY_DEFAULT_TEXT, TRANSACTION_TYPE_REFUND } from "@/common/Statics";
 import LocalPictures from "@/common/Pictures";
 import PosPayIcon from "@/components/PosPayIcon";
 import GradientButton from "@/components/GradientButton";
-import PaymentHelper from "@/modules/PaymentHelper";
 
 const styles = StyleSheet.create({
     moneyText: {
@@ -40,28 +39,7 @@ export default function OrderDetails(props){
     }
     
     const refundMoney = () => {
-        //如果不支持支付功能
-        if(!PaymentHelper.isSupport()){
-            return $alert(i18n["payment.errmsg1"]);
-        }
-        
-        PaymentHelper.startPay({
-            transactionMode: (runtimeEnvironment.isProduction ? "1" : "2"), //1-正常，2-练习
-            transactionType: TRANSACTION_TYPE_REFUND, //1-付款，2-取消付款，3-退款
-            slipNumber: orderInfo.slipNumber //单据号码，取消付款或者退款时用到
-        }, function(payRes){
-            if(payRes.activityResultCode === 0){//退款成功
-                $request("posAppRefund", { id: orderInfo.id, slipNumber: orderInfo.slipNumber }).then(res => {
-                    orderInfo.transactionType = TRANSACTION_TYPE_REFUND;
-                    setOrderInfo({...orderInfo});
-                    $toast(i18n["refund.success"]);
-                });
-            } else if(payRes.activityResultCode === 2){//取消退款
-                //$toast(i18n["payment.errmsg2"]);
-            } else {//退款失败
-                $alert(i18n["payment.errmsg3"].cloze(payRes.errorCode));
-            }
-        });
+        props.navigation.navigate("退款确认", orderInfo);
     }
     
     return (

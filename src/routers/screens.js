@@ -24,6 +24,9 @@ import OrderPrintPreview from "@/pages/order/printPreview";
 import OrderIndex from "@/pages/order/index";
 import OrderDetails from "@/pages/order/details";
 import OrderStatistics from "@/pages/order/statistics";
+import OrderPrinting from "@/pages/order/printing";
+import OrderRefund from "@/pages/order/refund";
+import OrderRefundConfirm from "@/pages/order/refundConfirm";
 
 //非Tabs页面的顶部导航栏全局配置
 const defaultScreenOptions = {
@@ -184,6 +187,18 @@ const PosPayRouterList = [
         options: {...defaultScreenOptions}
     },
     {
+        name: "订单打印",
+        component: OrderPrinting,
+        i18nTitle: "print",
+        options: {...defaultScreenOptions}
+    },
+    {
+        name: "订单退款",
+        component: OrderRefund,
+        i18nTitle: "drawer.returns",
+        options: {...defaultScreenOptions}
+    },
+    {
         name: "优惠券录入",
         component: CouponAdds,
         i18nTitle: "coupon.adds",
@@ -202,6 +217,11 @@ const PosPayRouterList = [
     {
         name: "打印预览",
         component: OrderPrintPreview,
+        options: noHeaderOnly
+    },
+    {
+        name: "退款确认",
+        component: OrderRefundConfirm,
         options: noHeaderOnly
     },
     {

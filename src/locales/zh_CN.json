@@ -81,14 +81,17 @@
     "coupon.errmsg1": "起始日期不能大于终止日期！",
     "payment.method": "支付方式",
     "payment.supports": "支付合作商",
-    "payment.payer": "付款人账号",
-    "payment.payee": "收款人名称",
+    "payment.payer": "付款人账户",
+    "payment.payee": "收款人账户",
     "payment.receipt": "付款回执单",
     "payment.amount": "\\\\付款金额：$[0]$[1]",
     "payment.errmsg1": "当前设备不支持该操作，请在POS机上操作！",
     "payment.errmsg2": "交易已取消",
     "payment.errmsg3": "\\\\交易失败，错误码：$[0]",
     "refund.success": "退款成功",
+    "refund.amount": "退款金额",
+    "refund.method": "退款方式",
+    "refund.confirm": "确认退款",
     "transaction.success": "交易成功",
     "transaction.fail": "交易失败",
     "transaction.amount": "交易金额",
@@ -130,7 +133,10 @@
     "tax.rate": "税率",
     "tax.formula": "税 = (订单金额 - 优惠) × 税率",
     "options.any": "全部",
+    "loading.error": "加载出错：",
+    "search.result": "搜索结果",
     
+    "retry": "重试",
     "optional": "选填",
     "filter": "筛选",
     "begindate": "起始日期",
@@ -156,5 +162,6 @@
     "settlement": "结算",
     "exit": "退出",
     "setting": "设置",
-    "nodata": "暂无数据"
+    "nodata": "暂无数据",
+    "nomore": "没有更多了~"
 }

@@ -28,21 +28,22 @@ class LoadingTip extends Component {
         super(props)
         this.state = {
             noMore: 0, //0 -未知，1-没有更多了，2-暂无数据
-            errMsg: ""
+            errMsg: "",
+            isLoading: false
         }
         
         this.pageIndex = 1
-        this.isLoading = false
         this.oldScrollTop = 0
         
         this.nextPage = this.__nextPage.bind(this)
         this.resetPage = this.__resetPage.bind(this)
+        this.getPage = this.__getPage.bind(this)
         this.isFirstPage = this.__isFirstPage.bind(this)
         this.setLoading = this.__setLoading.bind(this)
         this.setNoMore = this.__setNoMore.bind(this)
         this.setErrMsg = this.__setErrMsg.bind(this)
         this.resetState = this.__resetState.bind(this)
-        this.canLoad = this.__canLoad.bind(this)
+        this.canLoadMore = this.__canLoadMore.bind(this)
         this.setScrollTop = this.__setScrollTop.bind(this)
         this.isScrollDown = this.__isScrollDown.bind(this)
     }
@@ -53,43 +54,49 @@ class LoadingTip extends Component {
     __resetPage(){
         this.pageIndex = 1
     }
+    __getPage(){
+        return this.pageIndex
+    }
     __isFirstPage(){
         return (this.pageIndex === 1)
     }
     __setLoading(bo){
-        this.isLoading = !!bo
         this.setState({ 
             noMore: 0,
-            errMsg: ""
+            errMsg: "",
+            isLoading: !!bo
         })
     }
     __setNoMore(pageSize, dataLength){
         this.setState({ 
             noMore: (dataLength >= pageSize ? 0 : (this.pageIndex===1 && dataLength===0 ? 2 : 1)), 
-            errMsg: ""
+            errMsg: "",
+            isLoading: false
         })
-        this.isLoading = false
     }
     __setErrMsg(txt){
         this.setState({ 
             noMore: 0,
-            errMsg: (txt ? txt.toString() : "")
+            errMsg: (txt ? txt.toString() : ""),
+            isLoading: false
         })
-        this.isLoading = false
     }
     __resetState(){
         this.setState({
             noMore: 0,
-            errMsg: ""
+            errMsg: "",
+            isLoading: false
         })
+        
         this.state.errMsg = ""
         this.state.noMore = 0
-        this.isLoading = false
+        this.state.isLoading = false
+        
         this.pageIndex = 1
         this.oldScrollTop = 0
     }
-    __canLoad(){
-        return !this.isLoading && !this.state.noMore
+    __canLoadMore(){
+        return !this.state.isLoading && !this.state.noMore
     }
     __setScrollTop(top){
         this.oldScrollTop = (+top || 0)
@@ -116,7 +123,11 @@ class LoadingTip extends Component {
                     )
                 }
             } else {
-                return (<View style={styles.containerBox}><ActivityIndicator color={appMainColor} size={22} /></View>)
+                if(this.state.isLoading || this.props.alwaysShowLoading){
+                    return (<View style={styles.containerBox}><ActivityIndicator color={appMainColor} size={22} /></View>)
+                } else {
+                    return (<View style={styles.containerBox}><Text style={styles.tipText}>{this.props.readyText}</Text></View>)
+                }
             }
         } else {
             return (

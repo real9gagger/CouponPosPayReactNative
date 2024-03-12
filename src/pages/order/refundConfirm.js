@@ -8,7 +8,7 @@ import PaymentHelper from "@/modules/PaymentHelper";
 const styles = StyleSheet.create({
     amountBox: {
         fontSize: 40,
-        color: "#333",
+        color: appMainColor,
         textAlign: "center",
         fontWeight: "bold",
         paddingVertical: 20
@@ -64,6 +64,14 @@ export default function OrderRefundConfirm(props){
                 <Text style={fs16}>{appSettings.currencySymbol}</Text>
                 <Text>{orderInfo.amount}</Text>
                 <Text style={[fs16, tcEE]}>{appSettings.currencySymbol /*因此的文字，目的是让金额居中*/}</Text>
+            </Text>
+            <Text style={[fs12, taC, pdVX]}>
+                <Text >{i18n["order.amount"]}&nbsp;</Text>
+                <Text style={[tcMC, fwB]}>{orderInfo.orderAmount}&emsp;</Text>
+                <Text>{i18n["tax"]}&nbsp;</Text>
+                <Text style={[tcMC, fwB]}>{orderInfo.tax}&emsp;</Text>
+                <Text>{i18n["coupon.discount"]}&nbsp;</Text>
+                <Text style={[tcMC, fwB]}>-{orderInfo.discountAmount}</Text>
             </Text>
             <View style={[fxHC, pdVX]}>
                 <Text style={styles.labelBox}>{i18n["refund.method"]}</Text>

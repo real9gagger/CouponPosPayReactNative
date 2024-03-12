@@ -66,7 +66,7 @@ const actionList1 = [
     },
     {
         i18nName: "statistics",
-        iconName: "sub-total",
+        iconName: "statistics",
         pageName: "订单统计"
     }
 ];

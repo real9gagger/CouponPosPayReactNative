@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontSize: 16
     },
-    loadingTip: {
+    loadingBox: {
         paddingVertical: 30
     },
     couponBox: {
@@ -247,7 +247,7 @@ export default function CouponIndex(props){
             </View>
             <Text style={[styles.codeInput, !couponCode&&styles.codeEmpty, pkVisible&&styles.codeActived]} numberOfLines={1} onPress={showPKBox}>{couponCode || i18n["coupon.enter.tip"]}</Text>
             {!pkVisible ? (couponInfo.loading ?
-                <View style={styles.loadingTip}>
+                <View style={styles.loadingBox}>
                     <ActivityIndicator color={appMainColor} size={40} />
                     <Text style={[fs14, tcMC, mgTX, taC]}>{i18n["loading"]}</Text>
                 </View>

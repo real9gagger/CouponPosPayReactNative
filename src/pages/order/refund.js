@@ -8,7 +8,7 @@ import LoadingTip from "@/components/LoadingTip";
 
 const styles = StyleSheet.create({
     inputBox: {
-        borderColor: "#ccc",
+        borderColor: "#ddd",
         borderWidth: StyleSheet.hairlineWidth,
         backgroundColor: "#fff",
         paddingVertical: 5,
@@ -60,13 +60,9 @@ export default function OrderRefund(props){
     const [orderInfo, setOrderInfo] = useState(null);
     
     const onSearchOrder = () => {
-        if(ltRef.current.isLoading){
-            return;
-        }
-        
         setOrderInfo(null);
         if(!orderSN){
-            return;
+            return !ltRef.current.resetState();
         }
         
         ltRef.current.setLoading(true);
@@ -81,6 +77,9 @@ export default function OrderRefund(props){
     }
     const onOrderPress = () => {
         props.navigation.navigate("订单详情", orderInfo);
+    }
+    const onRefundPress = () => {
+        props.navigation.navigate("退款确认", orderInfo);
     }
     
     return (
@@ -104,11 +103,14 @@ export default function OrderRefund(props){
                 <TouchableOpacity style={styles.orderBox} onPress={onOrderPress} activeOpacity={0.75}>
                     <View style={fxG1}>
                         <Text style={[fs16, fwB]}>SN.{orderInfo.slipNumber}</Text>
+                        <Text style={fs12}>{orderInfo.amount} {orderInfo.currencyCode}</Text>
                         <Text style={[fs12, tc99]}>{orderInfo.transactionTime}</Text>
                     </View>
-                    <Text style={[fs16, tcMC]}>{i18n["drawer.returns"]}</Text>
+                    <Text style={[fs12, tcMC]}>{i18n["details"]}</Text>
                     <PosPayIcon name="right-arrow" color={appMainColor} size={16}/>
                 </TouchableOpacity>
+                <View style={fxG1}>{/* 占位用 */}</View>
+                <GradientButton onPress={onRefundPress}>{i18n["drawer.returns"]}</GradientButton>
             </>}
             
             <LoadingTip ref={ltRef}

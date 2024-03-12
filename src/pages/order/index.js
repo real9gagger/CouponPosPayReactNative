@@ -199,14 +199,14 @@ export default function OrderIndex(props){
         }
     }
     const queryOrders = () => {
-        if(!ltRef.current.canLoad()){
+        if(!ltRef.current.canLoadMore()){
             return;
         } else {
             ltRef.current.setLoading(true);
         }
         
         const params = {
-            pageNum: ltRef.current.pageIndex,
+            pageNum: ltRef.current.getPage(),
             pageSize: 20,
             startTime: tdi[1] ? formatDate(tdi[1], "yyyy-MM-dd 00:00:00") : null,
             endTime: tdi[2] ? formatDate(tdi[2], "yyyy-MM-dd 23:59:59") : null,
@@ -296,11 +296,13 @@ export default function OrderIndex(props){
                     </View>
                 </TouchableOpacity>
             )}
-            <LoadingTip ref={ltRef}
+            <LoadingTip 
+                ref={ltRef}
                 noMoreText={i18n["nomore"]}
                 noDataText={i18n["nodata"]}
                 retryLabel={i18n["retry"]}
                 errorTitle={i18n["loading.error"]}
+                alwaysShowLoading={true}
                 onRetry={queryOrders} />
         </ScrollView>
         <PopupX showMe={isPopupShow} onClose={onPopupClose} title={i18n["filter"]}>

@@ -49,7 +49,7 @@ export default function SettingCustomerDisplay(props){
             <View style={styles.blankBox}>{/* 空白间隔 */}</View>
             <View style={styles.itemBox}>
                 <Text style={[fs16, fxG1]}>{i18n["customer.display.label0"]}</Text>
-                <Text style={fs14}>{isOpened ? i18n["customer.display.opened"] : i18n["customer.display.closed"]}</Text>
+                <Text style={[fs14, isOpened ? tcMC : tc99]}>{isOpened ? i18n["customer.display.opened"] : i18n["customer.display.closed"]}</Text>
             </View>
             <View style={[pdHX, bgFF]}><View style={styles.boxDivider}>{/*==== 分割线 ====*/}</View></View>
             <View style={styles.itemBox}>

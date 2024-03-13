@@ -127,6 +127,7 @@
     "print.shoplogo": "打印店铺徽标",
     "order.amount": "订单金额",
     "order.details": "销售详情",
+    "order.number.input.tip": "请输入订单编号",
     "cleaning.completed.tip": "清理完成",
     "currency.header": "货币设置",
     "operation.time": "操作时间",

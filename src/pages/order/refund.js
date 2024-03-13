@@ -119,6 +119,7 @@ export default function OrderRefund(props){
                 noDataText={i18n["nodata"]}
                 retryLabel={i18n["retry"]}
                 errorTitle={i18n["loading.error"]}
+                readyText={i18n["order.number.input.tip"]}
                 onRetry={onSearchOrder} />
         </ScrollView>
     )

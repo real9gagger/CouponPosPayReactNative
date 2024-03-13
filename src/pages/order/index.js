@@ -3,7 +3,6 @@ import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, RefreshCont
 import { useI18N } from "@/store/getter";
 import { getPaymentInfo } from "@/common/Statics";
 import { CREDIT_CARD_PAYMENT_CODE, E_MONEY_PAYMENT_CODE, QR_CODE_PAYMENT_CODE, TRANSACTION_TYPE_RECEIVE, TRANSACTION_TYPE_REFUND } from "@/common/Statics";
-import { formatDate } from "@/utils/helper";
 import LocalPictures from "@/common/Pictures";
 import PosPayIcon from "@/components/PosPayIcon";
 import PopupX from "@/components/PopupX";
@@ -11,7 +10,7 @@ import RadioBox from "@/components/RadioBox";
 import CheckBox from "@/components/CheckBox";
 import GradientButton from "@/components/GradientButton";
 import LoadingTip from "@/components/LoadingTip";
-import DatePicker from "react-native-date-picker";
+import DateRangeBox from "@/components/DateRangeBox";
 
 const styles = StyleSheet.create({
     contentBox: {
@@ -41,33 +40,24 @@ const styles = StyleSheet.create({
     },
     labelBox: {
         fontSize: 14,
-        marginTop: 15,
+        marginTop: 10,
         marginBottom: 5
     },
     inputBox: {
-        borderColor: "#aaa",
-        borderWidth: StyleSheet.hairlineWidth,
-        borderRadius: 5,
-        paddingHorizontal: 10,
-        paddingVertical: 5,
+        borderBottomColor: "#ccc",
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        paddingTop: 5,
+        paddingBottom: 10,
+        paddingHorizontal: 0,
         fontSize: 14
-    },
-    dateBox: {
-        borderColor: "#aaa",
-        borderWidth: StyleSheet.hairlineWidth,
-        borderRadius: 5,
-        padding: 10,
-        fontSize: 14,
-        flex: 1
     },
     selectsBox: {
         display: "flex",
         flexDirection: "row",
-        borderColor: "#aaa",
-        borderWidth: StyleSheet.hairlineWidth,
-        borderRadius: 5,
-        paddingVertical: 5,
-        paddingHorizontal: 10
+        borderBottomColor: "#ccc",
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        paddingTop: 5,
+        paddingBottom: 10
     },
     paramsBox: {
         backgroundColor: "#fff",
@@ -108,9 +98,9 @@ function getOrderListByParams(params){
 export default function OrderIndex(props){
     const i18n = useI18N();
     const ltRef = useRef(null);
+    const drbRef = useRef(null);
     const [orderList, setOrderList] = useState([]);
     const [isPopupShow, setIsPopupShow] = useState(false);
-    const [tdi, setTDI] = useState([0, null, null, "", ""]); // transaction date info。索引0- 日期选择框绑定是开始（1）还是结束（2）或者不显示选择框（0），1-开始日期Date对象，2-结束日期Date对象，3-开始日期字符串，4-结束日期字符串
     const [osn, setOSN] = useState(null); //order slip number
     const [ttc, setTTC] = useState(null); //transaction type code
     const [pmc, setPMC] = useState([/*CREDIT_CARD_PAYMENT_CODE, E_MONEY_PAYMENT_CODE, QR_CODE_PAYMENT_CODE*/]); //payment method code
@@ -162,27 +152,8 @@ export default function OrderIndex(props){
             default: return "";
         }
     }
-    const onTdiDone = (date) => {
-        if(date){
-            tdi[tdi[0]] = date;
-            tdi[tdi[0] + 2] = formatDate(date, "yyyy/MM/dd");
-            tdi[0] = 0;
-            setTDI([...tdi]);
-        }
-    }
-    const onTdiOpen = (idx) => {
-        return function(){
-            tdi[0] = idx;
-            setTDI([...tdi]);
-        }
-    }
-    const onTdiClose = () => {
-        if(tdi[0]){
-            tdi[0] = 0;
-            setTDI([...tdi]);
-        }
-    }
     const getTdiName = (sd, ed) => {
+        //get transaction date info name
         if(sd){
             const ssss = sd.substr(0, 10);
             if(ed && !ed.startsWith(ssss)){
@@ -204,12 +175,12 @@ export default function OrderIndex(props){
         } else {
             ltRef.current.setLoading(true);
         }
-        
+        const tdi = (drbRef.current ? drbRef.current.getPickResults("yyyy-MM-dd 00:00:00", "yyyy-MM-dd 23:59:59") : []); //transaction date info
         const params = {
             pageNum: ltRef.current.getPage(),
             pageSize: 20,
-            startTime: tdi[1] ? formatDate(tdi[1], "yyyy-MM-dd 00:00:00") : null,
-            endTime: tdi[2] ? formatDate(tdi[2], "yyyy-MM-dd 23:59:59") : null,
+            startTime: tdi[0],
+            endTime: tdi[1],
             paymentType: pmc[0],
             slipNumber: osn,
             transactionType: ttc
@@ -238,7 +209,7 @@ export default function OrderIndex(props){
     }
     const onSVScroll = (evt) => {
         const { layoutMeasurement, contentOffset, contentSize } = evt.nativeEvent;
-        if(ltRef.current.isScrollDown(contentOffset.y) && ltRef.current.canLoad()){
+        if(ltRef.current.isScrollDown(contentOffset.y) && ltRef.current.canLoadMore()){
             const isCloseToBottom = (layoutMeasurement.height + contentOffset.y) >= (contentSize.height - 40); // 这里的 40 可以根据需要调整
             if (isCloseToBottom) {
                 ltRef.current.nextPage();
@@ -308,11 +279,14 @@ export default function OrderIndex(props){
         <PopupX showMe={isPopupShow} onClose={onPopupClose} title={i18n["filter"]}>
             <View style={pdHX}>
                 <Text style={styles.labelBox}>{i18n["transaction.time"]}</Text>
-                <View style={fxHC}>
-                    <Text style={[styles.dateBox, !tdi[3] && tcAA]} onPress={onTdiOpen(1)}>{tdi[3] || i18n["begindate"]}</Text>
-                    <Text style={[mgHX, fs14]}>~</Text>
-                    <Text style={[styles.dateBox, !tdi[4] && tcAA]} onPress={onTdiOpen(2)}>{tdi[4] || i18n["enddate"]}</Text>
-                </View>
+                <DateRangeBox
+                    ref={drbRef}
+                    style={styles.selectsBox}
+                    confirmText={i18n["btn.confirm"]}
+                    cancelText={i18n["btn.cancel"]}
+                    beginPlaceholder={i18n["begindate"]}
+                    endPlaceholder={i18n["enddate"]}
+                />
                 
                 <Text style={styles.labelBox}>{i18n["transaction.number"]}</Text>
                 <TextInput defaultValue={osn} onChangeText={setOSN} placeholder={i18n["optional"]} style={styles.inputBox}></TextInput>
@@ -326,26 +300,15 @@ export default function OrderIndex(props){
                 
                 <Text style={styles.labelBox}>{i18n["payment.method"]}</Text>
                 <View style={styles.selectsBox}>
-                    <CheckBox size={18} label={i18n["credit.card"]} checked={pmc.includes(CREDIT_CARD_PAYMENT_CODE)} onPress={onPmcChange(CREDIT_CARD_PAYMENT_CODE)} />
-                    <CheckBox size={18} label={i18n["e.wallet"]} style={mgLX} checked={pmc.includes(E_MONEY_PAYMENT_CODE)} onPress={onPmcChange(E_MONEY_PAYMENT_CODE)} />
-                    <CheckBox size={18} label={i18n["qrcode.pay"]} style={mgLX} checked={pmc.includes(QR_CODE_PAYMENT_CODE)} onPress={onPmcChange(QR_CODE_PAYMENT_CODE)} />
+                    <CheckBox size={18} label={i18n["credit.card"]} style={fxG1} checked={pmc.includes(CREDIT_CARD_PAYMENT_CODE)} onPress={onPmcChange(CREDIT_CARD_PAYMENT_CODE)} />
+                    <CheckBox size={18} label={i18n["e.wallet"]} style={fxG1} checked={pmc.includes(E_MONEY_PAYMENT_CODE)} onPress={onPmcChange(E_MONEY_PAYMENT_CODE)} />
+                    <CheckBox size={18} label={i18n["qrcode.pay"]} style={fxG1} checked={pmc.includes(QR_CODE_PAYMENT_CODE)} onPress={onPmcChange(QR_CODE_PAYMENT_CODE)} />
                 </View>
             </View>
-            <View style={[fxR, pdX, {marginTop: 80}]}>
+            <View style={[fxR, pdX, {marginTop: 100}]}>
                 <GradientButton style={fxG1} onPress={onPopupClose}>{i18n["btn.cancel"]}</GradientButton>
                 <GradientButton style={[fxG1, mgLS]} onPress={onSearchOrders}>{i18n["btn.confirm"]}</GradientButton>
             </View>
         </PopupX>
-        <DatePicker
-            modal={true}
-            date={tdi[tdi[0]] || (new Date())} 
-            open={tdi[0] > 0} 
-            onCancel={onTdiClose}
-            onConfirm={onTdiDone}
-            confirmText={i18n["btn.confirm"]}
-            cancelText={i18n["btn.cancel"]}
-            title={i18n[tdi[0] <= 1 ? "begindate" : "enddate"]}
-            theme="light"
-            mode="date" />
     </>);
 }

@@ -119,6 +119,7 @@
     "print.shoplogo": "Print shop logo",
     "order.amount": "Order amount",
     "order.details": "Sale Details",
+    "order.number.input.tip": "Please enter the order slip number",
     "cleaning.completed.tip": "Cleaning completed",
     "currency.header": "Currency Setting",
     "operation.time": "Operation time",

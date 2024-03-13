@@ -110,7 +110,7 @@ class PopupX extends Component {
                     <TouchableOpacity activeOpacity={1} style={fxG1} onPress={this.props.onClose}>{/* 点我关闭层 */}</TouchableOpacity>
                     <Animated.View style={contentBox}>
                         <View style={styles.popupTitleBox}>
-                            <Text style={[fs18, fxG1]}>{this.props.title}</Text>
+                            <Text style={[fs18, fxG1, fwB]}>{this.props.title}</Text>
                             <Svg viewBox="0 0 32 32" fill="#999" width={22} height={22} onPress={this.props.onClose}>
                                 <Path d="M24.416 6.4l1.184 1.184-8.384 8.416 8.384 8.384-1.184 1.216-8.416-8.416-8.384 8.416-1.216-1.216 8.416-8.384-8.416-8.416 1.216-1.184 8.384 8.384z" />
                             </Svg>

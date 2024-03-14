@@ -54,11 +54,11 @@ export function formatDate(dateObj, formatStr) {
 		dateObj = new Date();
 	} else if(typeof dateObj === "number"){
         dateObj = new Date(dateObj);
-    } else if(!dateObj.getDate){
+    } else if(!dateObj.getDate){ //不是日期
         return dateObj.toString();
     }
 	
-	if(!formatStr){
+	if(!formatStr || typeof(formatStr) !== "string"){
 		formatStr = "yyyy-MM-dd hh:mm:ss";
 	}
 	

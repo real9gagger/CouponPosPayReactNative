@@ -3,6 +3,7 @@ import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, RefreshCont
 import { useI18N } from "@/store/getter";
 import { getPaymentInfo } from "@/common/Statics";
 import { CREDIT_CARD_PAYMENT_CODE, E_MONEY_PAYMENT_CODE, QR_CODE_PAYMENT_CODE, TRANSACTION_TYPE_RECEIVE, TRANSACTION_TYPE_REFUND } from "@/common/Statics";
+import DateRangeBox, { clearDateRangeCache, getDateRangeResults } from "@/components/DateRangeBox";
 import LocalPictures from "@/common/Pictures";
 import PosPayIcon from "@/components/PosPayIcon";
 import PopupX from "@/components/PopupX";
@@ -10,7 +11,6 @@ import RadioBox from "@/components/RadioBox";
 import CheckBox from "@/components/CheckBox";
 import GradientButton from "@/components/GradientButton";
 import LoadingTip from "@/components/LoadingTip";
-import DateRangeBox from "@/components/DateRangeBox";
 
 const styles = StyleSheet.create({
     contentBox: {
@@ -68,6 +68,8 @@ const styles = StyleSheet.create({
     }
 });
 
+const drbUniqueKey = "OrderFilterDRB";
+
 function getOrderListByParams(params){
     return $request("getPosAppOrderList", params).then(res => {
         const list = (res || []);
@@ -98,7 +100,6 @@ function getOrderListByParams(params){
 export default function OrderIndex(props){
     const i18n = useI18N();
     const ltRef = useRef(null);
-    const drbRef = useRef(null);
     const [orderList, setOrderList] = useState([]);
     const [isPopupShow, setIsPopupShow] = useState(false);
     const [osn, setOSN] = useState(null); //order slip number
@@ -156,14 +157,16 @@ export default function OrderIndex(props){
         //get transaction date info name
         if(sd){
             const ssss = sd.substr(0, 10);
-            if(ed && !ed.startsWith(ssss)){
-                return ssss + "~" + ed.substr(0, 10);
-            } else {
+            if(!ed){
+                return ssss + "~";
+            } else if(ed.startsWith(ssss)) {
                 return ssss;
+            } else {
+                return ssss + "~" + ed.substr(0, 10);
             }
         } else {
             if(ed){
-                return ed.substr(0, 10);
+                return "~" + ed.substr(0, 10);
             } else {
                 return "";
             }
@@ -175,7 +178,7 @@ export default function OrderIndex(props){
         } else {
             ltRef.current.setLoading(true);
         }
-        const tdi = (drbRef.current ? drbRef.current.getPickResults("yyyy-MM-dd 00:00:00", "yyyy-MM-dd 23:59:59") : []); //transaction date info
+        const tdi = getDateRangeResults(drbUniqueKey, "yyyy-MM-dd 00:00:00", "yyyy-MM-dd 23:59:59"); //transaction date info
         const params = {
             pageNum: ltRef.current.getPage(),
             pageSize: 20,
@@ -219,11 +222,16 @@ export default function OrderIndex(props){
         ltRef.current.setScrollTop(contentOffset.y);
     }
     const onSearchOrders = () => {
-        ltRef.current.resetState();
+        ltRef.current.resetState();        
         queryOrders();
     }
     
-    useEffect(queryOrders, []);
+    useEffect(() => {
+        queryOrders();
+        return function(){
+            clearDateRangeCache(drbUniqueKey);
+        }
+    }, []);
     
     return (<>
         <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
@@ -280,12 +288,12 @@ export default function OrderIndex(props){
             <View style={pdHX}>
                 <Text style={styles.labelBox}>{i18n["transaction.time"]}</Text>
                 <DateRangeBox
-                    ref={drbRef}
                     style={styles.selectsBox}
                     confirmText={i18n["btn.confirm"]}
                     cancelText={i18n["btn.cancel"]}
                     beginPlaceholder={i18n["begindate"]}
                     endPlaceholder={i18n["enddate"]}
+                    uniqueKey={drbUniqueKey}
                 />
                 
                 <Text style={styles.labelBox}>{i18n["transaction.number"]}</Text>

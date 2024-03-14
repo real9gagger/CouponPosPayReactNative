@@ -40,19 +40,49 @@ const styles = StyleSheet.create({
     }
 })
 
+const dateRangeCaches = {} //日期缓存，放在突然销毁日期控件后，在此显示时无法显示上次选择的日期
+
 const DEFAULT_DATE_FORMATTER = "yyyy/MM/dd"
+
+export function clearDateRangeCache(pk){
+    if(pk && dateRangeCaches[pk]){
+        delete dateRangeCaches[pk]
+    }
+}
+
+export function getDateRangeResults(pk, formatter1, formatter2){
+    const output = ["", ""]
+    const dates = dateRangeCaches[pk]
+    
+    if(!dates){
+        return output;
+    }
+    
+    if(dates[0]){
+        output[0] = formatDate(dates[0], formatter1)
+    }
+    
+    if(dates[1]){
+        output[1] = formatDate(dates[1], formatter2 || formatter1)
+    }
+
+    return output
+}
 
 //日期范围选择框
 class DateRangeBox extends Component {
     constructor(props) {
         super(props)
+        
+        const cacheData = dateRangeCaches[props.uniqueKey]
+
         this.todayDate = new Date()
         this.state = {
             dateNth: 0,
-            beginDate: null,
-            endDate: null,
-            dateFormat1: "",
-            dateFormat2: ""
+            beginDate: (cacheData ? cacheData[0] : null),
+            endDate: (cacheData ? cacheData[1] : null),
+            dateFormat1: (cacheData && cacheData[0] ? formatDate(cacheData[0], DEFAULT_DATE_FORMATTER) : ""),
+            dateFormat2: (cacheData && cacheData[1] ? formatDate(cacheData[1], DEFAULT_DATE_FORMATTER) : "")
         }
         
         this.callOpenBeginDP = this.__openBeginDP.bind(this)
@@ -78,12 +108,18 @@ class DateRangeBox extends Component {
             beginDate: null,
             dateFormat1: ""
         })
+        if(this.props.uniqueKey){
+            dateRangeCaches[this.props.uniqueKey] = [null, this.state.endDate]
+        }
     }
     __clearEndDate(){
         this.setState({
             endDate: null,
             dateFormat2: ""
         })
+        if(this.props.uniqueKey){
+            dateRangeCaches[this.props.uniqueKey] = [this.state.beginDate, null]
+        }
     }
     __confirmDP(val){
         if(this.state.dateNth === 1){
@@ -92,19 +128,25 @@ class DateRangeBox extends Component {
                 dateFormat1: formatDate(val, DEFAULT_DATE_FORMATTER),
                 dateNth: 0
             })
+            if(this.props.uniqueKey){
+                dateRangeCaches[this.props.uniqueKey] = [val, this.state.endDate]
+            }
         } else {
             this.setState({
                 endDate: val,
                 dateFormat2: formatDate(val, DEFAULT_DATE_FORMATTER),
                 dateNth: 0
             })
+            if(this.props.uniqueKey){
+                dateRangeCaches[this.props.uniqueKey] = [this.state.beginDate, val]
+            }
         }
     }
     __getResults(formatter1, formatter2){
         const output = ["", ""]
         
         if(this.state.beginDate){
-            if(!formatter1 || typeof(formatter1) !== "string" || formatter1 === DEFAULT_DATE_FORMATTER){
+            if(!formatter1 || formatter1 === DEFAULT_DATE_FORMATTER){
                 output[0] = this.state.dateFormat1
             } else {
                 output[0] = formatDate(this.state.beginDate, formatter1)
@@ -113,7 +155,7 @@ class DateRangeBox extends Component {
         
         
         if(this.state.endDate){
-            if(!formatter2 || typeof(formatter2) !== "string" || formatter2 === DEFAULT_DATE_FORMATTER){
+            if(!formatter2 || formatter2 === DEFAULT_DATE_FORMATTER){
                 output[1] = this.state.dateFormat2
             } else {
                 output[1] = formatDate(this.state.endDate, formatter2)
@@ -145,6 +187,8 @@ class DateRangeBox extends Component {
                 modal={true}
                 date={(this.state.dateNth === 1 ? this.state.beginDate : this.state.endDate) || this.todayDate} 
                 open={this.state.dateNth > 0} 
+                minimumDate={this.state.dateNth === 2 ? this.state.beginDate : null}
+                maximumDate={this.state.dateNth === 1 ? this.state.endDate : null}
                 onCancel={this.callCloseDP}
                 onConfirm={this.callConfirmDP}
                 confirmText={this.props.confirmText}

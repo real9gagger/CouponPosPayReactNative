@@ -18,10 +18,12 @@ const styles = StyleSheet.create({
     },
     dateVal0: {
         fontSize: 14,
+        paddingRight: 20,
         color: "#999"
     },
     dateVal1: {
         fontSize: 14,
+        paddingRight: 20,
         color: "#333"
     },
     dividerBox: {
@@ -35,7 +37,7 @@ const styles = StyleSheet.create({
     clearBox: {
         position: "absolute",
         right: 10,
-        top: 12.5,
+        top: 11.5,
         zIndex: 9
     }
 })
@@ -50,12 +52,30 @@ export function clearDateRangeCache(pk){
     }
 }
 
+export function getBeginDateString(pk, formatter){
+    const dates = dateRangeCaches[pk]
+    if(dates && dates[0]){
+       return formatDate(dates[0], formatter)
+    } else {
+        return ""
+    }
+}
+
+export function getEndDateString(pk, formatter){
+    const dates = dateRangeCaches[pk]
+    if(dates && dates[1]){
+       return formatDate(dates[1], formatter)
+    } else {
+        return ""
+    }
+}
+
 export function getDateRangeResults(pk, formatter1, formatter2){
     const output = ["", ""]
     const dates = dateRangeCaches[pk]
     
     if(!dates){
-        return output;
+        return output
     }
     
     if(dates[0]){
@@ -67,6 +87,12 @@ export function getDateRangeResults(pk, formatter1, formatter2){
     }
 
     return output
+}
+
+export function setDateRangeData(pk, date1, date2){
+    if(pk){
+        dateRangeCaches[pk] = [date1 || null, date2 || null]
+    }
 }
 
 //日期范围选择框
@@ -91,17 +117,24 @@ class DateRangeBox extends Component {
         this.callClearBeginDate = this.__clearBeginDate.bind(this)
         this.callClearEndDate = this.__clearEndDate.bind(this)
         this.callConfirmDP = this.__confirmDP.bind(this)
-        this.getPickResults = this.__getResults.bind(this) //函数由外部调用
+        
+        this.getPickResults = this.__getPickResults.bind(this) //函数由外部调用
+        this.isBeginDateNull = this.__isBeginDateNull.bind(this) //函数由外部调用
+        this.isEndDateNull = this.__isEndDateNull.bind(this) //函数由外部调用
+        this.isLegalDateRange = this.__isLegalDateRange.bind(this) //函数由外部调用
     }
     
     __openBeginDP(){
         this.setState({ dateNth: 1 })
+        this.props.onPressDateBox && this.props.onPressDateBox(1)
     }
     __openEndDP(){
         this.setState({ dateNth: 2 })
+        this.props.onPressDateBox && this.props.onPressDateBox(2)
     }
     __closeDP(){
         this.setState({ dateNth: 0 })
+        this.props.onPressDateBox && this.props.onPressDateBox(0)
     }
     __clearBeginDate(){
         this.setState({
@@ -142,7 +175,7 @@ class DateRangeBox extends Component {
             }
         }
     }
-    __getResults(formatter1, formatter2){
+    __getPickResults(formatter1, formatter2){
         const output = ["", ""]
         
         if(this.state.beginDate){
@@ -164,6 +197,20 @@ class DateRangeBox extends Component {
         
         return output
     }
+    __isBeginDateNull(){
+        return (!this.state.beginDate)
+    }
+    __isEndDateNull(){
+        return (!this.state.endDate)
+    }
+    __isLegalDateRange(){
+        //是否是符合规范的日期范围（即，开始日期不能大于结束日期）
+        if(this.state.beginDate && this.state.endDate){
+            return (this.state.beginDate <= this.state.endDate)
+        } else {
+            return true
+        }
+    }
     
     render(){
         if(this.props.visible === false){
@@ -174,14 +221,15 @@ class DateRangeBox extends Component {
             <View style={[styles.containerBox, this.props.style]}>
                 {!!this.props.label && <Text style={styles.labelBox}>{this.props.label}</Text>}
                 <TouchableOpacity style={styles.dateBox} activeOpacity={0.5} onPress={this.callOpenBeginDP}>
-                    <Text style={this.state.beginDate ? styles.dateVal1 : styles.dateVal0}>{this.state.dateFormat1 || this.props.beginPlaceholder}</Text>
-                    <PosPayIcon visible={!!this.state.beginDate} name="delete-x" color="#999" size={14} style={styles.clearBox} onPress={this.callClearBeginDate} />
+                    <Text style={this.state.beginDate ? styles.dateVal1 : styles.dateVal0} numberOfLines={1}>{this.state.dateFormat1 || this.props.beginPlaceholder}</Text>
+                    <PosPayIcon name={this.state.beginDate ? "close-circle" : "calendar"} color="#999" size={16} style={styles.clearBox} onPress={this.callClearBeginDate} />
                 </TouchableOpacity>
                 <Text style={styles.dividerBox}>~</Text>
                 <TouchableOpacity style={styles.dateBox} activeOpacity={0.5} onPress={this.callOpenEndDP}>
-                    <Text style={this.state.endDate ? styles.dateVal1 : styles.dateVal0}>{this.state.dateFormat2 || this.props.endPlaceholder}</Text>
-                    <PosPayIcon visible={!!this.state.endDate} name="delete-x" color="#999" size={14} style={styles.clearBox} onPress={this.callClearEndDate} />
+                    <Text style={this.state.endDate ? styles.dateVal1 : styles.dateVal0} numberOfLines={1}>{this.state.dateFormat2 || this.props.endPlaceholder}</Text>
+                    <PosPayIcon name={this.state.endDate ? "close-circle" : "calendar"} color="#999" size={16} style={styles.clearBox} onPress={this.callClearEndDate} />
                 </TouchableOpacity>
+                {this.props.children}
             </View>
             <DatePicker
                 modal={true}

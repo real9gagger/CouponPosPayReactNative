@@ -3,7 +3,7 @@ import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, RefreshCont
 import { useI18N } from "@/store/getter";
 import { getPaymentInfo } from "@/common/Statics";
 import { CREDIT_CARD_PAYMENT_CODE, E_MONEY_PAYMENT_CODE, QR_CODE_PAYMENT_CODE, TRANSACTION_TYPE_RECEIVE, TRANSACTION_TYPE_REFUND } from "@/common/Statics";
-import DateRangeBox, { clearDateRangeCache, getDateRangeResults } from "@/components/DateRangeBox";
+import DateRangeBox, { clearDateRangeCache, getBeginDateString, getEndDateString } from "@/components/DateRangeBox";
 import LocalPictures from "@/common/Pictures";
 import PosPayIcon from "@/components/PosPayIcon";
 import PopupX from "@/components/PopupX";
@@ -158,7 +158,7 @@ export default function OrderIndex(props){
         if(sd){
             const ssss = sd.substr(0, 10);
             if(!ed){
-                return ssss + "~";
+                return "≥" + ssss;
             } else if(ed.startsWith(ssss)) {
                 return ssss;
             } else {
@@ -166,7 +166,7 @@ export default function OrderIndex(props){
             }
         } else {
             if(ed){
-                return "~" + ed.substr(0, 10);
+                return "≤" + ed.substr(0, 10);
             } else {
                 return "";
             }
@@ -178,12 +178,11 @@ export default function OrderIndex(props){
         } else {
             ltRef.current.setLoading(true);
         }
-        const tdi = getDateRangeResults(drbUniqueKey, "yyyy-MM-dd 00:00:00", "yyyy-MM-dd 23:59:59"); //transaction date info
         const params = {
             pageNum: ltRef.current.getPage(),
             pageSize: 20,
-            startTime: tdi[0],
-            endTime: tdi[1],
+            startTime: getBeginDateString(drbUniqueKey, "yyyy-MM-dd 00:00:00"),
+            endTime: getEndDateString(drbUniqueKey, "yyyy-MM-dd 23:59:59"),
             paymentType: pmc[0],
             slipNumber: osn,
             transactionType: ttc
@@ -198,7 +197,7 @@ export default function OrderIndex(props){
             
             setOrderList([]);
             setIsPopupShow(false);
-            setParamsText(txts.join(","));
+            setParamsText(txts.join(", "));
         }
         
         getOrderListByParams(params).then(res => {

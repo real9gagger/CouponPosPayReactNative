@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ScrollView, View, Text, TextInput, StyleSheet } from "react-native";
 import { useI18N, getAppSettings } from "@/store/getter";
 import { DISCOUNT_TYPE_ZK } from "@/common/Statics";
-import { formatDate } from "@/utils/helper";
 import GradientButton from "@/components/GradientButton";
 import RadioBox from "@/components/RadioBox";
-import DatePicker from "react-native-date-picker";
+import DateRangeBox from "@/components/DateRangeBox";
 
 const styles = StyleSheet.create({
     itemBox: {
@@ -38,39 +37,22 @@ const styles = StyleSheet.create({
         zIndex: 1,
         fontSize: 12,
         color: "#666"
-    },
-    textLh1: {
-        lineHeight: 28
-    },
-    textLh2: {
-        lineHeight: 28,
-        color: "#999"
     }
 });
 
 export default function CouponAdds(props){
     const i18n = useI18N();
-    const today = new Date();
     const appSettings = getAppSettings();
+    const drbRef = useRef(null);
     
     const [couponTitle, setCouponTitle] = useState(""); //优惠券名称
     const [couponCode, setCouponCode] = useState("");//优惠码
     const [couponType, setCouponType] = useState(1); //1-折扣，2-立减
     const [couponDiscount, setCouponDiscount] = useState("");//优惠金额或者比例
     const [couponCondition, setCouponCondition] = useState("");//生效条件
-    const [couponExpiration, setCouponExpiration] = useState([null, null, "", ""]);//有效期
     const [distributorNumber, setDistributorNumber] = useState("");//分销员编号
-    const [dpOpenedCode, setDpOpenedCode] = useState(-1);//日期选择器是否打开 0-开始日期，1-结束日期, 其他值-关闭日期选择框
     const [inputNth, setInputNth] = useState(0); //哪个输入框获得了焦点
     
-    const onDpDone = (date) => {
-        setDpOpenedCode(-1);
-        if(date){
-            couponExpiration[dpOpenedCode] = date;
-            couponExpiration[dpOpenedCode + 2] = formatDate(date, "yyyy/MM/dd");
-            setCouponExpiration([...couponExpiration]);
-        }
-    }
     const onInputFocus = (nth) => {
         return function(){
             setInputNth(nth);
@@ -85,13 +67,6 @@ export default function CouponAdds(props){
             setInputNth(0xBB22);
         }
     }
-    const onOpenDp = (code) => {
-        return function(){
-            setDpOpenedCode(code);
-            setInputNth(0xBB88);
-        }
-    }
-    
     const onAddCoupon = () => {
         if(!couponTitle){
             return !$notify.info(i18n["coupon.errmsg0"].cloze(i18n["coupon.name"]));
@@ -105,22 +80,23 @@ export default function CouponAdds(props){
         if(!couponCondition){
             return !$notify.info(i18n["coupon.errmsg0"].cloze(i18n["coupon.condition"]));
         }
-        if(!couponExpiration[0] || !couponExpiration[1]){
+        if(drbRef.current.isBeginDateNull() || drbRef.current.isEndDateNull()){
             return !$notify.info(i18n["coupon.errmsg0"].cloze(i18n["coupon.expiration"]));
-        } else if(couponExpiration[0] > couponExpiration[1]){
+        } else if(!drbRef.current.isLegalDateRange()){
             return !$notify.info(i18n["coupon.errmsg1"]);
         }
         if(!distributorNumber){
             return !$notify.info(i18n["coupon.errmsg0"].cloze(i18n["coupon.distributor.number"]));
         }
         
+        const cpExpiration = drbRef.current.getPickResults("yyyy/MM/dd ~ ", "yyyy/MM/dd");
         const couponData = {
             picurl:     null,
             title:      couponTitle.trim(),
             cpcode:     couponCode.replace(/[^\d]/g, ""),
             distype:    couponType, //1-折扣，2-立减
             discount:   (+couponDiscount || 0),
-            expiration: (couponExpiration[2] + " ~ " + couponExpiration[3]),
+            expiration: (cpExpiration[0] + cpExpiration[1]),
             condition:  (+couponCondition || 0), //满免条件
             distributor:distributorNumber.replace(/[^\d]/g, "") //分销员编号
         };
@@ -187,23 +163,15 @@ export default function CouponAdds(props){
             </View>
             <View style={styles.itemBox}>
                 <Text style={[fs12, inputNth===0xBB88&&tcMC]}>{i18n["coupon.expiration"]}</Text>
-                <View style={[fxHC, fxJE, styles.inputBox, inputNth===0xBB88&&styles.inputActivated]}>
-                    <Text style={couponExpiration[0] ? styles.textLh1 : styles.textLh2} onPress={onOpenDp(0)}>{couponExpiration[2] || i18n["begindate"]}</Text>
-                    <Text style={mgHX}>~</Text>
-                    <Text style={couponExpiration[1] ? styles.textLh1 : styles.textLh2} onPress={onOpenDp(1)}>{couponExpiration[3] || i18n["enddate"]}</Text>
-                </View>
-                <DatePicker 
-                    modal={true}
-                    date={couponExpiration[dpOpenedCode] || today} 
-                    open={dpOpenedCode >= 0} 
-                    minimumDate={today} 
-                    onCancel={onDpDone}
-                    onConfirm={onDpDone}
+                <DateRangeBox
+                    ref={drbRef}
+                    style={[styles.inputBox, inputNth===0xBB88&&styles.inputActivated]}
                     confirmText={i18n["btn.confirm"]}
                     cancelText={i18n["btn.cancel"]}
-                    theme="light"
-                    mode="date" 
-                    title={dpOpenedCode < 1 ? i18n["begindate"] : i18n["enddate"]} />
+                    beginPlaceholder={i18n["begindate"]}
+                    endPlaceholder={i18n["enddate"]}
+                    onPressDateBox={onInputFocus(0xBB88)}
+                />
             </View>
             <View style={styles.itemBox}>
                 <Text style={[fs12, inputNth===0xEE44&&tcMC]}>{i18n["coupon.distributor.number"]}</Text>

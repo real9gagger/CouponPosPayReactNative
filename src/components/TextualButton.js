@@ -8,8 +8,8 @@ class TextualButton extends Component {
             return null
         }
         
-        const boxStyle = { fontSize: 14 }
-        const textStyle = { textAlign: "center" }
+        const boxStyle = {}
+        const textStyle = { fontSize: 14, textAlign: "center" }
         const isStringText = (typeof this.props.children !== "object")
         
         if(this.props.style){
@@ -45,7 +45,7 @@ class TextualButton extends Component {
         } else {
             return (
                 <TouchableOpacity 
-                    activeOpacity={this.props.activeOpacity || 0.3}
+                    activeOpacity={this.props.activeOpacity || 0.5}
                     onPress={this.props.onPress}
                     style={boxStyle}>{isStringText ? <Text style={textStyle}>{this.props.children}</Text> : this.props.children}</TouchableOpacity>
             )

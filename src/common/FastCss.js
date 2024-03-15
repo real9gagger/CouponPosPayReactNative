@@ -103,6 +103,7 @@ const FastCss = StyleSheet.create({
     tcTP: { color: "transparent" },
     
     bgMC: { backgroundColor: appMainColor },
+    bgEE: { backgroundColor: "#eee" },
     bgFF: { backgroundColor: "#fff" },
     bgF0: { backgroundColor: "#f0f0f0" },
     bgB0: { backgroundColor: "#1ba4f0" },

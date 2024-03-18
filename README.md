@@ -59,19 +59,19 @@ else {
 * 【日期选择控件中的“日”对应的框宽度太小】打开 /node_modules/react-native-date-picker/android/src/main/res/values/styles.xml 将样式 “android_native_small” 中的 “android:layout_width” 改为 64dp
 
 ## 产品截图
-![启动屏] (/src/images/screenshots/p1.jpg)
-![登录页] (/src/images/screenshots/p2.jpg)
-![主页] (/src/images/screenshots/p3.jpg)
-![个人中心] (/src/images/screenshots/p4.jpg)
-![设置] (/src/images/screenshots/p5.jpg)
-![销售] (/src/images/screenshots/p6.jpg)
-![销售详情] (/src/images/screenshots/p7.jpg)
-![打印预览] (/src/images/screenshots/p8.jpg)
-![使用优惠券] (/src/images/screenshots/p9.jpg)
-![支付合作商] (/src/images/screenshots/p10.jpg)
-![我的账户] (/src/images/screenshots/p11.jpg)
-
-
+<kbd>
+    <img alt="启动屏" src="/src/images/screenshots/p1.jpg" width="300" />
+    <img alt="登录页" src="/src/images/screenshots/p2.jpg" width="300" />
+    <img alt="主页" src="/src/images/screenshots/p3.jpg" width="300" />
+    <img alt="个人中心" src="/src/images/screenshots/p4.jpg" width="300" />
+    <img alt="设置" src="/src/images/screenshots/p5.jpg" width="300" />
+    <img alt="销售" src="/src/images/screenshots/p6.jpg" width="300" />
+    <img alt="销售详情" src="/src/images/screenshots/p7.jpg" width="300" />
+    <img alt="打印预览" src="/src/images/screenshots/p8.jpg" width="300" />
+    <img alt="使用优惠券" src="/src/images/screenshots/p9.jpg" width="300" />
+    <img alt="支付合作商" src="/src/images/screenshots/p10.jpg" width="300" />
+    <img alt="我的账户" src="/src/images/screenshots/p11.jpg" width="300" />
+</kbd>
 
 ## 技术架构
 > 使用的技术框架或系统架构图等相关说明，请填写在这里  

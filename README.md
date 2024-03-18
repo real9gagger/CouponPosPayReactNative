@@ -59,7 +59,7 @@ else {
 * 【日期选择控件中的“日”对应的框宽度太小】打开 /node_modules/react-native-date-picker/android/src/main/res/values/styles.xml 将样式 “android_native_small” 中的 “android:layout_width” 改为 64dp
 
 ## 产品截图
-![启动屏](/src/images/screenshots/p1.jpg)
+<img src="/src/images/screenshots/p1.jpg" alt="启动屏" width="300" />
 ![登录页](/src/images/screenshots/p2.jpg)
 ![主页](/src/images/screenshots/p3.jpg)
 ![个人中心](/src/images/screenshots/p4.jpg)

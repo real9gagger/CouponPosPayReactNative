@@ -1,5 +1,5 @@
 ## 项目名称
-> POS机付款APP -- 2024年1月4日
+> POS机付款APP
 * logo艺术字体生成（字体大小：150px，保存到本地后用PS调整画布大小为1000x1000即可）：https://font.chinaz.com/diy/971022.html
 
 ## 运行条件
@@ -41,7 +41,7 @@
 > 【以下修改可以改善第三方组件的体验】  
 > 【！！！每次添加新插件后，以下配置都可能被覆盖，需要重新修改！！！】  
 * 【图片预览点击空白无法关闭问题】打开 /node_modules/react-native-image-viewing/dist/ImageViewing.js。转到第42行，将 View 改为 TouchableOpacity（需要 import），并添加两个属性 “ activeOpacity={1} onPress={onRequestCloseEnhanced} ”。
-* 【Android 8+ 启动屏无法全屏问题】打开 /node_modules/react-native-splash-screen/android/src/main/java/org/devio/rn/splashscreen/SplashScreen.java 找到 setActivityAndroidP 函数。在 if(Build.VERSION.SDK_INT >= 28){...} 语句后面加上如下代码：（2024年1月26日 使用的是 react-native-splash-screen 3.3.0 版本）
+* 【Android 8+ 启动屏无法全屏问题】打开 /node_modules/react-native-splash-screen/android/src/main/java/org/devio/rn/splashscreen/SplashScreen.java 找到 setActivityAndroidP 函数。在 if(Build.VERSION.SDK_INT >= 28){...} 语句后面加上如下代码：（使用的是 react-native-splash-screen 3.3.0 版本）
 ```java
 else {
     if (dialog != null && dialog.getWindow() != null) {

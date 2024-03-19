@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { ScrollView, View, Image, Text, StyleSheet, Pressable, ActivityIndicator } from "react-native";
-import { useI18N, getAppSettings, getUserPosName, getCouponInUse } from "@/store/getter";
+import { useI18N, getI18N, getAppSettings, getUserPosName, getCouponInUse } from "@/store/getter";
 import { dispatchSetLastUsed } from "@/store/setter";
 import { DISCOUNT_TYPE_LJ } from "@/common/Statics";
 import LinearGradient from "react-native-linear-gradient"
@@ -153,6 +153,28 @@ const lgStartEnd = [{x:0, y:0.5}, {x:1, y:0.5}];
 const couponLoading = {loading: true}; //正在查询优惠券信息
 const couponReady = {ready: true};//已输入优惠码，可查询
 
+//检查优惠券是否已过期
+function checkCouponExpiration(exp){
+    if(!exp){
+        return true; //没有时间限制
+    }
+    const arr = exp.split("~");
+    const nowDate = new Date();
+    
+    if(arr.length === 1){//只有终止日期
+        const endDate = new Date(arr[0].replace(/-/g, "/"));
+        endDate.setHours(23, 59, 59);
+        return (nowDate <= endDate);
+    } else {//起始日期 ~ 终止日期
+        const startDate = new Date(arr[0].replace(/-/g, "/"));
+        const endDate = new Date(arr[1].replace(/-/g, "/"));
+        
+        startDate.setHours(0, 0, 0);
+        endDate.setHours(23, 59, 59);
+        return (nowDate >= startDate && nowDate <= endDate);
+    }
+}
+
 //查询优惠券信息
 function getCouponInfo(cc) {
     return new Promise(function(resolve, reject){
@@ -163,7 +185,7 @@ function getCouponInfo(cc) {
                 title: items[1],
                 cpcode: items[1],
                 distype: (+items[2] || 0), //1-折扣，2-立减，其他值-未知
-                discount: (+items[3] || 0) * 100,
+                discount: (+items[3] || 0),
                 condition: (+items[6] || 0), //满免条件
                 expiration: (items[8] + " ~ " + items[9]),
                 distributor: "" //分销员编号
@@ -172,6 +194,7 @@ function getCouponInfo(cc) {
         } else {
             //去服务器查询
             resolve({});
+            $alert(getI18N("unimplemented.tip"));
         }
     });
 }
@@ -198,6 +221,10 @@ export default function CouponIndex(props){
     }
     const useThisCoupon = () => {
         if(couponInfo.cpcode && !couponInfo.inuse){
+            if(!checkCouponExpiration(couponInfo.expiration)){
+                return !$notify.error(i18n["coupon.errmsg2"]);
+            }
+            
             dispatchSetLastUsed(couponInfo);
             props.route.params?.onGoBack(couponInfo);
         } else {

@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { ScrollView, View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { useI18N } from "@/store/getter";
-import { getPaymentInfo } from "@/common/Statics";
+import { getPaymentInfo, TRANSACTION_TYPE_REFUND } from "@/common/Statics";
 import PosPayIcon from "@/components/PosPayIcon";
 import GradientButton from "@/components/GradientButton";
 import LoadingTip from "@/components/LoadingTip";
@@ -33,6 +33,12 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         padding: 10,
         marginVertical: 5
+    },
+    tipsBox: {
+        textAlign: "center",
+        fontSize: 12,
+        color: "#f90",
+        padding: 10
     }
 });
 
@@ -110,7 +116,8 @@ export default function OrderRefund(props){
                     <PosPayIcon name="right-arrow" color={appMainColor} size={16}/>
                 </TouchableOpacity>
                 <View style={fxG1}>{/* 占位用 */}</View>
-                <GradientButton onPress={onRefundPress}>{i18n["drawer.returns"]}</GradientButton>
+                <Text style={orderInfo.transactionType===TRANSACTION_TYPE_REFUND ? styles.tipsBox : dpN}>{i18n["refund.already"]}</Text>
+                <GradientButton disabled={orderInfo.transactionType===TRANSACTION_TYPE_REFUND} onPress={onRefundPress}>{i18n["drawer.returns"]}</GradientButton>
             </>}
             
             <LoadingTip ref={ltRef}

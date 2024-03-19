@@ -89,7 +89,7 @@ export default function CouponAdds(props){
             return !$notify.info(i18n["coupon.errmsg0"].cloze(i18n["coupon.distributor.number"]));
         }
         
-        const cpExpiration = drbRef.current.getPickResults("yyyy/MM/dd ~ ", "yyyy/MM/dd");
+        const cpExpiration = drbRef.current.getPickResults("yyyy-MM-dd ~ ", "yyyy-MM-dd");
         const couponData = {
             picurl:     null,
             title:      couponTitle.trim(),

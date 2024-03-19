@@ -3,6 +3,7 @@ import { ScrollView, View, Text, Pressable , Image, StatusBar, StyleSheet, Touch
 import { useI18N, getI18N, useAppSettings } from "@/store/getter";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
 import { eWalletList, CREDIT_CARD_PAYMENT_CODE, QR_CODE_PAYMENT_CODE, DISCOUNT_TYPE_LJ, TRANSACTION_TYPE_RECEIVE } from "@/common/Statics";
+import CustomerDisplay from "@/modules/CustomerDisplay";
 import LocalPictures from "@/common/Pictures";
 import QRcodeScanner from "@/modules/QRcodeScanner";
 import PaymentHelper from "@/modules/PaymentHelper";
@@ -206,7 +207,7 @@ function togglePKHidden(evt){
 
 //计算折扣了多少钱，返回的是【正数】
 function calcDiscountAmount(tl, dc, dt, cd){
-    if(tl < cd){//不满足消费条件
+    if(!tl || !dc || tl < cd){//不满足消费条件
         return 0;
     }
     
@@ -219,14 +220,13 @@ function calcDiscountAmount(tl, dc, dt, cd){
 
 //计算税费和优惠金额（返回字符串）
 function calcTaxAmount(tl, dc, rt){
-    if(!tl || !rt){
-        const temp = $tofixed(0);
+    if(!tl){
         return {
-            T_X: temp,
-            F_A: temp
+            T_X: "0",
+            F_A: "0"
         };
     } else {
-        const temp = (tl - dc) * (rt / 100); //先减去优惠金额在计算
+        const temp = !rt ? 0 : ((tl - dc) * (rt / 100)); //先减去优惠金额在计算
         return {
             T_X: $tofixed(temp),
             F_A: $tofixed(tl - dc + temp)
@@ -293,11 +293,19 @@ function tabBankCard(props){
     }, []);
     
     useEffect(() => {
-        if(cpInfos){
-            setDisAmounts(calcDiscountAmount(payAmounts, cpInfos.discount, cpInfos.distype, cpInfos.condition));
-        } else {
-            setDisAmounts(0);
-        }
+        const da = calcDiscountAmount(payAmounts, cpInfos?.discount, cpInfos?.distype, cpInfos?.condition);
+        
+        //加入防抖功能
+        appSettings.customerDisplayShowPayAmountInfo && $debounce(CustomerDisplay.showPayAmountInfo, 800, {
+            total: payAmounts,
+            tax: taxAndFa.T_X,
+            discount: da,
+            amount: taxAndFa.F_A,
+            cycode: appSettings.currencyCode,
+            cysymbol: appSettings.currencySymbol
+        });
+        
+        setDisAmounts(da);
     }, [payAmounts, cpInfos]);
     
     //银行卡支付界面
@@ -429,11 +437,19 @@ function tabEWallet(props){
     }, []);
     
     useEffect(() => {
-        if(cpInfos){
-            setDisAmounts(calcDiscountAmount(payAmounts, cpInfos.discount, cpInfos.distype, cpInfos.condition));
-        } else {
-            setDisAmounts(0);
-        }
+        const da = calcDiscountAmount(payAmounts, cpInfos?.discount, cpInfos?.distype, cpInfos?.condition);
+        
+        //加入防抖功能
+        appSettings.customerDisplayShowPayAmountInfo && $debounce(CustomerDisplay.showPayAmountInfo, 800, {
+            total: payAmounts,
+            tax: taxAndFa.T_X,
+            discount: da,
+            amount: taxAndFa.F_A,
+            cycode: appSettings.currencyCode,
+            cysymbol: appSettings.currencySymbol
+        });
+        
+        setDisAmounts(da);
     }, [payAmounts, cpInfos]);
     
     //电子钱包支付界面
@@ -565,11 +581,19 @@ function tabQRCode(props){
     }, []);
     
     useEffect(() => {
-        if(cpInfos){
-            setDisAmounts(calcDiscountAmount(payAmounts, cpInfos.discount, cpInfos.distype, cpInfos.condition));
-        } else {
-            setDisAmounts(0);
-        }
+        const da = calcDiscountAmount(payAmounts, cpInfos?.discount, cpInfos?.distype, cpInfos?.condition);
+        
+        //加入防抖功能
+        appSettings.customerDisplayShowPayAmountInfo && $debounce(CustomerDisplay.showPayAmountInfo, 800, {
+            total: payAmounts,
+            tax: taxAndFa.T_X,
+            discount: da,
+            amount: taxAndFa.F_A,
+            cycode: appSettings.currencyCode,
+            cysymbol: appSettings.currencySymbol
+        });
+        
+        setDisAmounts(da);
     }, [payAmounts, cpInfos]);
     
     //二维码支付界面

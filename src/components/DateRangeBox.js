@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
 
 const dateRangeCaches = {} //日期缓存，放在突然销毁日期控件后，在此显示时无法显示上次选择的日期
 
-const DEFAULT_DATE_FORMATTER = "yyyy/MM/dd"
+const DEFAULT_DATE_FORMATTER = "yyyy-MM-dd"
 
 export function clearDateRangeCache(pk){
     if(pk && dateRangeCaches[pk]){

@@ -287,9 +287,9 @@ export default function OrderStatistics(props){
                 </View>
             </View>
         </View>
-        <View style={[bgEE, pdS]}>
+        {/* <View style={[bgEE, pdS]}>
             <GradientButton>{i18n["print"]}</GradientButton>
-        </View>
+        </View> */}
         <PopupX showMe={isPopupShow} onClose={onPopupClose} title={i18n["filter"]}>
             <View style={pdHX}>
                 <Text style={styles.labelBox}>{i18n["transaction.time"]}</Text>

@@ -2,7 +2,7 @@ import { SET_LAST_COUPON, ADD_A_COUPON, DELETE_A_COUPON, DELETE_ALL_COUPON, UNKN
 
 const initialState = {
     lastUsed: null,//上次使用的优惠券
-    addedList: [], //已添加的优惠券列表
+    addedList: [], //手动添加的优惠券列表（功能暂未完善）
 };
 
 //设置最近使用的优惠券
@@ -60,7 +60,7 @@ export default couponReducer = (state = initialState, action) => {
         case SET_LAST_COUPON: return {...state, lastUsed: action.payload};
         //case ADD_A_COUPON: state.addedList.push(action.payload); break;
         //case DELETE_A_COUPON: state.addedList.splice(state.addedList.findIndex(vx => vx.cpcode===action.payload), 1); break;
-        case DELETE_ALL_COUPON: return {...state, addedList: []};
+        //case DELETE_ALL_COUPON: return {...state, addedList: []};
     }
     
     return state;

@@ -1,5 +1,5 @@
 import { NativeModules } from "react-native";
-import { getI18N, getUserPosName, getAppSettings } from "@/store/getter";
+import { getI18N, getUserPosName } from "@/store/getter";
 import { formatDate } from "@/utils/helper";
 
 //副屏助手
@@ -49,10 +49,9 @@ function getContentCentered(txt){
 }
 
 //显示需要付款的金额信息
-function showPayAmountInfo(total, tax, discount, amount){
-    const ass = getAppSettings();
-    if(!ass.customerDisplayShowPayAmountInfo){ //结账时副屏是否显示付款金额
-        return;
+function showPayAmountInfo(amountInfo){
+    if(!CDHelper.hasCustomerDisplay() || !amountInfo){
+        return;//没有副屏
     }
     
     CDHelper.openCustomerDisplay(function(errmsg){
@@ -60,16 +59,19 @@ function showPayAmountInfo(total, tax, discount, amount){
             return !$alert(errmsg);
         }
         
+        if(!amountInfo.total){
+            return !CDHelper.setCustomerDisplayContent(null); //显示欢迎界面即可
+        }
+        
         const i18n = getI18N();
-        const ccode = ass.currencyCode;
         const title1 = getUserPosName();
         const title2 = formatDate();
         const title3 = i18n["settlement"];
-        const msgAM = getContentLine(i18n["input.amount"],      `${total} ${ccode}`);
-        const msgTX = getContentLine(i18n["tax"],               `${tax} ${ccode}`);
-        const msgDC = getContentLine(i18n["coupon.discount"],   `-${discount} ${ccode}`);
-        const msgFA = getContentLine(i18n["final.amount"],      `${amount} ${ccode}`);
-        const msgPA = getContentCentered(i18n["payment.amount"].cloze(ass.currencySymbol, amount));
+        const msgAM = getContentLine(i18n["input.amount"],      `${amountInfo.total} ${amountInfo.cycode}`);
+        const msgTX = getContentLine(i18n["tax"],               `${amountInfo.tax} ${amountInfo.cycode}`);
+        const msgDC = getContentLine(i18n["coupon.discount"],   `-${amountInfo.discount} ${amountInfo.cycode}`);
+        const msgFA = getContentLine(i18n["final.amount"],      `${amountInfo.amount} ${amountInfo.cycode}`);
+        const msgPA = getContentCentered(i18n["payment.amount"].cloze(amountInfo.cysymbol, amountInfo.amount));
         
         CDHelper.setCustomerDisplayContent(`<?xml version="1.0" encoding="UTF-8" ?>
             <customerDisplayApi id="settlementCD">

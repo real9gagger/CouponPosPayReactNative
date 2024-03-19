@@ -48,6 +48,7 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
     private Callback mPrintCallback;
     private Callback mCdOpenedCallback;
     private boolean isCdOpened = false;
+    private boolean isSetAppLogo = false;
 
     private final String TAG = PosApiModule.class.getSimpleName();
     private final String PACKAGE_NAME = BuildConfig.APPLICATION_ID;
@@ -252,12 +253,15 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
     //2024年2月27日显示默认副屏
     private void showDefaultCustomerDisplay() {
         if (mCustomerDisplay != null) {
-            mCustomerDisplay.setCustomerImage(
-                    PACKAGE_NAME,
-                    ICustomerDisplay.IMAGE_KIND_DISPLAY,
-                    0,
-                    mContext.getExternalCacheDir().getPath() + "/customer_display/app_logo.jpg"
-            );
+            if(!isSetAppLogo){
+                mCustomerDisplay.setCustomerImage(
+                        PACKAGE_NAME,
+                        ICustomerDisplay.IMAGE_KIND_DISPLAY,
+                        0,
+                        mContext.getExternalCacheDir().getPath() + "/customer_display/app_logo.jpg"
+                );
+                isSetAppLogo = true;
+            }
             mCustomerDisplay.doDisplayScreen(PACKAGE_NAME,
                     "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" +
                     "<customerDisplayApi id=\"defaultCD\">" +
@@ -319,12 +323,12 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
     @Override
     public void onHostPause() {
         Log.d(TAG, "调用了小票打印的 onHostPause...");
+        closeCustomerDisplay(false);
     }
 
     @Override
     public void onHostDestroy() {
         try {
-            closeCustomerDisplay(false);
             mPaymentApi.term(mContext);
             Log.d(TAG, "销毁了支付/打印接口...");
         } catch (Exception ex) {
@@ -470,7 +474,11 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
     public void setCustomerDisplayContent(String content, Promise promise) {
         if (mCustomerDisplay != null) {
             try {
-                mCustomerDisplay.doDisplayScreen(PACKAGE_NAME, content);
+                if(content == null || content.isEmpty()){
+                    showDefaultCustomerDisplay(); //显示欢迎界面
+                } else {
+                    mCustomerDisplay.doDisplayScreen(PACKAGE_NAME, content);
+                }
                 promise.resolve(0);
             } catch (Exception ex) {
                 ex.printStackTrace();

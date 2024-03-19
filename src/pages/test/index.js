@@ -37,7 +37,14 @@ export default function TestIndex(props){
     }
     
     const showCD = () => {
-        CustomerDisplay.showPayAmountInfo(100, 0, 10, 90);
+        CustomerDisplay.showPayAmountInfo({
+            total: 100,
+            tax: 10,
+            discount: 10,
+            amount: 100,
+            cycode: "RMB",
+            cysymbol: "元"
+        });
     }
     
     return (

@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     },
     btnBox: {
         backgroundColor: "#fff",
-        borderColor: appMainColor,
+        borderColor: appDarkColor,
         borderWidth: StyleSheet.hairlineWidth,
         paddingHorizontal: 10,
         paddingVertical: 8,
@@ -112,7 +112,7 @@ export default function OrderStatistics(props){
     const [isPopupShow, setIsPopupShow] = useState(false);
     const [ttc, setTTC] = useState(null); //transaction type code
     const [pmc, setPMC] = useState([]); //payment method code
-    const [sdn, setSDN] = useState(""); //select date name
+    const [sdn, setSDN] = useState("today"); //select date name
     const [paramsText, setParamsText] = useState(""); //参数简要说明文本
     
     const onPopupShow = () => {
@@ -189,7 +189,7 @@ export default function OrderStatistics(props){
             transactionType: ttc
         };
         const txts = [];
-        
+
         (!!params.startTime || !!params.endTime) && txts.push(getTdiName(params.startTime, params.endTime));
         (!!params.transactionType) && txts.push(getTtcName(params.transactionType));
         (!!params.paymentType) && txts.push(getPmiName(params.paymentType));
@@ -231,6 +231,7 @@ export default function OrderStatistics(props){
     }
     
     useEffect(() => {
+        setDateRangeData(drbUniqueKey, new Date(), new Date()); //设置起始、结束默认日期
         return function(){
             clearDateRangeCache(drbUniqueKey);
         } 
@@ -272,7 +273,7 @@ export default function OrderStatistics(props){
                 <View style={styles.itemBox}>
                     <View style={fxHM}>
                         <Text style={styles.valueUnitHidden}>{appSettings.currencyUnit}</Text>
-                        <Text style={styles.valueBox}>{statisData?.totalTax || EMPTY_DEFAULT_TEXT}</Text>
+                        <Text style={styles.valueBox}>{statisData?.totalTaxAmount || EMPTY_DEFAULT_TEXT}</Text>
                         <Text style={styles.valueUnit}>{appSettings.currencyUnit}</Text>
                     </View>
                     <Text style={styles.titleBox}>{i18n["statistics.total.tax"]}</Text>

@@ -95,10 +95,10 @@ const FastCss = StyleSheet.create({
     tcDD: { color: "#ddd" },
     tcEE: { color: "#eee" },
     tcFF: { color: "#fff" },
-    tcR0: { color: "#ff8989" }, /* text color red 0 */
-    tcR1: { color: "#ff6161" }, /* text color red 1 */
+    tcR0: { color: "#ff6161" }, /* text color red 0 */
     tcB0: { color: "#1ba4f0" }, /* text color blue 0 */
     tcG0: { color: "#03C988" }, /* text color green 0 */
+    tcO0: { color: "#ff9900" }, /* 橙色 */
     tcMC: { color: appMainColor },
     tcTP: { color: "transparent" },
     

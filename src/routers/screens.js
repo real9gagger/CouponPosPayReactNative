@@ -27,6 +27,7 @@ import OrderStatistics from "@/pages/order/statistics";
 import OrderPrinting from "@/pages/order/printing";
 import OrderRefund from "@/pages/order/refund";
 import OrderRefundConfirm from "@/pages/order/refundConfirm";
+import OrderSynchronizeFailed from "@/pages/order/synchronizeFailed";
 
 //非Tabs页面的顶部导航栏全局配置
 const defaultScreenOptions = {
@@ -196,6 +197,12 @@ const PosPayRouterList = [
         name: "订单退款",
         component: OrderRefund,
         i18nTitle: "drawer.returns",
+        options: {...defaultScreenOptions}
+    },
+    {
+        name: "问题订单",
+        component: OrderSynchronizeFailed,
+        i18nTitle: "order.failed.manifest",
         options: {...defaultScreenOptions}
     },
     {

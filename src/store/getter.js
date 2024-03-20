@@ -86,3 +86,14 @@ export function getCouponInUse(code){
     const lu = store.getState().couponData.lastUsed;
     return (lu && lu.cpcode === code ? lu : null);
 }
+
+/* ================ 订单相关 ================ */
+export function useFailedOrders(){
+    return useSelector(state => state.orderData.postFailedCache);
+}
+export function getFailedOrders(){
+    return store.getState().orderData.postFailedCache;
+}
+export function hasFailedOrders(){
+    return store.getState().orderData.postFailedCache.length;
+}

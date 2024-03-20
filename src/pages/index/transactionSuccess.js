@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ScrollView, View, Text, Image, StatusBar, StyleSheet, TouchableOpacity } from "react-native";
 import { useI18N, getUserInfo, getAppSettings } from "@/store/getter";
+import { dispatchAddFailedOrder } from "@/store/setter";
 import { formatDate } from "@/utils/helper";
 import { getPaymentInfo, EMPTY_DEFAULT_TEXT } from "@/common/Statics";
 import LocalPictures from "@/common/Pictures";
@@ -72,8 +73,8 @@ export default function IndexTransactionSuccess(props){
             
             setTransactionResult(dat);
             
-            //保存订单信息！
-            $request("savePosAppOrder", dat);
+            //保存订单信息！！！如果保存失败则存入缓存，留下次手动同步到服务器
+            $request("savePosAppOrder", dat).catch(err => dispatchAddFailedOrder("savePosAppOrder", dat, err));
         }
     }, []);
     
@@ -98,7 +99,7 @@ export default function IndexTransactionSuccess(props){
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["transaction.amount"]}</Text>
-                    <Text style={tcR1}><Text style={fwB}>{transactionResult.amount}</Text> {transactionResult.currencyCode}</Text>
+                    <Text style={tcR0}><Text style={fwB}>{transactionResult.amount}</Text> {transactionResult.currencyCode}</Text>
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["coupon.code"]}</Text>

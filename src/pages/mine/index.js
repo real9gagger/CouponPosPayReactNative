@@ -39,9 +39,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingVertical: 20,
     },
-    actionItem1: {
-        backgroundColor: "#EFEFEF",
-    },
     sectionTitle: {
         marginTop: 15,
         fontSize: 18
@@ -148,7 +145,7 @@ export default function MineIndex(props){
             <View style={[fxR, fxWP]}>
                 {actionList2.map((vx, ix) => (
                     <View key={vx.i18nName} style={[styles.actionGrid, (ix%2===0) && styles.actionLeft]}>
-                        <Pressable android_ripple={tcCC} onPress={() => onActionPress(vx.pageName)} style={[styles.actionItem, styles.actionItem1]}>
+                        <Pressable android_ripple={tcCC} onPress={() => onActionPress(vx.pageName)} style={styles.actionItem}>
                             <PosPayIcon name={vx.iconName} color={appMainColor} size={24} offset={-10} />
                             <Text style={[fxG1, fs16]} numberOfLines={1}>{i18n[vx.i18nName]}</Text>
                         </Pressable>

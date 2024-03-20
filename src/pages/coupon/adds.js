@@ -90,7 +90,7 @@ export default function CouponAdds(props){
         }
         
         const cpExpiration = drbRef.current.getPickResults("yyyy-MM-dd ~ ", "yyyy-MM-dd");
-        const couponData = {
+        const cpData = {
             picurl:     null,
             title:      couponTitle.trim(),
             cpcode:     couponCode.replace(/[^\d]/g, ""),
@@ -101,7 +101,7 @@ export default function CouponAdds(props){
             distributor:distributorNumber.replace(/[^\d]/g, "") //分销员编号
         };
         
-        props.route.params?.onGoBack(couponData);
+        props.route.params?.onGoBack(cpData);
         props.navigation.goBack();
     }
     

@@ -1,32 +1,43 @@
-import { ScrollView, View, Image, Text, StatusBar, Pressable, StyleSheet, Linking } from "react-native";
-import { useI18N } from "@/store/getter";
+import { ScrollView, View, TouchableOpacity, Image, Text, StatusBar, Pressable, StyleSheet, Linking } from "react-native";
+import { useI18N, hasFailedOrders } from "@/store/getter";
 import LocalPictures from "@/common/Pictures";
+import PosPayIcon from "@/components/PosPayIcon";
 
 const styles = StyleSheet.create({
     qrBox: {
         width: 180,
-        height: 180,
-        overflow: "hidden"
+        height: 180
     },
     pressBox: {
         position: "absolute",
         top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 2
+        left: (deviceDimensions.screenWidth - 180) / 2,
+        width: 180,
+        height: 180,
+        zIndex: 9
     },
-    nodataBox: {
-        lineHeight: 125,
-        fontSize: 18,
-        color: "#000",
-        fontWeight: "bold",
-        opacity: 0
+    itemBox: {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        padding: 15
+    },
+    itemContainer: {
+        margin: 10,
+        borderRadius: 10,
+        overflow: "hidden",
+        backgroundColor: "#fff",
+    },
+    redDot: {
+        color: "#f00",
+        fontSize: 8
     }
 });
 
 export default function MineHelps(props){
     const i18n = useI18N();
+    const hasFO = hasFailedOrders();
+    
     const onQRcodeLongPresss = () => {
         const theURL = "https://qa.smbc-card.com/kamei/steradev";
         Linking.canOpenURL(theURL).then(res => {
@@ -39,16 +50,25 @@ export default function MineHelps(props){
             $notify.info(i18n["more.help.errmsg1"]);
         });
     }
+    const gotoSyncFailed = () => {
+        props.navigation.navigate("问题订单");
+    }
     
     return (
-        <ScrollView style={pgEE} contentContainerStyle={[fxC, fxAC, mhF]}>
+        <ScrollView style={pgEE} contentContainerStyle={mhF}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
-            <Text style={styles.nodataBox}>{i18n["nodata"]}</Text>
-            <View style={styles.qrBox}>
-                <Pressable style={styles.pressBox} android_ripple={tcCC} onLongPress={onQRcodeLongPresss} />
-                <Image source={LocalPictures.helpsQRcode} style={whF} />
+            <View style={styles.itemContainer}>
+                <TouchableOpacity style={styles.itemBox} activeOpacity={0.5} onPress={gotoSyncFailed}>
+                    <Text style={[fxG1, fs16]}>{i18n["order.failed.sync"]}</Text>
+                    <Text style={hasFO ? styles.redDot : dpN}>●</Text>
+                    <PosPayIcon name="right-arrow" color="#aaa" size={20} />
+                </TouchableOpacity>
             </View>
-            <Text style={[pdX, taC, tc99, fs16]}>{i18n["more.help.tip"]}</Text>
+            <View style={[fxVM, {marginTop: 120}]}>
+                <Pressable style={styles.pressBox} android_ripple={tcCC} onLongPress={onQRcodeLongPresss} />
+                <Image source={LocalPictures.helpsQRcode} style={styles.qrBox} />
+                <Text style={[pdS, tc99, fs14]}>{i18n["more.help.tip"]}</Text>
+            </View>
         </ScrollView>
     );
 }

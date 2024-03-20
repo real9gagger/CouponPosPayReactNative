@@ -256,7 +256,7 @@ export default function OrderIndex(props){
                             <Text style={[fs12, fxG1]}>{i18n["transaction.type"]}</Text>
                             {vx.transactionType===TRANSACTION_TYPE_RECEIVE
                             ? <Text style={[fs12, tcG0, taC]}>{i18n["transaction.receive"]}</Text>
-                            : <Text style={[fs12, tcR1, taC]}>{i18n["transaction.refund"]}</Text>
+                            : <Text style={[fs12, tcR0, taC]}>{i18n["transaction.refund"]}</Text>
                             }
                         </View>
                         <View style={fxHC}>

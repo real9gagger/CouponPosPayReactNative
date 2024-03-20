@@ -5,10 +5,11 @@ import localesReducer from "./localesReducer";
 import userReducer from "./userReducer";
 import settingsReducer from "./settingsReducer";
 import couponReducer from "./couponReducer";
+import orderReducer from "./orderReducer";
 
 const persistConfig = {
     key: "root",
-    whitelist: ["userInfo", "appSettings"],
+    whitelist: ["userInfo", "appSettings", "orderData"],
     storage: asyncStorage
 };
 
@@ -23,6 +24,7 @@ const allReducers = combineReducers({
     userInfo: userReducer, //用户信息
     appSettings: settingsReducer, //APP设置
     couponData: couponReducer, //优惠券相关数据
+    orderData: orderReducer, //订单相关的数据（必须保存在缓存里）
 });
 
 const store = createStore(persistReducer(persistConfig, allReducers));

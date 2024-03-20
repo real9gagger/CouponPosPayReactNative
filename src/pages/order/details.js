@@ -51,7 +51,7 @@ export default function OrderDetails(props){
                         <Text style={fxG1}>{i18n["transaction.type"]}</Text>
                         {orderInfo.transactionType!==TRANSACTION_TYPE_REFUND
                         ? <Text style={tcG0}>{i18n["transaction.receive"]}</Text>
-                        : <Text style={tcR1}>{i18n["transaction.refund"]}</Text>
+                        : <Text style={tcR0}>{i18n["transaction.refund"]}</Text>
                         }
                     </View>
                     <View style={styles.itemBox}>
@@ -68,7 +68,7 @@ export default function OrderDetails(props){
                     </View>
                     <View style={styles.itemBox}>
                         <Text style={fxG1}>{i18n["transaction.amount"]}</Text>
-                        <Text style={tcR1}><Text style={fwB}>{orderInfo.amount}</Text> {orderInfo.currencyCode}</Text>
+                        <Text style={tcR0}><Text style={fwB}>{orderInfo.amount}</Text> {orderInfo.currencyCode}</Text>
                     </View>
                     <View style={styles.itemBox}>
                         <Text style={fxG1}>{i18n["coupon.code"]}</Text>

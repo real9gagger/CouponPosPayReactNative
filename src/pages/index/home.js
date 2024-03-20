@@ -361,7 +361,7 @@ function tabBankCard(props){
                 </View>
                 <View style={fxHC}>
                     <Text style={[fs12, fxG1]}>{i18n["final.amount"]}</Text>
-                    <Text style={[fs12, tcR1]}><Text style={fwB}>{taxAndFa.F_A}</Text> {appSettings.currencyCode}</Text>
+                    <Text style={[fs12, tcR0]}><Text style={fwB}>{taxAndFa.F_A}</Text> {appSettings.currencyCode}</Text>
                 </View>
             </View>}
             <View style={pdX}>
@@ -507,7 +507,7 @@ function tabEWallet(props){
                 </View>
                 <View style={fxHC}>
                     <Text style={[fs12, fxG1]}>{i18n["final.amount"]}</Text>
-                    <Text style={[fs12, tcR1]}><Text style={fwB}>{taxAndFa.F_A}</Text> {appSettings.currencyCode}</Text>
+                    <Text style={[fs12, tcR0]}><Text style={fwB}>{taxAndFa.F_A}</Text> {appSettings.currencyCode}</Text>
                 </View>
             </View>}
             <View style={pdX}>
@@ -648,7 +648,7 @@ function tabQRCode(props){
                 </View>
                 <View style={fxHC}>
                     <Text style={[fs12, fxG1]}>{i18n["final.amount"]}</Text>
-                    <Text style={[fs12, tcR1]}><Text style={fwB}>{taxAndFa.F_A}</Text> {appSettings.currencyCode}</Text>
+                    <Text style={[fs12, tcR0]}><Text style={fwB}>{taxAndFa.F_A}</Text> {appSettings.currencyCode}</Text>
                 </View>
             </View>}
             <View style={{height: 20}}>{/* 占位用 */}</View>

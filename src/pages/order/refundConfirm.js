@@ -1,5 +1,6 @@
 import { View, Text, StatusBar, Image, StyleSheet } from "react-native";
 import { useI18N, getAppSettings } from "@/store/getter";
+import { dispatchAddFailedOrder } from "@/store/setter";
 import { EMPTY_DEFAULT_TEXT, TRANSACTION_TYPE_REFUND } from "@/common/Statics";
 import GradientButton from "@/components/GradientButton";
 import LocalPictures from "@/common/Pictures";
@@ -41,9 +42,12 @@ export default function OrderRefundConfirm(props){
             slipNumber: orderInfo.slipNumber //单据号码，取消付款或者退款时用到
         }, function(payRes){
             if(payRes.activityResultCode === 0){//退款成功
-                $request("posAppRefund", { id: orderInfo.id, slipNumber: orderInfo.slipNumber }).then(res => {
+                const dat = { id: orderInfo.id, slipNumber: orderInfo.slipNumber };
+                $request("posAppRefund", dat).then(res => {
                     $toast(i18n["refund.success"]);
                     props.navigation.goBack();
+                }).catch(err => {
+                    dispatchAddFailedOrder("posAppRefund", dat, err);
                 });
             } else if(payRes.activityResultCode === 2){//取消退款
                 //$toast(i18n["payment.errmsg2"]);

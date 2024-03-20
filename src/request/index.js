@@ -30,13 +30,12 @@ instance.interceptors.response.use(function (response) {
         return (resData.data || resData.rows);
     } else {
         //是否显示错误提示
-        if(response.config.data){
-            const cfgDat = response.config.data;
-            const datType = (typeof cfgDat);
-            if((datType === "object" && !cfgDat.doNotToastErrMsg) || (datType === "string" && !cfgDat.includes("doNotToastErrMsg"))){
-                $toast(resData.msg);
-            }
+        const cfgDat = response.config.data || response.config.params;
+        const datType = (typeof cfgDat);
+        if(!cfgDat || (datType === "object" && !cfgDat.doNotToastErrMsg) || (datType === "string" && !cfgDat.includes("doNotToastErrMsg"))){
+            $toast(resData.msg);
         }
+        
         return Promise.reject("[" + resCode + "] " + resData.msg);
     }
 }, function (err) {

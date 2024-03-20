@@ -42,7 +42,7 @@ export default function SettingMoney(props){
                 autoFocus={true}
             />
             <Text style={[fs10, taR, tc99]}>{i18n["preview"]}: {NUM99.substr(0, +decNum ? 3 : 2)}{NUM99.substr(3, +decNum)}</Text>
-            <Text style={[fs14, taC, tcR1, pdVX]}>{i18n["setting.restart.tip"]}</Text>
+            <Text style={[fs14, taC, tcR0, pdVX]}>{i18n["setting.restart.tip"]}</Text>
         </ScrollView>
     )
 }

@@ -3,7 +3,7 @@ import { changeLanguage, initiLanguage } from "./localesReducer";
 import { updateUserInfo, resetUserInfo, setAccessToken } from "./userReducer";
 import { updateAppSettings, updateLanguageSettings } from "./settingsReducer";
 import { setLastUsed } from "./couponReducer";
-import { addFailedOrder, removeFailedOrder, updateFailedOrder } from "./orderReducer";
+import { addFailedOrder, removeFailedOrder, updateFailedOrder, synchronousAllOrder } from "./orderReducer";
 
 /* ================ 本地语言相关 ================ */
 export function dispatchChangeLanguage(lgcode){
@@ -51,6 +51,9 @@ export function dispatchAddFailedOrder(api, data, msg){
 export function dispatchRemoveFailedOrder(fid){
     store.dispatch(removeFailedOrder(fid));
 }
-export function dispatchUpdateFailedOrder(fid, msg){
-    store.dispatch(updateFailedOrder(fid, msg));
+export function dispatchUpdateFailedOrder(fid, msg, syncing){
+    store.dispatch(updateFailedOrder(fid, msg, syncing));
+}
+export function dispatchSynchronousAllOrder(bo){
+    store.dispatch(synchronousAllOrder(bo));
 }

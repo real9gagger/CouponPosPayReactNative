@@ -87,6 +87,7 @@ const FastCss = StyleSheet.create({
     fs50: { fontSize: 50 },
     
     tc00: { color: "#000" }, /* <==== text color ====> */
+    tc33: { color: "#333" },
     tc66: { color: "#666" },
     tc99: { color: "#999" },
     tcAA: { color: "#aaa" },

@@ -135,9 +135,13 @@ function open(){
     CDHelper.openCustomerDisplay(null);
 }
 
-//副屏状态：true-已打开，false-已关闭
+//副屏状态：true-已打开，false-已关闭, null-无副屏
 function status(){
-    return CDHelper.isCustomerDisplayOpened();
+    if(!CDHelper.hasCustomerDisplay()){
+        return null;
+    } else {
+        return CDHelper.isCustomerDisplayOpened();
+    }
 }
 
 export default {

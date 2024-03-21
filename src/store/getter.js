@@ -95,5 +95,11 @@ export function getFailedOrders(){
     return store.getState().orderData.postFailedCache;
 }
 export function hasFailedOrders(){
-    return store.getState().orderData.postFailedCache.length;
+    return useSelector(state => state.orderData.postFailedCache.length);
+}
+export function checkIsSyncingAll(){
+    return store.getState().orderData.isSyncingAll;
+}
+export function useIsSyncingAll(){
+    return useSelector(state => state.orderData.isSyncingAll);
 }

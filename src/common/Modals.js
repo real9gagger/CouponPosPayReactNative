@@ -72,6 +72,12 @@ const styles = StyleSheet.create({
         color: appMainColor,
         fontWeight: "bold"
     },
+    riskyText: {
+        textAlign: "center",
+        fontSize: 16,
+        color: "#f00",
+        fontWeight: "bold"
+    },
     cancelBtn: {
         padding: 15,
         borderTopColor: "#ddd",
@@ -83,7 +89,7 @@ const styles = StyleSheet.create({
     cancelText: {
         textAlign: "center",
         fontSize: 16,
-        color: "#333",
+        color: "#444",
         fontWeight: "bold"
     },
     notifyBox: {
@@ -130,7 +136,7 @@ export function showAlert(msg, title, btntxt){
     })
 }
 
-export function showConfirm(msg, title, notxt, yestxt){
+export function showConfirm(msg, title, notxt, yestxt, isrisky/*是否是有风险的操作*/){
     return new Promise(function (resolve, reject) {
         if((!msg) || (typeof msg !== "string")){
             reject(0)
@@ -165,7 +171,7 @@ export function showConfirm(msg, title, notxt, yestxt){
                     <TouchableHighlight
                         style={styles.okBtn} 
                         underlayColor="#eee" 
-                        onPress={onDialogConfirm}><Text style={styles.okText}>{yestxt}</Text></TouchableHighlight>
+                        onPress={onDialogConfirm}><Text style={!isrisky ? styles.okText : styles.riskyText}>{yestxt}</Text></TouchableHighlight>
                 </View>
             </View>
         )

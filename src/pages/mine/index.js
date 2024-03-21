@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ScrollView, View, StatusBar, Text, Image, StyleSheet, Pressable, TouchableOpacity, DevSettings } from "react-native";
-import { useI18N, useUserInfo } from "@/store/getter";
+import { useI18N, useUserInfo, hasFailedOrders } from "@/store/getter";
 import LocalPictures from "@/common/Pictures";
 import PosPayIcon from "@/components/PosPayIcon";
 
@@ -42,6 +42,14 @@ const styles = StyleSheet.create({
     sectionTitle: {
         marginTop: 15,
         fontSize: 18
+    },
+    redDot: {
+        position: "absolute",
+        right: 8,
+        top: 6,
+        zIndex: 8,
+        color: "#f00",
+        fontSize: 8
     }
 });
 
@@ -86,13 +94,15 @@ const actionList2 = [
     {
         i18nName: "drawer.helps",
         iconName: "help-stroke",
-        pageName: "帮助页"
+        pageName: "帮助页",
+        isHelpPage: true
     }
 ];
 
 export default function MineIndex(props){
     const i18n = useI18N();
     const userInfo = useUserInfo();
+    const hasFO = hasFailedOrders();
     const [userAvatar, setUserAvatar] = useState(LocalPictures.defaultUserAvatar);
     
     const restartApp = () => {
@@ -148,6 +158,7 @@ export default function MineIndex(props){
                         <Pressable android_ripple={tcCC} onPress={() => onActionPress(vx.pageName)} style={styles.actionItem}>
                             <PosPayIcon name={vx.iconName} color={appMainColor} size={24} offset={-10} />
                             <Text style={[fxG1, fs16]} numberOfLines={1}>{i18n[vx.i18nName]}</Text>
+                            {vx.isHelpPage && !!hasFO && <Text style={styles.redDot}>●</Text>}
                         </Pressable>
                     </View>
                 ))}

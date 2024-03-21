@@ -185,9 +185,9 @@ function getCouponInfo(cc) {
                 title: items[1],
                 cpcode: items[1],
                 distype: (+items[2] || 0), //1-折扣，2-立减，其他值-未知
-                discount: (+items[3] || 0),
+                discount: (+items[3] || 0), //折扣率，或者立减金额
                 condition: (+items[6] || 0), //满免条件
-                expiration: (items[8] + " ~ " + items[9]),
+                expiration: (items[8].replace(/(\d{4})(\d{2})/, "$1-$2-") + " ~ " + items[9].replace(/(\d{4})(\d{2})/, "$1-$2-")),
                 distributor: "" //分销员编号
             };
             resolve(output);

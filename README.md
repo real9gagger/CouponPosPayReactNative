@@ -1,6 +1,7 @@
 ## 项目名称
 > POS机付款APP -- 2024年1月4日
 * logo艺术字体生成（字体大小：150px，保存到本地后用PS调整画布大小为1000x1000即可）：https://font.chinaz.com/diy/971022.html
+* android APP logo 制作网站：https://icon.wuruihong.com。圆角比例：ic_launcher.png 为 16%，ic_launcher_round.png 为 50%。
 
 ## 运行条件
 > 列出运行该项目所必须的条件和相关依赖  

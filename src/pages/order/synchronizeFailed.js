@@ -112,6 +112,13 @@ function doSynchronousAll(orders){
     }
 }
 
+function tryToString(val){
+    if(!val && val !== false && val !== 0){
+        return "[NULL]";
+    }
+    return val.toString();
+}
+
 //同步失败的订单数据
 export default function OrderSynchronizeFailed(props){
     const i18n = useI18N();
@@ -241,7 +248,7 @@ export default function OrderSynchronizeFailed(props){
                     {Object.keys(selOrder).map(vx =>
                         <View key={vx} style={styles.fieldBox}>
                             <Text style={[fs12, fwB]}>{vx}</Text>
-                            <Text style={[fs12, fxG1, pdLS, taR]}>{selOrder[vx]}</Text>
+                            <Text style={[fs12, fxG1, pdLS, taR]}>{tryToString(selOrder[vx])}</Text>
                         </View>
                     )}
                 </ScrollView>

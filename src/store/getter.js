@@ -86,7 +86,9 @@ export function getCouponInUse(code){
     const lu = store.getState().couponData.lastUsed;
     return (lu && lu.cpcode === code ? lu : null);
 }
-
+export function useAddedList(){
+    return useSelector(state => state.couponData.addedList);
+}
 /* ================ 订单相关 ================ */
 export function useFailedOrders(){
     return useSelector(state => state.orderData.postFailedCache);
@@ -102,4 +104,7 @@ export function checkIsSyncingAll(){
 }
 export function useIsSyncingAll(){
     return useSelector(state => state.orderData.isSyncingAll);
+}
+export function useOnRefundSuccessful(){
+    return useSelector(state => state.orderData.refundSuccessfulOrderID);
 }

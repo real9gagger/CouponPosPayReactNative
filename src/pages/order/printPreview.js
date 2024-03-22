@@ -85,9 +85,11 @@ export default function OrderPrintPreview(props){
     
     const onSVLayout = (evt) => {
         svHeight.current = evt.nativeEvent.layout.height;
+        //$debounce(resetContentXY, 200);
     }
     const onCSChange = (cw, ch) => {
         ctHeight.current = ch;
+        //$debounce(resetContentXY, 200);
     }
     
     //全览打印内容

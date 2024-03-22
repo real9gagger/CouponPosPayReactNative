@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, RefreshControl, StatusBar, StyleSheet } from "react-native";
-import { useI18N } from "@/store/getter";
+import { useI18N, useOnRefundSuccessful } from "@/store/getter";
 import { getPaymentInfo } from "@/common/Statics";
 import { CREDIT_CARD_PAYMENT_CODE, E_MONEY_PAYMENT_CODE, QR_CODE_PAYMENT_CODE, TRANSACTION_TYPE_RECEIVE, TRANSACTION_TYPE_REFUND } from "@/common/Statics";
 import DateRangeBox, { clearDateRangeCache, getBeginDateString, getEndDateString } from "@/components/DateRangeBox";
@@ -100,6 +100,7 @@ function getOrderListByParams(params){
 export default function OrderIndex(props){
     const i18n = useI18N();
     const ltRef = useRef(null);
+    const useOrs = useOnRefundSuccessful();
     const [orderList, setOrderList] = useState([]);
     const [isPopupShow, setIsPopupShow] = useState(false);
     const [osn, setOSN] = useState(null); //order slip number
@@ -118,8 +119,8 @@ export default function OrderIndex(props){
     }
     const getTtcName = (code) => {
         switch(code){
-            case TRANSACTION_TYPE_RECEIVE: return i18n["transaction.receive"];
-            case TRANSACTION_TYPE_REFUND: return i18n["transaction.refund"];
+            case TRANSACTION_TYPE_RECEIVE: return i18n["order.status.received"];
+            case TRANSACTION_TYPE_REFUND: return i18n["order.status.refunded"];
             default: return "";
         }
     }
@@ -232,6 +233,14 @@ export default function OrderIndex(props){
         }
     }, []);
     
+    //退款成功时订单 ID 会变化，则刷新订单状态。
+    useEffect(() => {
+        if(useOrs){
+            ltRef.current.resetState();
+            queryOrders();
+        }
+    }, [useOrs]);
+    
     return (<>
         <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
         <TouchableOpacity style={[fxHC, styles.paramsBox]} onPress={onPopupShow} activeOpacity={0.6}>
@@ -249,23 +258,23 @@ export default function OrderIndex(props){
                 <TouchableOpacity key={vx.id} style={styles.itemBox} onPress={() => onItemPress(vx)} activeOpacity={0.5}>
                     <View style={styles.itemLeft}>
                         <View style={fxHC}>
-                            <Text style={[fs12, fxG1]}>{i18n["transaction.amount"]}</Text>
-                            <Text style={[fs12, fwB]}>{vx.amount} {vx.currencyCode}</Text>
+                            <Text style={[fs12, fxG1]}>{i18n["order.amount"]}</Text>
+                            <Text style={[fs12, fwB]}>{vx.orderAmount} {vx.currencyCode}</Text>
                         </View>
                         <View style={fxHC}>
-                            <Text style={[fs12, fxG1]}>{i18n["transaction.type"]}</Text>
+                            <Text style={[fs12, fxG1]}>{i18n["order.status"]}</Text>
                             {vx.transactionType===TRANSACTION_TYPE_RECEIVE
-                            ? <Text style={[fs12, tcG0, taC]}>{i18n["transaction.receive"]}</Text>
-                            : <Text style={[fs12, tcR0, taC]}>{i18n["transaction.refund"]}</Text>
+                            ? <Text style={[fs12, tcG0, taC]}>{i18n["order.status.received"]}</Text>
+                            : <Text style={[fs12, tcR0, taC]}>{i18n["order.status.refunded"]}</Text>
                             }
-                        </View>
-                        <View style={fxHC}>
-                            <Text style={[fs12, fxG1]}>{i18n["transaction.time"]}</Text>
-                            <Text style={fs12}>{vx.transactionTime}</Text>
                         </View>
                         <View style={fxHC}>
                             <Text style={[fs12, fxG1]}>{i18n["transaction.number"]}</Text>
                             <Text style={fs12}>{vx.slipNumber}</Text>
+                        </View>
+                        <View style={fxHC}>
+                            <Text style={[fs12, fxG1]}>{i18n["transaction.time"]}</Text>
+                            <Text style={fs12}>{vx.transactionTime}</Text>
                         </View>
                     </View>
                     <View style={[fxG1, fxVM]}>
@@ -298,11 +307,11 @@ export default function OrderIndex(props){
                 <Text style={styles.labelBox}>{i18n["transaction.number"]}</Text>
                 <TextInput defaultValue={osn} onChangeText={setOSN} placeholder={i18n["optional"]} style={styles.inputBox}></TextInput>
                 
-                <Text style={styles.labelBox}>{i18n["transaction.type"]}</Text>
+                <Text style={styles.labelBox}>{i18n["order.status"]}</Text>
                 <View style={styles.selectsBox}>
                     <RadioBox size={18} label={i18n["options.any"]} style={fxG1} checked={!ttc} onPress={onTtcChange(null)} />
-                    <RadioBox size={18} label={i18n["transaction.receive"]} style={fxG1} checked={ttc===TRANSACTION_TYPE_RECEIVE} onPress={onTtcChange(TRANSACTION_TYPE_RECEIVE)} />
-                    <RadioBox size={18} label={i18n["transaction.refund"]} style={fxG1} checked={ttc===TRANSACTION_TYPE_REFUND} onPress={onTtcChange(TRANSACTION_TYPE_REFUND)} />
+                    <RadioBox size={18} label={i18n["order.status.received"]} style={fxG1} checked={ttc===TRANSACTION_TYPE_RECEIVE} onPress={onTtcChange(TRANSACTION_TYPE_RECEIVE)} />
+                    <RadioBox size={18} label={i18n["order.status.refunded"]} style={fxG1} checked={ttc===TRANSACTION_TYPE_REFUND} onPress={onTtcChange(TRANSACTION_TYPE_REFUND)} />
                 </View>
                 
                 <Text style={styles.labelBox}>{i18n["payment.method"]}</Text>

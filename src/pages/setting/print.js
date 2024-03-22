@@ -1,7 +1,8 @@
-import { ScrollView, View, Text, Switch, StatusBar, StyleSheet, Pressable } from "react-native";
+import { ScrollView, View, Text, Image, Switch, StatusBar, StyleSheet, Pressable } from "react-native";
 import { useI18N, useAppSettings } from "@/store/getter";
 import { dispatchUpdateAppSettings } from "@/store/setter";
 import PosPayIcon from "@/components/PosPayIcon";
+import LocalPictures from "@/common/Pictures";
 
 const styles = StyleSheet.create({
     blankBox: {
@@ -19,6 +20,14 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         paddingVertical: 15,
         paddingHorizontal: 15
+    },
+    picBox: {
+        width: 12,
+        height: 22,
+        marginRight: 2,
+        backgroundColor: "#fff",
+        borderColor: "#ccc",
+        borderWidth: StyleSheet.hairlineWidth
     }
 });
 
@@ -65,6 +74,7 @@ export default function SettingPrint(props){
             <View style={[pdHX, bgFF]}><View style={styles.boxDivider}>{/*==== 分割线 ====*/}</View></View>
             <Pressable style={styles.itemBox} android_ripple={tcBB} onPress={printPV}>
                 <Text style={[fs16, fxG1]}>{i18n["preview"]}</Text>
+                <Image source={LocalPictures.printPreview} style={styles.picBox} resizeMode="contain" />
                 <PosPayIcon name="right-arrow" color="#aaa" size={20} />
             </Pressable>
         </ScrollView>

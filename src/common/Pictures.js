@@ -11,6 +11,7 @@ const LocalPictures = {
     noCoupon: require("@/images/pics/no_coupon.png"),
     creditCardPay: require("@/images/pics/credit_card_pay.png"),
     creditCardList: require("@/images/pics/credit_card_list.png"),
+    printPreview: require("@/images/pics/print_preview.png"), //打印预览专用图片
     
     //图标图片
     iconToggleDrawer: require("@/images/icons/toggle_drawer.png"), //切换抽屉图标

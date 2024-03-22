@@ -145,8 +145,8 @@ export default function OrderStatistics(props){
     }
     const getTtcName = (code) => {
         switch(code){
-            case TRANSACTION_TYPE_RECEIVE: return i18n["transaction.receive"];
-            case TRANSACTION_TYPE_REFUND: return i18n["transaction.refund"];
+            case TRANSACTION_TYPE_RECEIVE: return i18n["order.status.received"];
+            case TRANSACTION_TYPE_REFUND: return i18n["order.status.refunded"];
             default: return "";
         }
     }
@@ -193,7 +193,7 @@ export default function OrderStatistics(props){
         (!!params.startTime || !!params.endTime) && txts.push(getTdiName(params.startTime, params.endTime));
         (!!params.transactionType) && txts.push(getTtcName(params.transactionType));
         (!!params.paymentType) && txts.push(getPmiName(params.paymentType));
-        
+
         setIsPopupShow(false);
         setParamsText(txts.join(", "));
         
@@ -303,11 +303,11 @@ export default function OrderStatistics(props){
                     uniqueKey={drbUniqueKey}
                 />
                 
-                <Text style={styles.labelBox}>{i18n["transaction.type"]}</Text>
+                <Text style={styles.labelBox}>{i18n["order.status"]}</Text>
                 <View style={styles.selectsBox}>
                     <RadioBox size={18} label={i18n["options.any"]} style={fxG1} checked={!ttc} onPress={onTtcChange(null)} />
-                    <RadioBox size={18} label={i18n["transaction.receive"]} style={fxG1} checked={ttc===TRANSACTION_TYPE_RECEIVE} onPress={onTtcChange(TRANSACTION_TYPE_RECEIVE)} />
-                    <RadioBox size={18} label={i18n["transaction.refund"]} style={fxG1} checked={ttc===TRANSACTION_TYPE_REFUND} onPress={onTtcChange(TRANSACTION_TYPE_REFUND)} />
+                    <RadioBox size={18} label={i18n["order.status.received"]} style={fxG1} checked={ttc===TRANSACTION_TYPE_RECEIVE} onPress={onTtcChange(TRANSACTION_TYPE_RECEIVE)} />
+                    <RadioBox size={18} label={i18n["order.status.refunded"]} style={fxG1} checked={ttc===TRANSACTION_TYPE_REFUND} onPress={onTtcChange(TRANSACTION_TYPE_REFUND)} />
                 </View>
                 
                 <Text style={styles.labelBox}>{i18n["payment.method"]}</Text>

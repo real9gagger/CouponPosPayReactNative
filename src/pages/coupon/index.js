@@ -3,6 +3,7 @@ import { ScrollView, View, Image, Text, StyleSheet, Pressable, ActivityIndicator
 import { useI18N, getI18N, getAppSettings, getUserPosName, getCouponInUse } from "@/store/getter";
 import { dispatchSetLastUsed } from "@/store/setter";
 import { DISCOUNT_TYPE_LJ } from "@/common/Statics";
+import { parseStringDate } from "@/utils/helper"
 import LinearGradient from "react-native-linear-gradient"
 import PayKeyboard from "@/components/PayKeyboard";
 import PosPayIcon from "@/components/PosPayIcon";
@@ -162,12 +163,12 @@ function checkCouponExpiration(exp){
     const nowDate = new Date();
     
     if(arr.length === 1){//只有终止日期
-        const endDate = new Date(arr[0].replace(/-/g, "/"));
+        const endDate = parseStringDate(arr[0]);
         endDate.setHours(23, 59, 59);
         return (nowDate <= endDate);
     } else {//起始日期 ~ 终止日期
-        const startDate = new Date(arr[0].replace(/-/g, "/"));
-        const endDate = new Date(arr[1].replace(/-/g, "/"));
+        const startDate = parseStringDate(arr[0]);
+        const endDate = parseStringDate(arr[1]);
         
         startDate.setHours(0, 0, 0);
         endDate.setHours(23, 59, 59);

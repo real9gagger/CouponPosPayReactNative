@@ -1,13 +1,6 @@
 //将字符串日期转成日期对象
 export function parseStringDate(dt) {
-    if (dt) {
-        /* const dtType = (typeof dt);
-        if(dtType==="string"){
-            return new Date(dt.replace(/-/g, "/"));
-        } else if(dtType==="number"){
-            return new Date(dt);
-        } */
-
+    if (dt && typeof(dt) === "string") {
         const date = new Date(dt.replace(/-/g, "/"));
         if (!isNaN(date.getTime())) { //not a Invalid Date
             return date;

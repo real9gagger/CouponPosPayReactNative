@@ -1,6 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ScrollView, View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
-import { useI18N } from "@/store/getter";
+import { useI18N, useOnRefundSuccessful } from "@/store/getter";
 import { getPaymentInfo, TRANSACTION_TYPE_REFUND } from "@/common/Statics";
 import PosPayIcon from "@/components/PosPayIcon";
 import GradientButton from "@/components/GradientButton";
@@ -61,6 +61,7 @@ function getOrderInfoBySN(osn){
 export default function OrderRefund(props){
     const i18n = useI18N();
     const ltRef = useRef(null);
+    const useOrs = useOnRefundSuccessful();
     const [isFocus, setIsFocus] = useState(true);
     const [orderSN, setOrderSN] = useState("");
     const [orderInfo, setOrderInfo] = useState(null);
@@ -88,6 +89,14 @@ export default function OrderRefund(props){
         props.navigation.navigate("退款确认", orderInfo);
     }
     
+    //退款成功时订单 ID 会变化，则更新相关状态。
+    useEffect(() => {
+        if(orderInfo && useOrs === orderInfo.id){
+            orderInfo.transactionType = TRANSACTION_TYPE_REFUND;
+            setOrderInfo({...orderInfo});
+        }
+    }, [useOrs]);
+    
     return (
         <ScrollView style={pgEE} contentContainerStyle={[mhF, pdS]}>
             <View>
@@ -109,7 +118,13 @@ export default function OrderRefund(props){
                 <TouchableOpacity style={styles.orderBox} onPress={onOrderPress} activeOpacity={0.75}>
                     <View style={fxG1}>
                         <Text style={[fs16, fwB]}>SN.{orderInfo.slipNumber}</Text>
-                        <Text style={fs12}>{orderInfo.amount} {orderInfo.currencyCode}</Text>
+                        {orderInfo.transactionType===TRANSACTION_TYPE_REFUND ? 
+                            <View style={fxHC}>
+                                <Text style={fs12}>{orderInfo.amount} {orderInfo.currencyCode}</Text>
+                                <PosPayIcon name="refunded" color={tcG0.color} size={14} offset={5} />
+                            </View> :
+                            <Text style={fs12}>{orderInfo.amount} {orderInfo.currencyCode}</Text>
+                        }
                         <Text style={[fs12, tc99]}>{orderInfo.transactionTime}</Text>
                     </View>
                     <Text style={[fs12, tcMC]}>{i18n["details"]}</Text>

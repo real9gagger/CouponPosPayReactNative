@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { ScrollView, View, Text, TextInput, StyleSheet } from "react-native";
 import { useI18N, getAppSettings } from "@/store/getter";
+import { dispatchAddNewCoupon } from "@/store/setter";
 import { DISCOUNT_TYPE_ZK } from "@/common/Statics";
 import GradientButton from "@/components/GradientButton";
 import RadioBox from "@/components/RadioBox";
@@ -93,13 +94,15 @@ export default function CouponAdds(props){
         const cpData = {
             picurl:     null,
             title:      couponTitle.trim(),
-            cpcode:     couponCode.replace(/[^\d]/g, ""),
+            cpcode:     couponCode,
             distype:    couponType, //1-折扣，2-立减
             discount:   (+couponDiscount || 0),
             expiration: (cpExpiration[0] + cpExpiration[1]),
             condition:  (+couponCondition || 0), //满免条件
-            distributor:distributorNumber.replace(/[^\d]/g, "") //分销员编号
+            distributor:distributorNumber //分销员编号
         };
+        
+        dispatchAddNewCoupon(cpData); //保存到缓存里
         
         props.route.params?.onGoBack(cpData);
         props.navigation.goBack();
@@ -121,7 +124,7 @@ export default function CouponAdds(props){
                 <Text style={[fs12, inputNth===0xAA00&&tcMC]}>{i18n["coupon.code"]}</Text>
                 <TextInput 
                     style={[styles.inputBox, inputNth===0xAA00&&styles.inputActivated]} 
-                    keyboardType="number-pad" 
+                    keyboardType="default"
                     defaultValue={couponCode} 
                     onChangeText={setCouponCode}
                     placeholder={i18n["required"]} 

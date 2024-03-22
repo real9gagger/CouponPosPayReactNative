@@ -7,7 +7,7 @@ const regexpRM = /\?__RM__=([A-Z_]+)\b/;
 
 //参考文档 https://github.com/axios/axios
 const instance = axios.create({
-    baseURL: "https://api-test.jpcoupon.net", //请求基地址
+    baseURL: (runtimeEnvironment.isProduction ? "https://api.jpcoupon.net" : "https://api-test.jpcoupon.net"), //请求基地址
     timeout: 15000, //请求超时时间 15 秒
     headers: {} //额外的请求头 例如 token
 });

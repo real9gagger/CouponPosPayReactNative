@@ -21,7 +21,7 @@ export function setLastUsed(info){
 }
 
 //添加一张优惠券
-export function addCoupon(info){
+export function addNewCoupon(info){
     if(info){
         return {
             type: ADD_A_COUPON,
@@ -36,7 +36,7 @@ export function addCoupon(info){
 }
 
 //删除优惠券，不传参数则删除所有优惠券！
-export function deleteCoupon(code){
+export function deleteAddedCoupon(code){
     if(code){
         return {
             type: DELETE_A_COUPON,
@@ -58,9 +58,19 @@ export function deleteCoupon(code){
 export default couponReducer = (state = initialState, action) => {
     switch(action.type){
         case SET_LAST_COUPON: return {...state, lastUsed: action.payload};
-        //case ADD_A_COUPON: state.addedList.push(action.payload); break;
-        //case DELETE_A_COUPON: state.addedList.splice(state.addedList.findIndex(vx => vx.cpcode===action.payload), 1); break;
-        //case DELETE_ALL_COUPON: return {...state, addedList: []};
+        case ADD_A_COUPON: 
+            if(action.payload.cpcode){
+                state.addedList = [...state.addedList, action.payload];
+                return {...state};
+            }
+            break;
+        case DELETE_A_COUPON:
+            if(action.payload){
+                state.addedList = state.addedList.filter(vxo => vxo.cpcode !== action.payload);
+                return {...state};
+            }
+            break;
+        case DELETE_ALL_COUPON: return {...state, addedList: []};
     }
     
     return state;

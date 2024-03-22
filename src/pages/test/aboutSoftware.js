@@ -14,7 +14,8 @@ const styles = StyleSheet.create({
         width: 80,
         height: 80,
         borderRadius: 80,
-        marginTop: 60
+        marginTop: 60,
+        backgroundColor: appMainColor
     },
     verBox1: {
         color: "#333",

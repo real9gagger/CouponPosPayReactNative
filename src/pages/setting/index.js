@@ -194,7 +194,7 @@ export default function SettingIndex(props){
             {infoList.map((vx, ix) => (
                 <TouchableHighlight key={vx.actionName} style={vx.disabled ? dpN : [pdHX, bgFF]} underlayColor="#eee" onPress={onItemPress(vx.actionName)}>
                     <View style={[pdVX, fxHC, ix && styles.boxDivider]}>
-                        <Text style={[fs16, fxG1]}>{i18n[vx.i18nLabel]}</Text>
+                        <Text style={[fs16, fxG1]} numberOfLines={1}>{i18n[vx.i18nLabel]}</Text>
                         <Text style={!vx.descText ? dpN : [fs14, tc99]}>{i18n[vx.descText] || vx.descText}</Text>
                         <PosPayIcon name="right-arrow" color="#aaa" size={20} />
                     </View>

@@ -169,7 +169,7 @@ function getBlankFeed(){
 
 //获取切纸命令（测试环境不切纸）
 function getCutCommand(){
-    return (runtimeEnvironment.isProduction ? "<paperCut paperCuttingMethod=\"partialcut\" />" : "");
+    return ("<paperCut paperCuttingMethod=\"partialcut\" />");
 }
 
 //获取图像
@@ -245,6 +245,11 @@ function printPaymentReceipts(orderInfo){
             }
         });
     });
+}
+
+//打印统计小票
+function printStatisticsReceipts(statisInfo){
+    
 }
 
 //清理APP打印缓存

@@ -2,8 +2,8 @@ import { store } from "./index"; //使用 useDispatch 报错，因此直接使�
 import { changeLanguage, initiLanguage } from "./localesReducer";
 import { updateUserInfo, resetUserInfo, setAccessToken } from "./userReducer";
 import { updateAppSettings, updateLanguageSettings } from "./settingsReducer";
-import { setLastUsed } from "./couponReducer";
-import { addFailedOrder, removeFailedOrder, updateFailedOrder, synchronousAllOrder } from "./orderReducer";
+import { setLastUsed, addNewCoupon, deleteAddedCoupon } from "./couponReducer";
+import { addFailedOrder, removeFailedOrder, updateFailedOrder, synchronousAllOrder, onRefundSuccessful } from "./orderReducer";
 
 /* ================ 本地语言相关 ================ */
 export function dispatchChangeLanguage(lgcode){
@@ -43,7 +43,12 @@ export function dispatchUpdateAppSettings(key, value){
 export function dispatchSetLastUsed(info){
     store.dispatch(setLastUsed(info));
 }
-
+export function dispatchAddNewCoupon(info){
+    store.dispatch(addNewCoupon(info));
+}
+export function dispatchDeleteAddedCoupon(code){
+    store.dispatch(deleteAddedCoupon(code));
+}
 /* ================ 订单相关 ================ */
 export function dispatchAddFailedOrder(api, data, msg){
     store.dispatch(addFailedOrder(api, data, msg));
@@ -56,4 +61,8 @@ export function dispatchUpdateFailedOrder(fid, msg, syncing){
 }
 export function dispatchSynchronousAllOrder(bo){
     store.dispatch(synchronousAllOrder(bo));
+}
+export function dispatchOnRefundSuccessful(oid){
+    store.dispatch(onRefundSuccessful(oid));
+    setTimeout(store.dispatch, 2000, onRefundSuccessful(0)); //2秒钟后还原！！！
 }

@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
 import { View, Text, StatusBar, Image, StyleSheet } from "react-native";
 import { useI18N, getAppSettings } from "@/store/getter";
-import { dispatchAddFailedOrder } from "@/store/setter";
+import { dispatchAddFailedOrder, dispatchOnRefundSuccessful } from "@/store/setter";
 import { EMPTY_DEFAULT_TEXT, TRANSACTION_TYPE_REFUND } from "@/common/Statics";
+import { parseStringDate } from "@/utils/helper"
 import GradientButton from "@/components/GradientButton";
 import LocalPictures from "@/common/Pictures";
 import PaymentHelper from "@/modules/PaymentHelper";
@@ -29,7 +31,8 @@ export default function OrderRefundConfirm(props){
     const i18n = useI18N();
     const appSettings = getAppSettings();
     const orderInfo = props.route.params;
-    
+    const [canRefund, setCanRefund] = useState(false); //是否可以退款
+
     const confirmRefund = () => {
         //如果不支持支付功能
         if(!PaymentHelper.isSupport()){
@@ -44,10 +47,12 @@ export default function OrderRefundConfirm(props){
             if(payRes.activityResultCode === 0){//退款成功
                 const dat = { id: orderInfo.id, slipNumber: orderInfo.slipNumber };
                 $request("posAppRefund", dat).then(res => {
+                    dispatchOnRefundSuccessful(orderInfo.id);
                     $toast(i18n["refund.success"]);
                     props.navigation.goBack();
                 }).catch(err => {
                     dispatchAddFailedOrder("posAppRefund", dat, err);
+                    props.navigation.goBack();
                 });
             } else if(payRes.activityResultCode === 2){//取消退款
                 //$toast(i18n["payment.errmsg2"]);
@@ -56,6 +61,17 @@ export default function OrderRefundConfirm(props){
             }
         });
     }
+    
+    useEffect(() => {
+        const transTime = parseStringDate(orderInfo.transactionTime);
+        const diffDays = (Date.now() - transTime.getTime()) / 86400000; //交易时间距离现在已经过去多少天了
+        
+        if(diffDays >= 0 && diffDays <= 1){
+            setCanRefund(true); //一天之内可退款
+        } else {
+            setCanRefund(false); //收款超过一天就不能退了！！！
+        }
+    }, []);
     
     return (
         <View style={[pgEE, pdX]}>
@@ -70,7 +86,7 @@ export default function OrderRefundConfirm(props){
                 <Text style={[fs16, tcEE]}>{appSettings.currencySymbol /*因此的文字，目的是让金额居中*/}</Text>
             </Text>
             <Text style={[fs12, taC, pdVX]}>
-                <Text >{i18n["order.amount"]}&nbsp;</Text>
+                <Text>{i18n["order.amount"]}&nbsp;</Text>
                 <Text style={[tcMC, fwB]}>{orderInfo.orderAmount}&emsp;</Text>
                 <Text>{i18n["tax"]}&nbsp;</Text>
                 <Text style={[tcMC, fwB]}>{orderInfo.tax}&emsp;</Text>
@@ -87,7 +103,8 @@ export default function OrderRefundConfirm(props){
                 <Text style={[fs16, fwB]}>{orderInfo.creditCardMaskedPan || orderInfo.eMoneyNumber || EMPTY_DEFAULT_TEXT}</Text>
             </View>
             <View style={fxG1}>{/* 占位专用 */}</View>
-            <GradientButton onPress={confirmRefund}>{i18n["refund.confirm"]}</GradientButton>
+            <Text style={canRefund ? dpN : [fs12, tcO0, taC, pdS]}>{i18n["refund.unsupport"]}</Text>
+            <GradientButton disabled={!canRefund} onPress={confirmRefund}>{i18n["refund.confirm"]}</GradientButton>
         </View>
     )
 }

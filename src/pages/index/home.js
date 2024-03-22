@@ -102,8 +102,8 @@ const styles = StyleSheet.create({
         paddingTop: 10
     },
     paymentBox: {
-        width: 78,
-        height: 78,
+        width: 62,
+        height: 62,
         padding: 5,
         backgroundColor: "#fff",
         borderColor: "#ddd",
@@ -668,7 +668,7 @@ function customTabItem(args){
     return (
         <View style={fxHC}>
             <PosPayIcon name={iconName} color={args.focused ? styles.tabActived.color : styles.tabInactived.color} size={20} />
-            <Text style={args.focused ? styles.tabActived : styles.tabInactived}>{args.route.title}</Text>
+            <Text style={args.focused ? styles.tabActived : styles.tabInactived} numberOfLines={1}>{args.route.title}</Text>
         </View>
     )
 }

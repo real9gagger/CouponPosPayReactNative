@@ -1,8 +1,16 @@
-import { ADD_FAILED_ORDER, REMOVE_FAILED_ORDER, UPDATE_FAILED_ORDER, SYNCHRONOUS_ALL_ORDER, UNKNOWN_ACTION } from "./types";
+import { 
+    ADD_FAILED_ORDER, 
+    REMOVE_FAILED_ORDER, 
+    UPDATE_FAILED_ORDER, 
+    SYNCHRONOUS_ALL_ORDER,  
+    ON_REFUND_SUCCESSFUL, 
+    UNKNOWN_ACTION
+} from "./types";
 
 const initialState = {
     postFailedCache: [], //提交失败的订单数据要及时保存在缓存里，防止数据丢失【重要】！！！
-    isSyncingAll: false, //是否正在同步所有数据
+    isSyncingAll: false, //是否正在同步所有提交失败的缓存数据
+    refundSuccessfulOrderID: 0, //退款成功的订单ID！
 }
 
 export function addFailedOrder(apiName, postData, errMsg){
@@ -61,6 +69,13 @@ export function synchronousAllOrder(bo){
     }
 }
 
+export function onRefundSuccessful(oid){
+    return {
+        type: ON_REFUND_SUCCESSFUL,
+        payload: (+oid || 0)
+    }
+}
+
 export default orderReducer = (state = initialState, action) => {
     switch(action.type){
         case ADD_FAILED_ORDER: //新增一个同步失败的订单数据
@@ -88,6 +103,8 @@ export default orderReducer = (state = initialState, action) => {
             break;
         case SYNCHRONOUS_ALL_ORDER: //同步全部订单
             return {...state, isSyncingAll: !!action.payload};
+        case ON_REFUND_SUCCESSFUL: //退款成功
+            return {...state, refundSuccessfulOrderID: action.payload};
     }
     return state;
 }

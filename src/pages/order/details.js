@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ScrollView, View, Text, Image, StatusBar, StyleSheet } from "react-native";
-import { useI18N } from "@/store/getter";
+import { useI18N, useOnRefundSuccessful } from "@/store/getter";
 import { EMPTY_DEFAULT_TEXT, TRANSACTION_TYPE_REFUND } from "@/common/Statics";
 import LocalPictures from "@/common/Pictures";
 import PosPayIcon from "@/components/PosPayIcon";
@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
 
 export default function OrderDetails(props){
     const i18n = useI18N();
+    const useOrs = useOnRefundSuccessful();
     const [orderInfo, setOrderInfo] = useState(props.route.params);
     
     const printOrder = () => {
@@ -42,16 +43,24 @@ export default function OrderDetails(props){
         props.navigation.navigate("退款确认", orderInfo);
     }
     
+    //退款成功时订单 ID 会变化，则更新相关状态。
+    useEffect(() => {
+        if(orderInfo && useOrs === orderInfo.id){
+            orderInfo.transactionType = TRANSACTION_TYPE_REFUND;
+            setOrderInfo({...orderInfo});
+        }
+    }, [useOrs]);
+    
     return (
         <ScrollView style={pgEE} contentContainerStyle={pdS}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
             {!!orderInfo ? <>
                 <View style={[bgFF, brX, pdHX]}>
                     <View style={styles.itemBox}>
-                        <Text style={fxG1}>{i18n["transaction.type"]}</Text>
+                        <Text style={fxG1}>{i18n["order.status"]}</Text>
                         {orderInfo.transactionType!==TRANSACTION_TYPE_REFUND
-                        ? <Text style={tcG0}>{i18n["transaction.receive"]}</Text>
-                        : <Text style={tcR0}>{i18n["transaction.refund"]}</Text>
+                        ? <Text style={tcG0}>{i18n["order.status.received"]}</Text>
+                        : <Text style={tcR0}>{i18n["order.status.refunded"]}</Text>
                         }
                     </View>
                     <View style={styles.itemBox}>

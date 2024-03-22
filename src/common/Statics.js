@@ -152,7 +152,7 @@ export const supportLanguageList = [
     {
         name: "日本語",
         code: "ja_JP",
-        disabled: true //语言包是否已经翻译好了，true-否，false-是
+        disabled: false //语言包是否已经翻译好了，true-否，false-是
     },
     {
         name: "简体中文",

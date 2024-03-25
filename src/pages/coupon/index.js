@@ -62,14 +62,14 @@ const styles = StyleSheet.create({
         marginTop: 15
     },
     couponTitle: {
-        fontSize: 20,
+        fontSize: 18,
         marginBottom: 3
     },
     couponPic: {
-        width: 50,
-        height: 50,
+        width: 45,
+        height: 45,
         marginRight: 10,
-        borderRadius: 50,
+        borderRadius: 45,
         borderColor: "#fff",
         borderWidth: 1
     },
@@ -189,7 +189,8 @@ function getCouponInfo(cc) {
                 discount: (+items[3] || 0), //折扣率，或者立减金额
                 condition: (+items[6] || 0), //满免条件
                 expiration: (items[8].replace(/(\d{4})(\d{2})/, "$1-$2-") + " ~ " + items[9].replace(/(\d{4})(\d{2})/, "$1-$2-")),
-                distributor: "" //分销员编号
+                distributor: "", //分销员编号
+                createtime: Date.now() //创建时间的时间戳
             };
             resolve(output);
         } else {
@@ -250,6 +251,9 @@ export default function CouponIndex(props){
     }
     const gotoCouponAdds = () => {
         props.navigation.navigate("优惠券录入", { onGoBack: onAddNewCoupon });
+    }
+    const gotoShopCoupons = () => {
+        props.navigation.navigate("店铺优惠券", { onGoBack: onAddNewCoupon });
     }
     
     useEffect(() => {
@@ -336,6 +340,10 @@ export default function CouponIndex(props){
                     <Pressable style={[fxHC, pdX]} android_ripple={tcCC} onPress={gotoCouponAdds}>
                         <Text style={[fxG1, tcMC]}>{i18n["coupon.adds.manually"]}</Text>
                         <PosPayIcon name="manual-add" color={appMainColor} size={20} />
+                    </Pressable>
+                    <Pressable style={[fxHC, pdX]} android_ripple={tcCC} onPress={gotoShopCoupons}>
+                        <Text style={[fxG1, tcMC]}>{i18n["coupon.adds.history"]}</Text>
+                        <PosPayIcon name="my-coupons" color={appMainColor} size={20} />
                     </Pressable>
                     <Text style={fxG1} onPress={() => setPkVisible(false)}>{/* 点我关闭键盘 */}</Text>
                 </>

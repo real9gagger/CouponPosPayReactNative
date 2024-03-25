@@ -1,8 +1,8 @@
-import { SET_LAST_COUPON, ADD_A_COUPON, DELETE_A_COUPON, DELETE_ALL_COUPON, UNKNOWN_ACTION } from "./types";
+import { SET_LAST_COUPON, ADD_A_COUPON, DELETE_A_COUPON, DELETE_ALL_COUPON, INITI_COUPON_DATA, UNKNOWN_ACTION } from "./types";
 
 const initialState = {
     lastUsed: null,//上次使用的优惠券
-    addedList: [], //手动添加的优惠券列表（功能暂未完善）
+    addedList: [], //手动添加的优惠券列表（数据需要保存在缓存了）
 };
 
 //设置最近使用的优惠券
@@ -55,6 +55,14 @@ export function deleteAddedCoupon(code){
     }
 }
 
+//初始化优惠券数据
+export function onInitiCouponData(){
+    return {
+        type: INITI_COUPON_DATA,
+        payload: null
+    }
+}
+
 export default couponReducer = (state = initialState, action) => {
     switch(action.type){
         case SET_LAST_COUPON: return {...state, lastUsed: action.payload};
@@ -71,6 +79,7 @@ export default couponReducer = (state = initialState, action) => {
             }
             break;
         case DELETE_ALL_COUPON: return {...state, addedList: []};
+        case INITI_COUPON_DATA: return {...state, lastUsed: null};
     }
     
     return state;

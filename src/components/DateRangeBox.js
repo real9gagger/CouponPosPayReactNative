@@ -155,19 +155,26 @@ class DateRangeBox extends Component {
         }
     }
     __confirmDP(val){
+        const fd = formatDate(val, DEFAULT_DATE_FORMATTER)
         if(this.state.dateNth === 1){
+            if(this.props.onDateChange && fd !== this.state.dateFormat1){
+                this.props.onDateChange(fd, this.state.dateNth)
+            }
             this.setState({
                 beginDate: val,
-                dateFormat1: formatDate(val, DEFAULT_DATE_FORMATTER),
+                dateFormat1: fd,
                 dateNth: 0
             })
             if(this.props.uniqueKey){
                 dateRangeCaches[this.props.uniqueKey] = [val, this.state.endDate]
             }
         } else {
+            if(this.props.onDateChange && fd !== this.state.dateFormat2){
+                this.props.onDateChange(fd, this.state.dateNth)
+            }
             this.setState({
                 endDate: val,
-                dateFormat2: formatDate(val, DEFAULT_DATE_FORMATTER),
+                dateFormat2: fd,
                 dateNth: 0
             })
             if(this.props.uniqueKey){

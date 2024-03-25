@@ -2,24 +2,29 @@ import { store } from "./index"; //使用 useDispatch 报错，因此直接使�
 import { changeLanguage, initiLanguage } from "./localesReducer";
 import { updateUserInfo, resetUserInfo, setAccessToken } from "./userReducer";
 import { updateAppSettings, updateLanguageSettings } from "./settingsReducer";
-import { setLastUsed, addNewCoupon, deleteAddedCoupon } from "./couponReducer";
-import { addFailedOrder, removeFailedOrder, updateFailedOrder, synchronousAllOrder, onRefundSuccessful } from "./orderReducer";
+import { setLastUsed, addNewCoupon, deleteAddedCoupon, onInitiCouponData } from "./couponReducer";
+import { addFailedOrder, removeFailedOrder, updateFailedOrder, synchronousAllOrder, onRefundSuccessful, onInitiOrderData } from "./orderReducer";
+
+//初始化存储仓库
+export function dispatchInitiStore(){
+    const lgcode = store.getState().appSettings.languageCode;
+    const actionType = initiLanguage(lgcode);
+    
+    store.dispatch(actionType); //加载语言包
+    
+    if(actionType.payload.code !== lgcode){
+        store.dispatch(updateLanguageSettings(actionType.payload.code)); //保存语言编码
+    }
+    
+    onInitiCouponData(); //初始化优惠券数据
+    onInitiOrderData(); //初始化订单数据
+}
 
 /* ================ 本地语言相关 ================ */
 export function dispatchChangeLanguage(lgcode){
     const actionType = changeLanguage(lgcode);
     store.dispatch(actionType);
     store.dispatch(updateLanguageSettings(actionType.payload.code)); //保存语言编码
-}
-export function dispatchInitiLanguage(){
-    const lgcode = store.getState().appSettings.languageCode;
-    const actionType = initiLanguage(lgcode);
-    
-    store.dispatch(actionType);
-    
-    if(actionType.payload.code !== lgcode){
-        store.dispatch(updateLanguageSettings(actionType.payload.code)); //保存语言编码
-    }
 }
 /* ================ 用户信息相关 ================ */
 export function dispatchUpdateUserInfo(infos){
@@ -64,5 +69,4 @@ export function dispatchSynchronousAllOrder(bo){
 }
 export function dispatchOnRefundSuccessful(oid){
     store.dispatch(onRefundSuccessful(oid));
-    setTimeout(store.dispatch, 2000, onRefundSuccessful(0)); //2秒钟后还原！！！
 }

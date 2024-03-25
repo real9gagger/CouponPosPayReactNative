@@ -20,6 +20,7 @@ import TestSupportPayment from "@/pages/test/supportPayment";
 import TestPospayIcons from "@/pages/test/pospayIcons";
 import CouponIndex from "@/pages/coupon/index";
 import CouponAdds from "@/pages/coupon/adds";
+import CouponShopCoupons from "@/pages/coupon/shopCoupons";
 import OrderPrintPreview from "@/pages/order/printPreview";
 import OrderIndex from "@/pages/order/index";
 import OrderDetails from "@/pages/order/details";
@@ -28,6 +29,7 @@ import OrderPrinting from "@/pages/order/printing";
 import OrderRefund from "@/pages/order/refund";
 import OrderRefundConfirm from "@/pages/order/refundConfirm";
 import OrderSynchronizeFailed from "@/pages/order/synchronizeFailed";
+import OrderStatisticsDetails from "@/pages/order/statisticsDetails";
 
 //非Tabs页面的顶部导航栏全局配置
 const defaultScreenOptions = {
@@ -210,6 +212,17 @@ const PosPayRouterList = [
         component: CouponAdds,
         i18nTitle: "coupon.adds",
         options: {...defaultScreenOptions}
+    },
+    {
+        name: "店铺优惠券",
+        component: CouponShopCoupons,
+        i18nTitle: "coupon.shop.coupons",
+        options: {...defaultScreenOptions}
+    },
+    {
+        name: "统计明细",
+        component: OrderStatisticsDetails,
+        options: noHeaderOnly
     },
     {
         name: "支付成功",

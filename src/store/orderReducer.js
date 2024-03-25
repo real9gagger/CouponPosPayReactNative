@@ -4,6 +4,7 @@ import {
     UPDATE_FAILED_ORDER, 
     SYNCHRONOUS_ALL_ORDER,  
     ON_REFUND_SUCCESSFUL, 
+    INITI_ORDER_DATA, 
     UNKNOWN_ACTION
 } from "./types";
 
@@ -76,6 +77,13 @@ export function onRefundSuccessful(oid){
     }
 }
 
+export function onInitiOrderData(){
+    return {
+        type: INITI_ORDER_DATA,
+        payload: null
+    }
+}
+
 export default orderReducer = (state = initialState, action) => {
     switch(action.type){
         case ADD_FAILED_ORDER: //新增一个同步失败的订单数据
@@ -105,6 +113,8 @@ export default orderReducer = (state = initialState, action) => {
             return {...state, isSyncingAll: !!action.payload};
         case ON_REFUND_SUCCESSFUL: //退款成功
             return {...state, refundSuccessfulOrderID: action.payload};
+        case INITI_ORDER_DATA: //初始化订单数据
+            return {...state, isSyncingAll: false, refundSuccessfulOrderID: 0};
     }
     return state;
 }

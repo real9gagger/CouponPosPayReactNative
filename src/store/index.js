@@ -9,7 +9,7 @@ import orderReducer from "./orderReducer";
 
 const persistConfig = {
     key: "root",
-    whitelist: ["userInfo", "appSettings", "orderData"],
+    whitelist: ["userInfo", "appSettings", "couponData", "orderData"],
     storage: asyncStorage
 };
 

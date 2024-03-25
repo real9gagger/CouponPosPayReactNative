@@ -50,13 +50,13 @@ const styles = StyleSheet.create({
     },
     delete1Box: {
         width: "33%",
-        marginHorizontal: 15,
+        marginHorizontal: 20,
         color: "#333",
         elevation: 2
     },
     delete2Box: {
         width: "33%",
-        marginHorizontal: 15,
+        marginHorizontal: 20,
         color: "#f00",
         elevation: 2
     },
@@ -79,6 +79,8 @@ const styles = StyleSheet.create({
         backgroundColor: appMainColor
     }
 });
+
+const whiteBtnLg = ["#fff", "#fff"];
 
 //执行同步全部数据
 function doSynchronousAll(orders){
@@ -216,8 +218,8 @@ export default function OrderSynchronizeFailed(props){
                         )}
                         {activatedIndex===ix &&
                             <View style={styles.activatedBox}>
-                                <GradientButton style={styles.delete2Box} lgToRight={true} lgColors={["#fff", "#fff"]} onPress={onItemDelete}>{i18n["btn.delete"]}</GradientButton>
-                                <GradientButton style={styles.delete1Box} lgToRight={true} lgColors={["#fff", "#fff"]} onPress={onItemLongPress(-1)}>{i18n["btn.cancel"]}</GradientButton>
+                                <GradientButton style={styles.delete2Box} lgColors={whiteBtnLg} onPress={onItemDelete}>{i18n["btn.delete"]}</GradientButton>
+                                <GradientButton style={styles.delete1Box} lgColors={whiteBtnLg} onPress={onItemLongPress(-1)}>{i18n["btn.cancel"]}</GradientButton>
                             </View>
                         }
                     </View>

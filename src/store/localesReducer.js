@@ -80,18 +80,30 @@ export function changeLanguage(lgcode){
     
     //如果没有被解析过
     if(!lange.i18n["i.have.been.parsed"]){
-        //提取哪些需要填充的翻译内容
-        for(const kk in lange.i18n){
-            //非正式环境才检查键名是否规范
-            if(!runtimeEnvironment.isProduction && !regKey.test(kk)){
-                throw new Error(`多语言键名“${kk}”不规范，请参考 /src/locales/zh_CN.json 规范化说明。`);
+        if(!runtimeEnvironment.isProduction){//如果是【非正式环境】，则检查多语言是否规范。
+            //提取哪些需要填充的翻译内容
+            for(const kk in lange.i18n){
+                //非正式环境才检查键名是否规范
+                if(!regKey.test(kk)){
+                    throw new Error(`多语言键名“${kk}”不规范，请参考 /src/locales/zh_CN.json 规范化说明。`);
+                }
+                const txtc = lange.i18n[kk];
+                if(txtc.startsWith("\\\\")){
+                    if(regDigits.test(txtc)){
+                        lange.i18n[kk] = { content:txtc.substr(2), slices:null, cloze:clozeHandler }; //由字符串转成对象，调用方式：i18n[kk].cloze(12,34,56);
+                    } else {
+                        throw new Error(`多语言 ${kk} 的内容以“\\\\”开头，但内容里没有 $[xx] 的占位标记！`);
+                    }
+                } else if(regDigits.test(txtc)){
+                    throw new Error(`多语言 ${kk} 的内容里有 $[xx] 的占位标记，但是没有以“\\\\”开头！`);
+                }
             }
-            const txtc = lange.i18n[kk];
-            if(txtc.startsWith("\\\\")){
-                if(runtimeEnvironment.isProduction || regDigits.test(txtc)){
+        } else {//【正式环境】
+            //提取哪些需要填充的翻译内容
+            for(const kk in lange.i18n){
+                const txtc = lange.i18n[kk];
+                if(txtc.startsWith("\\\\")){
                     lange.i18n[kk] = { content:txtc.substr(2), slices:null, cloze:clozeHandler }; //由字符串转成对象，调用方式：i18n[kk].cloze(12,34,56);
-                } else {
-                    throw new Error(`多语言 ${kk} 的内容以“\\\\”开头，但内容里没有 $[xx] 的占位标记！`);
                 }
             }
         }

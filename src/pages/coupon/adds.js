@@ -99,7 +99,8 @@ export default function CouponAdds(props){
             discount:   (+couponDiscount || 0),
             expiration: (cpExpiration[0] + cpExpiration[1]),
             condition:  (+couponCondition || 0), //满免条件
-            distributor:distributorNumber //分销员编号
+            distributor:distributorNumber, //分销员编号
+            createtime: Date.now() //创建时间的时间戳
         };
         
         dispatchAddNewCoupon(cpData); //保存到缓存里

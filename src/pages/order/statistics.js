@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ScrollView, TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { useI18N, useAppSettings } from "@/store/getter";
 import { EMPTY_DEFAULT_TEXT, CREDIT_CARD_PAYMENT_CODE, E_MONEY_PAYMENT_CODE, QR_CODE_PAYMENT_CODE, TRANSACTION_TYPE_RECEIVE, TRANSACTION_TYPE_REFUND } from "@/common/Statics";
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
         fontSize: 10,
         marginLeft: 2,
         paddingTop: 6,
-        color: "#666"
+        color: appDarkColor
     },
     valueUnitHidden: {
         fontSize: 10,
@@ -108,6 +108,7 @@ export default function OrderStatistics(props){
     
     const i18n = useI18N();
     const appSettings = useAppSettings();
+    const isDateChanged = useRef();
     const [statisData, setStatisData] = useState({});
     const [isPopupShow, setIsPopupShow] = useState(false);
     const [ttc, setTTC] = useState(null); //transaction type code
@@ -116,9 +117,11 @@ export default function OrderStatistics(props){
     const [paramsText, setParamsText] = useState(""); //参数简要说明文本
     
     const onPopupShow = () => {
+        isDateChanged.current = false;
         setIsPopupShow(true);
     }
     const onPopupClose = () => {
+        isDateChanged.current = false;
         setIsPopupShow(false);
     }
     const onTtcChange = (code) => {
@@ -196,7 +199,6 @@ export default function OrderStatistics(props){
 
         setIsPopupShow(false);
         setParamsText(txts.join(", "));
-        
         $request("getOrderStatistics", params).then(setStatisData);
     }
     const onDateNameCheck = (nm) => {
@@ -223,11 +225,24 @@ export default function OrderStatistics(props){
         }
     }
     const onFilterConfirm = () => {
-        if(sdn){
+        if(sdn && isDateChanged.current){
             setSDN(""); //值变化后会自动调用 “onStartStatistics”！！！
         } else {
             onStartStatistics();
         }
+        isDateChanged.current = false;
+    }
+    const gotoDetails = () => {
+        //传的是明细查询参数！！！
+        props.navigation.navigate("统计明细", {
+            startTime: getBeginDateString(drbUniqueKey, "yyyy-MM-dd 00:00:00"),
+            endTime: getEndDateString(drbUniqueKey, "yyyy-MM-dd 23:59:59"),
+            paymentType: pmc[0],
+            transactionType: ttc
+        });
+    }
+    const onDRChange = () => {
+        isDateChanged.current = true;
     }
     
     useEffect(() => {
@@ -288,9 +303,10 @@ export default function OrderStatistics(props){
                 </View>
             </View>
         </View>
-        {/* <View style={[bgEE, pdS]}>
-            <GradientButton>{i18n["print"]}</GradientButton>
-        </View> */}
+        <TextualButton style={[bgFF, pdX, fxHM]} onPress={gotoDetails}>
+            <Text style={[fs16, tcMC]}>{i18n["statistics.details"]}</Text>
+            <PosPayIcon name="right-arrow-double" color={appMainColor} size={16} offset={3}/>
+        </TextualButton>
         <PopupX showMe={isPopupShow} onClose={onPopupClose} title={i18n["filter"]}>
             <View style={pdHX}>
                 <Text style={styles.labelBox}>{i18n["transaction.time"]}</Text>
@@ -301,6 +317,7 @@ export default function OrderStatistics(props){
                     beginPlaceholder={i18n["begindate"]}
                     endPlaceholder={i18n["enddate"]}
                     uniqueKey={drbUniqueKey}
+                    onDateChange={onDRChange}
                 />
                 
                 <Text style={styles.labelBox}>{i18n["order.status"]}</Text>

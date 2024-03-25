@@ -75,7 +75,9 @@
     "coupon.type2": "立减",
     "coupon.discount": "优惠",
     "coupon.adds": "添加优惠券",
-    "coupon.adds.manually": "手动添加",    
+    "coupon.adds.manually": "手动添加",
+    "coupon.adds.history": "我添加的优惠券",
+    "coupon.shop.coupons": "店铺优惠券",
     "coupon.condition": "满多少元可用",
     "coupon.expiration": "有效期",
     "coupon.distributor.number": "分销员编号",
@@ -162,6 +164,7 @@
     "statistics.recent.3month": "近三个月",
     "statistics.recent.6month": "近半年",
     "statistics.recent.1year": "近一年",
+    "statistics.details": "统计明细",
     
     "yesterday": "昨日",
     "today": "今日",

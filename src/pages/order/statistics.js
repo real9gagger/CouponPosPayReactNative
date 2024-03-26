@@ -269,17 +269,17 @@ export default function OrderStatistics(props){
             <View style={[fxHC, fxWP]}>
                 <View style={styles.itemBox}>
                     <View style={fxHM}>
-                        <Text style={styles.valueUnitHidden}>{appSettings.currencyUnit}</Text>
+                        <Text style={styles.valueUnitHidden}>{appSettings.regionalCurrencyUnit}</Text>
                         <Text style={styles.valueBox}>{statisData?.totalOrderAmount || EMPTY_DEFAULT_TEXT}</Text>
-                        <Text style={styles.valueUnit}>{appSettings.currencyUnit}</Text>
+                        <Text style={styles.valueUnit}>{appSettings.regionalCurrencyUnit}</Text>
                     </View>
                     <Text style={styles.titleBox}>{i18n["statistics.total.sales"]}</Text>
                 </View>
                 <View style={[styles.itemBox, styles.itemRight]}>
                     <View style={fxHM}>
-                        <Text style={styles.valueUnitHidden}>{appSettings.currencyUnit}</Text>
+                        <Text style={styles.valueUnitHidden}>{appSettings.regionalCurrencyUnit}</Text>
                         <Text style={styles.valueBox}>{statisData?.totalDiscountAmount || EMPTY_DEFAULT_TEXT}</Text>
-                        <Text style={styles.valueUnit}>{appSettings.currencyUnit}</Text>
+                        <Text style={styles.valueUnit}>{appSettings.regionalCurrencyUnit}</Text>
                     </View>
                     <Text style={styles.titleBox}>{i18n["statistics.total.discount"]}</Text>
                 </View>
@@ -287,17 +287,17 @@ export default function OrderStatistics(props){
             <View style={[fxHC, fxWP, styles.rowBottom]}>
                 <View style={styles.itemBox}>
                     <View style={fxHM}>
-                        <Text style={styles.valueUnitHidden}>{appSettings.currencyUnit}</Text>
+                        <Text style={styles.valueUnitHidden}>{appSettings.regionalCurrencyUnit}</Text>
                         <Text style={styles.valueBox}>{statisData?.totalTaxAmount || EMPTY_DEFAULT_TEXT}</Text>
-                        <Text style={styles.valueUnit}>{appSettings.currencyUnit}</Text>
+                        <Text style={styles.valueUnit}>{appSettings.regionalCurrencyUnit}</Text>
                     </View>
                     <Text style={styles.titleBox}>{i18n["statistics.total.tax"]}</Text>
                 </View>
                 <View style={[styles.itemBox, styles.itemRight]}>
                     <View style={fxHM}>
-                        <Text style={styles.valueUnitHidden}>{appSettings.currencyUnit}</Text>
+                        <Text style={styles.valueUnitHidden}>{appSettings.regionalCurrencyUnit}</Text>
                         <Text style={styles.valueBox}>{statisData?.totalAmount || EMPTY_DEFAULT_TEXT}</Text>
-                        <Text style={styles.valueUnit}>{appSettings.currencyUnit}</Text>
+                        <Text style={styles.valueUnit}>{appSettings.regionalCurrencyUnit}</Text>
                     </View>
                     <Text style={styles.titleBox}>{i18n["statistics.total.income"]}</Text>
                 </View>

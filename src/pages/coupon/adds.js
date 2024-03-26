@@ -150,7 +150,7 @@ export default function CouponAdds(props){
                     placeholder={i18n["required"]} 
                     onBlur={onInputBlur}
                     onFocus={onInputFocus(0xDD88)} />
-                <Text style={styles.suffixBox}>{couponType===DISCOUNT_TYPE_ZK ? "%" : appSettings.currencyUnit}</Text>
+                <Text style={styles.suffixBox}>{couponType===DISCOUNT_TYPE_ZK ? "%" : appSettings.regionalCurrencyUnit}</Text>
             </View>
             <View style={styles.itemBox}>
                 <Text style={[fs12, inputNth===0xCC99&&tcMC]}>{i18n["coupon.condition"]}</Text>
@@ -163,7 +163,7 @@ export default function CouponAdds(props){
                     placeholder={i18n["required"]} 
                     onBlur={onInputBlur}
                     onFocus={onInputFocus(0xCC99)} />
-                <Text style={styles.suffixBox}>{appSettings.currencyUnit}</Text>
+                <Text style={styles.suffixBox}>{appSettings.regionalCurrencyUnit}</Text>
             </View>
             <View style={styles.itemBox}>
                 <Text style={[fs12, inputNth===0xBB88&&tcMC]}>{i18n["coupon.expiration"]}</Text>

@@ -130,7 +130,6 @@ export default function OrderPrintPreview(props){
         if(dat){
             dat.paymentName = (pmi?.name || dat.paymentType);
             dat.transactionTime = formatDate(dat.transactionTime);
-            dat.currencyCode = (dat.currencyCode || appSettings.currencyCode);
             dat.creditCardMaskedPan = (dat.creditCardMaskedPan || dat.eMoneyNumber || EMPTY_DEFAULT_TEXT);
             dat.amount = $tofixed(dat.amount);
             dat.tax = $tofixed(dat.tax);
@@ -141,6 +140,7 @@ export default function OrderPrintPreview(props){
             dat.payeeName = userInfo.posName;
             dat.operatorName = userInfo.loginAccount;
             dat.bottomText = appSettings.paymentReceiptBottomText;
+            dat.currencySymbol = appSettings.regionalCurrencySymbol;
             
             setOrderInfo(dat);
         }
@@ -160,19 +160,19 @@ export default function OrderPrintPreview(props){
             <View style={styles.hrLine}>{/*水平线*/}</View>
             <View style={styles.rowBox}>
                 <Text style={styles.textLabel2}>{i18n["order.amount"]}</Text>
-                <Text style={styles.textValue2}>{orderInfo.orderAmount} {orderInfo.currencyCode}</Text>
+                <Text style={styles.textValue2}>{orderInfo.currencySymbol}{orderInfo.orderAmount}</Text>
             </View>
             <View style={styles.rowBox}>
                 <Text style={styles.textLabel2}>{i18n["tax"]}</Text>
-                <Text style={styles.textValue2}>{orderInfo.tax} {orderInfo.currencyCode}</Text>
+                <Text style={styles.textValue2}>{orderInfo.currencySymbol}{orderInfo.tax}</Text>
             </View>
             <View style={styles.rowBox}>
                 <Text style={styles.textLabel2}>{i18n["coupon.discount"]}</Text>
-                <Text style={styles.textValue2}>-{orderInfo.discountAmount} {orderInfo.currencyCode}</Text>
+                <Text style={styles.textValue2}>-{orderInfo.currencySymbol}{orderInfo.discountAmount}</Text>
             </View>
             <View style={styles.rowBox}>
                 <Text style={styles.textLabel2}>{i18n["transaction.amount"]}</Text>
-                <Text style={styles.textValue2}>{orderInfo.amount} {orderInfo.currencyCode}</Text>
+                <Text style={styles.textValue2}>{orderInfo.currencySymbol}{orderInfo.amount}</Text>
             </View>
             <View style={styles.hrLine}>{/*水平线*/}</View>
             <View style={styles.rowBox}>
@@ -212,6 +212,7 @@ export default function OrderPrintPreview(props){
                 <View style={styles.hrLine}>{/*水平线*/}</View>
                 <Text style={styles.textValue3}>{orderInfo.bottomText}</Text>
             </>}
+            <Text style={[fs14, taR, pdTX]}>{i18n["receipt.of.customer"]}</Text>
         </ScrollView>
         <View style={styles.printBtn}>
             <GradientButton style={fxG1} onPress={resetContentXY} lgColors={!contentXY.scaleXY && OVERVIEW_DEFAULT_LG}>{i18n["overview"]}</GradientButton>

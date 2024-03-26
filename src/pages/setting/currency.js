@@ -20,15 +20,15 @@ const styles = StyleSheet.create({
 export default function SettingCurrency(props){
     const i18n = useI18N();
     const appSettings = getAppSettings();
-    const [selCode, setSelCode] = useState(appSettings.currencyCode);
+    const [selCode, setSelCode] = useState(appSettings.regionalCurrencyCode);
     
     const onConfirm = function(){
         const thatCurrency = supportCurrencyList.find(vx => vx.code === selCode);
         if(thatCurrency){
             dispatchUpdateAppSettings({}, {
-                currencySymbol: thatCurrency.symbol, //货币符号
-                currencyCode: thatCurrency.code, //货币代号
-                currencyUnit: thatCurrency.unit //货币单元
+                regionalCurrencySymbol: thatCurrency.symbol, //货币符号
+                regionalCurrencyCode: thatCurrency.code, //货币代号
+                regionalCurrencyUnit: thatCurrency.unit //货币单元
             });
         }
         props.navigation.goBack();
@@ -46,7 +46,7 @@ export default function SettingCurrency(props){
                 </TouchableHighlight>
             ))}
             <View style={[pdX, styles.bthBox]}>
-                <GradientButton disabled={appSettings.currencyCode===selCode} onPress={onConfirm}>{i18n["btn.apply"]}</GradientButton>
+                <GradientButton disabled={appSettings.regionalCurrencyCode===selCode} onPress={onConfirm}>{i18n["btn.apply"]}</GradientButton>
             </View>
         </ScrollView>
     );

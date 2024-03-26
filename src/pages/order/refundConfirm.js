@@ -81,9 +81,9 @@ export default function OrderRefundConfirm(props){
                 <Text style={fwB}>({orderInfo.currencyCode})</Text>
             </View>
             <Text style={styles.amountBox}>
-                <Text style={fs16}>{appSettings.currencySymbol}</Text>
+                <Text style={fs16}>{appSettings.regionalCurrencySymbol}</Text>
                 <Text>{orderInfo.amount}</Text>
-                <Text style={[fs16, tcEE]}>{appSettings.currencySymbol /*因此的文字，目的是让金额居中*/}</Text>
+                <Text style={[fs16, tcEE]}>{appSettings.regionalCurrencySymbol /*因此的文字，目的是让金额居中*/}</Text>
             </Text>
             <Text style={[fs12, taC, pdVX]}>
                 <Text>{i18n["order.amount"]}&nbsp;</Text>

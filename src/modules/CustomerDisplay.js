@@ -67,10 +67,10 @@ function showPayAmountInfo(amountInfo){
         const title1 = getUserPosName();
         const title2 = formatDate();
         const title3 = i18n["settlement"];
-        const msgAM = getContentLine(i18n["input.amount"],      `${amountInfo.total} ${amountInfo.cycode}`);
-        const msgTX = getContentLine(i18n["tax"],               `${amountInfo.tax} ${amountInfo.cycode}`);
-        const msgDC = getContentLine(i18n["coupon.discount"],   `-${amountInfo.discount} ${amountInfo.cycode}`);
-        const msgFA = getContentLine(i18n["final.amount"],      `${amountInfo.amount} ${amountInfo.cycode}`);
+        const msgAM = getContentLine(i18n["input.amount"],      `${amountInfo.cysymbol}${amountInfo.total}`);
+        const msgTX = getContentLine(i18n["tax"],               `${amountInfo.cysymbol}${amountInfo.tax}`);
+        const msgDC = getContentLine(i18n["coupon.discount"],   `-${amountInfo.cysymbol}${amountInfo.discount}`);
+        const msgFA = getContentLine(i18n["final.amount"],      `${amountInfo.cysymbol}${amountInfo.amount}`);
         const msgPA = getContentCentered(i18n["payment.amount"].cloze(amountInfo.cysymbol, amountInfo.amount));
         
         CDHelper.setCustomerDisplayContent(`<?xml version="1.0" encoding="UTF-8" ?>

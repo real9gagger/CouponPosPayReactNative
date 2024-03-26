@@ -310,7 +310,7 @@ export default function CouponIndex(props){
                         {couponInfo.distype===DISCOUNT_TYPE_LJ ? <>
                             <View style={[fxR, fxJC]}>
                                 <Text style={styles.couponTypeLeft}>{i18n["coupon.type2"]/* 为了使金额保持居中，所有需要这个透明文字 */}</Text>
-                                <Text style={styles.couponDiscount}>{appSettings.currencySymbol}{couponInfo.discount}</Text>
+                                <Text style={styles.couponDiscount}>{appSettings.regionalCurrencySymbol}{couponInfo.discount}</Text>
                                 <Text style={styles.couponTypeRight}>{i18n["coupon.type2"]}</Text>
                             </View>
                             <Text style={styles.couponCondition}>{i18n["coupon.reduction"].cloze(couponInfo.condition, couponInfo.discount)}</Text>

@@ -42,7 +42,6 @@ export default function TestIndex(props){
             tax: 10,
             discount: 10,
             amount: 100,
-            cycode: "RMB",
             cysymbol: "元"
         });
     }

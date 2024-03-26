@@ -159,7 +159,7 @@ export default function SettingIndex(props){
             case "语言设置": vxo.descText = i18n["app.lgname"]; break;
             case "税率设置": vxo.descText = appSettings.generalTaxRate + "%"; break;
             case "金额设置": vxo.descText = appSettings.numbersDecimalOfMoney.toString(); break;
-            case "货币设置": vxo.descText = appSettings.currencyCode; break;
+            case "货币设置": vxo.descText = appSettings.regionalCurrencyCode; break;
         }
     }
 

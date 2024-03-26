@@ -65,7 +65,7 @@ export default function IndexTransactionSuccess(props){
             dat.createBy = uif.loginAccount;
             dat.posId = uif.posId;
             dat.transactionTime = formatDate(params.transactionTime);
-            dat.currencyCode = (params.currencyCode || getAppSettings("currencyCode"));
+            dat.currencyCode = (params.currencyCode || getAppSettings("regionalCurrencyCode"));
             dat.amount = $tofixed(params.amount);
             dat.tax = $tofixed(params.tax);
             dat.discountAmount = $tofixed(params.discountAmount);

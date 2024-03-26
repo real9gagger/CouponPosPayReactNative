@@ -27,7 +27,7 @@ function getTextSize(txt){
 //2022年1月6日 超出打印纸宽度，自动添加换行符。
 //示例：textAutoWrap("今天是2024年2月21日下午14点，人在南宁，天气晴朗。", 16, 1, 0); 限制格子16个字符的宽度，间隔0字符
 //输出：["今天是2024年2月 ", "21日下午14点30分", "左右，人在南宁，", "天气晴朗。      "]
-function textAutoWrap(input, limits, align, ngap=TEXT_GAPS){
+function textAutoWrap(input, limits, align, ngap = TEXT_GAPS, irls = false){
     if(!input || !limits){
     	return [];
     }
@@ -102,7 +102,7 @@ function textAutoWrap(input, limits, align, ngap=TEXT_GAPS){
         }
     }
     
-    return outarr;
+    return (!irls ? outarr : outarr.join("\n")); //is return lines
 }
 
 //自动填充文本1和文本2之间需要多少个空格
@@ -152,7 +152,24 @@ function getTextCentered(txt, scale){
     const count = (maxChars >= len ? Math.round((maxChars - len) / 2) : -1);
     
     //字符数小数限制的字符数，左边补空格，让它看起来居中
-    const output = (count >= 0 ? (SPACES_100.substr(0, count) + txt) : textAutoWrap(txt, maxChars, 0, 0).join("\n"));
+    const output = (count >= 0 ? (SPACES_100.substr(0, count) + txt) : textAutoWrap(txt, maxChars, 0, 0, true));
+    
+    return (`<line><text scale="${scale}">${output}</text></line>`);
+}
+
+//获取居右的文本
+function getTextRighted(txt, scale){
+    if(!txt || !scale){
+        return "";
+    }
+    
+    const temp = (scale===3 || scale===4) ? 2 : 1;
+    const maxChars = MAX_LETTER_NUMBER / temp; //根据字体大小设置每行的最大字符数
+    const len = getTextSize(txt);
+    const count = (maxChars >= len ? (maxChars - len) : -1);
+    
+    //字符数小数限制的字符数，左边补空格，让它看起来居右
+    const output = (count >= 0 ? (SPACES_100.substr(0, count) + txt) : textAutoWrap(txt, maxChars, 2, 0, true));
     
     return (`<line><text scale="${scale}">${output}</text></line>`);
 }
@@ -201,10 +218,10 @@ function printPaymentReceipts(orderInfo){
         
         const imageSL = await getImageXml(orderInfo.shopLogo);
         const titlePR = getTextCentered(i18n["payment.receipt"], 2);
-        const rowOA = fitTextLine(i18n["order.amount"], `${orderInfo.orderAmount} ${orderInfo.currencyCode}`);
-        const rowTX = fitTextLine(i18n["tax"], `${orderInfo.tax} ${orderInfo.currencyCode}`);
-        const rowCD = fitTextLine(i18n["coupon.discount"], `${orderInfo.discountAmount} ${orderInfo.currencyCode}`);
-        const rowTA = fitTextLine(i18n["transaction.amount"], `${orderInfo.amount} ${orderInfo.currencyCode}`);
+        const rowOA = fitTextLine(i18n["order.amount"], `${orderInfo.currencySymbol}${orderInfo.orderAmount}`);
+        const rowTX = fitTextLine(i18n["tax"], `${orderInfo.currencySymbol}${orderInfo.tax}`);
+        const rowCD = fitTextLine(i18n["coupon.discount"], `${orderInfo.currencySymbol}${orderInfo.discountAmount}`);
+        const rowTA = fitTextLine(i18n["transaction.amount"], `${orderInfo.currencySymbol}${orderInfo.amount}`);
         const rowPM = fitTextLine(i18n["payment.method"], orderInfo.paymentName);
         const rowPR = fitTextLine(i18n["payment.payer"], orderInfo.creditCardMaskedPan);
         const rowPE = fitTextLine(i18n["payment.payee"], orderInfo.payeeName);
@@ -214,6 +231,7 @@ function printPaymentReceipts(orderInfo){
         const rowPT = fitTextLine(i18n["print.time"], orderInfo.printTime);
         const rowOP = fitTextLine(i18n["operator"], orderInfo.operatorName);
         const rowBT = getTextCentered(orderInfo.bottomText, 5);
+        const rowCS = getTextRighted(i18n["receipt.of.customer"], 1);
         const solidLine = getSolidLine();
         const blankFeed = getBlankFeed();
         const cutCommand = getCutCommand();
@@ -230,6 +248,7 @@ function printPaymentReceipts(orderInfo){
                 ${solidLine}
                 ${rowPT + rowOP}
                 ${rowBT && (solidLine + blankFeed + rowBT)}
+                ${blankFeed + rowCS}
             </sheet>
         </printElements>${cutCommand}</page></paymentApi>`;
         

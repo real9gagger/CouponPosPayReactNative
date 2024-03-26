@@ -3,9 +3,9 @@ import { UPDATE_SETTINGS, UNKNOWN_ACTION } from "./types";
 const initialState = {
     generalTaxRate: 0, //通用税率（%）
     languageCode: "", //语言编码，如：zh_CN
-    currencySymbol: "￥", //货币符号，默认日本货币符号
-    currencyCode: "JPY", //货币代号，默认日元代号
-    currencyUnit: "円", //货币单元，默认円（日元）
+    regionalCurrencySymbol: "￥", //所在地区的货币符号，默认日本货币符号
+    regionalCurrencyCode: "JPY", //所在地区的货币代号，默认日元代号
+    regionalCurrencyUnit: "円", //所在地区的货币单元，默认円（日元）
     isEnableDrawer: true, //启用抽屉栏
     isEnableTabbar: true, //启用底部导航栏
     isEnableHomeHeader: true, //是否显示主页标题栏

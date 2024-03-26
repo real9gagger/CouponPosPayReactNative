@@ -301,8 +301,7 @@ function tabBankCard(props){
             tax: taxAndFa.T_X,
             discount: da,
             amount: taxAndFa.F_A,
-            cycode: appSettings.currencyCode,
-            cysymbol: appSettings.currencySymbol
+            cysymbol: appSettings.regionalCurrencySymbol
         });
         
         setDisAmounts(da);
@@ -313,10 +312,10 @@ function tabBankCard(props){
         <ScrollView style={fxG1} contentContainerStyle={mhF}>
             <View style={[fxHC, styles.moneyLabel]}>
                 <Text style={[fxG1, fs16]}>{i18n["input.amount"]}</Text>
-                <Text style={tc99}>{appSettings.currencyCode}</Text>
+                <Text style={tc99}>{appSettings.regionalCurrencyUnit}</Text>
             </View>
             <View style={styles.rowBox}>
-                <Text style={[styles.moneyInput, currentInputBox===iNthAmount&&styles.InputActived]} onPress={toggleAmountInput}>{appSettings.currencySymbol}{payAmounts}</Text>
+                <Text style={[styles.moneyInput, currentInputBox===iNthAmount&&styles.InputActived]} onPress={toggleAmountInput}>{appSettings.regionalCurrencySymbol}{payAmounts}</Text>
             </View>
             <Pressable style={[fxHC, styles.couponLabel]} android_ripple={tcCC} onPress={scanCouponCode}>
                 <Text style={[fxG1, fs16]}>{i18n["coupon"]}</Text>
@@ -348,20 +347,20 @@ function tabBankCard(props){
             {!!payAmounts && <View style={styles.paymentDetails}>
                 <View style={fxHC}>
                     <Text style={[fs12, fxG1]}>{i18n["input.amount"]}</Text>
-                    <Text style={fs12}><Text style={fwB}>{$tofixed(payAmounts)}</Text> {appSettings.currencyCode}</Text>
+                    <Text style={fs12}><Text style={fwB}>{$tofixed(payAmounts)}</Text> {appSettings.regionalCurrencyUnit}</Text>
                 </View>
                 <View style={fxHC}>
                     <Text style={fs12}>{i18n["tax"]}</Text>
                     <Text style={[fs12, tc99, fxG1]}>&nbsp;({appSettings.generalTaxRate}%)</Text>
-                    <Text style={fs12}><Text style={fwB}>{taxAndFa.T_X}</Text> {appSettings.currencyCode}</Text>
+                    <Text style={fs12}><Text style={fwB}>{taxAndFa.T_X}</Text> {appSettings.regionalCurrencyUnit}</Text>
                 </View>
                 <View style={fxHC}>
                     <Text style={[fs12, fxG1]}>{i18n["coupon.discount"]}</Text>
-                    <Text style={[fs12, tcG0]}><Text style={fwB}>-{$tofixed(disAmounts)}</Text> {appSettings.currencyCode}</Text>
+                    <Text style={[fs12, tcG0]}><Text style={fwB}>-{$tofixed(disAmounts)}</Text> {appSettings.regionalCurrencyUnit}</Text>
                 </View>
                 <View style={fxHC}>
                     <Text style={[fs12, fxG1]}>{i18n["final.amount"]}</Text>
-                    <Text style={[fs12, tcR0]}><Text style={fwB}>{taxAndFa.F_A}</Text> {appSettings.currencyCode}</Text>
+                    <Text style={[fs12, tcR0]}><Text style={fwB}>{taxAndFa.F_A}</Text> {appSettings.regionalCurrencyUnit}</Text>
                 </View>
             </View>}
             <View style={pdX}>
@@ -445,8 +444,7 @@ function tabEWallet(props){
             tax: taxAndFa.T_X,
             discount: da,
             amount: taxAndFa.F_A,
-            cycode: appSettings.currencyCode,
-            cysymbol: appSettings.currencySymbol
+            cysymbol: appSettings.regionalCurrencySymbol
         });
         
         setDisAmounts(da);
@@ -457,10 +455,10 @@ function tabEWallet(props){
         <ScrollView style={fxG1} contentContainerStyle={mhF}>
             <View style={[fxHC, styles.moneyLabel]}>
                 <Text style={[fxG1, fs16]}>{i18n["input.amount"]}</Text>
-                <Text style={tc99}>{appSettings.currencyCode}</Text>
+                <Text style={tc99}>{appSettings.regionalCurrencyUnit}</Text>
             </View>
             <View style={styles.rowBox}>
-                <Text style={[styles.moneyInput, currentInputBox===iNthAmount&&styles.InputActived]} onPress={toggleAmountInput}>{appSettings.currencySymbol}{payAmounts}</Text>
+                <Text style={[styles.moneyInput, currentInputBox===iNthAmount&&styles.InputActived]} onPress={toggleAmountInput}>{appSettings.regionalCurrencySymbol}{payAmounts}</Text>
             </View>
             <Pressable style={[fxHC, styles.couponLabel]} android_ripple={tcCC} onPress={scanCouponCode}>
                 <Text style={[fxG1, fs16]}>{i18n["coupon"]}</Text>
@@ -494,20 +492,20 @@ function tabEWallet(props){
             {!!payAmounts && <View style={styles.paymentDetails}>
                 <View style={fxHC}>
                     <Text style={[fs12, fxG1]}>{i18n["input.amount"]}</Text>
-                    <Text style={fs12}><Text style={fwB}>{$tofixed(payAmounts)}</Text> {appSettings.currencyCode}</Text>
+                    <Text style={fs12}><Text style={fwB}>{$tofixed(payAmounts)}</Text> {appSettings.regionalCurrencyUnit}</Text>
                 </View>
                 <View style={fxHC}>
                     <Text style={fs12}>{i18n["tax"]}</Text>
                     <Text style={[fs12, tc99, fxG1]}>&nbsp;({appSettings.generalTaxRate}%)</Text>
-                    <Text style={fs12}><Text style={fwB}>{taxAndFa.T_X}</Text> {appSettings.currencyCode}</Text>
+                    <Text style={fs12}><Text style={fwB}>{taxAndFa.T_X}</Text> {appSettings.regionalCurrencyUnit}</Text>
                 </View>
                 <View style={fxHC}>
                     <Text style={[fs12, fxG1]}>{i18n["coupon.discount"]}</Text>
-                    <Text style={[fs12, tcG0]}><Text style={fwB}>-{$tofixed(disAmounts)}</Text> {appSettings.currencyCode}</Text>
+                    <Text style={[fs12, tcG0]}><Text style={fwB}>-{$tofixed(disAmounts)}</Text> {appSettings.regionalCurrencyUnit}</Text>
                 </View>
                 <View style={fxHC}>
                     <Text style={[fs12, fxG1]}>{i18n["final.amount"]}</Text>
-                    <Text style={[fs12, tcR0]}><Text style={fwB}>{taxAndFa.F_A}</Text> {appSettings.currencyCode}</Text>
+                    <Text style={[fs12, tcR0]}><Text style={fwB}>{taxAndFa.F_A}</Text> {appSettings.regionalCurrencyUnit}</Text>
                 </View>
             </View>}
             <View style={pdX}>
@@ -589,8 +587,7 @@ function tabQRCode(props){
             tax: taxAndFa.T_X,
             discount: da,
             amount: taxAndFa.F_A,
-            cycode: appSettings.currencyCode,
-            cysymbol: appSettings.currencySymbol
+            cysymbol: appSettings.regionalCurrencySymbol
         });
         
         setDisAmounts(da);
@@ -601,10 +598,10 @@ function tabQRCode(props){
         <ScrollView style={fxG1} contentContainerStyle={mhF}>
             <View style={[fxHC, styles.moneyLabel]}>
                 <Text style={[fxG1, fs16]}>{i18n["input.amount"]}</Text>
-                <Text style={tc99}>{appSettings.currencyCode}</Text>
+                <Text style={tc99}>{appSettings.regionalCurrencyUnit}</Text>
             </View>
             <View style={styles.rowBox}>
-                <Text style={[styles.moneyInput, currentInputBox===iNthAmount&&styles.InputActived]} onPress={toggleAmountInput}>{appSettings.currencySymbol}{payAmounts}</Text>
+                <Text style={[styles.moneyInput, currentInputBox===iNthAmount&&styles.InputActived]} onPress={toggleAmountInput}>{appSettings.regionalCurrencySymbol}{payAmounts}</Text>
             </View>
             <Pressable style={[fxHC, styles.couponLabel]} android_ripple={tcCC} onPress={scanCouponCode}>
                 <Text style={[fxG1, fs16]}>{i18n["coupon"]}</Text>
@@ -635,20 +632,20 @@ function tabQRCode(props){
             {!!payAmounts && <View style={styles.paymentDetails}>
                 <View style={fxHC}>
                     <Text style={[fs12, fxG1]}>{i18n["input.amount"]}</Text>
-                    <Text style={fs12}><Text style={fwB}>{$tofixed(payAmounts)}</Text> {appSettings.currencyCode}</Text>
+                    <Text style={fs12}><Text style={fwB}>{$tofixed(payAmounts)}</Text> {appSettings.regionalCurrencyUnit}</Text>
                 </View>
                 <View style={fxHC}>
                     <Text style={fs12}>{i18n["tax"]}</Text>
                     <Text style={[fs12, tc99, fxG1]}>&nbsp;({appSettings.generalTaxRate}%)</Text>
-                    <Text style={fs12}><Text style={fwB}>{taxAndFa.T_X}</Text> {appSettings.currencyCode}</Text>
+                    <Text style={fs12}><Text style={fwB}>{taxAndFa.T_X}</Text> {appSettings.regionalCurrencyUnit}</Text>
                 </View>
                 <View style={fxHC}>
                     <Text style={[fs12, fxG1]}>{i18n["coupon.discount"]}</Text>
-                    <Text style={[fs12, tcG0]}><Text style={fwB}>-{$tofixed(disAmounts)}</Text> {appSettings.currencyCode}</Text>
+                    <Text style={[fs12, tcG0]}><Text style={fwB}>-{$tofixed(disAmounts)}</Text> {appSettings.regionalCurrencyUnit}</Text>
                 </View>
                 <View style={fxHC}>
                     <Text style={[fs12, fxG1]}>{i18n["final.amount"]}</Text>
-                    <Text style={[fs12, tcR0]}><Text style={fwB}>{taxAndFa.F_A}</Text> {appSettings.currencyCode}</Text>
+                    <Text style={[fs12, tcR0]}><Text style={fwB}>{taxAndFa.F_A}</Text> {appSettings.regionalCurrencyUnit}</Text>
                 </View>
             </View>}
             <View style={{height: 20}}>{/* 占位用 */}</View>

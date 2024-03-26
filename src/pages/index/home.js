@@ -234,6 +234,11 @@ function calcTaxAmount(tl, dc, rt){
     }
 }
 
+//显示实际金额的计算规则
+function showAmountCalcRule(){
+    $alert(getI18N("final.amount.formula"));
+}
+
 //银行卡
 function tabBankCard(props){
     const i18n = useI18N();
@@ -358,10 +363,11 @@ function tabBankCard(props){
                     <Text style={[fs12, fxG1]}>{i18n["coupon.discount"]}</Text>
                     <Text style={[fs12, tcG0]}><Text style={fwB}>-{$tofixed(disAmounts)}</Text> {appSettings.regionalCurrencyUnit}</Text>
                 </View>
-                <View style={fxHC}>
-                    <Text style={[fs12, fxG1]}>{i18n["final.amount"]}</Text>
-                    <Text style={[fs12, tcR0]}><Text style={fwB}>{taxAndFa.F_A}</Text> {appSettings.regionalCurrencyUnit}</Text>
-                </View>
+                <TouchableOpacity style={fxHC} activeOpacity={0.5} onPress={showAmountCalcRule}>
+                    <Text style={fs12}>{i18n["final.amount"]}</Text>
+                    <PosPayIcon name="help-stroke" size={12} color={appMainColor} offset={5} />
+                    <Text style={[fxG1, fs12, tcR0, taR]}><Text style={fwB}>{taxAndFa.F_A}</Text> {appSettings.regionalCurrencyUnit}</Text>
+                </TouchableOpacity>
             </View>}
             <View style={pdX}>
                 <GradientButton onPress={startPayMoney}>{i18n["btn.collect"]}</GradientButton>
@@ -503,10 +509,11 @@ function tabEWallet(props){
                     <Text style={[fs12, fxG1]}>{i18n["coupon.discount"]}</Text>
                     <Text style={[fs12, tcG0]}><Text style={fwB}>-{$tofixed(disAmounts)}</Text> {appSettings.regionalCurrencyUnit}</Text>
                 </View>
-                <View style={fxHC}>
-                    <Text style={[fs12, fxG1]}>{i18n["final.amount"]}</Text>
-                    <Text style={[fs12, tcR0]}><Text style={fwB}>{taxAndFa.F_A}</Text> {appSettings.regionalCurrencyUnit}</Text>
-                </View>
+                <TouchableOpacity style={fxHC} activeOpacity={0.5} onPress={showAmountCalcRule}>
+                    <Text style={fs12}>{i18n["final.amount"]}</Text>
+                    <PosPayIcon name="help-stroke" size={12} color={appMainColor} offset={5} />
+                    <Text style={[fxG1, fs12, tcR0, taR]}><Text style={fwB}>{taxAndFa.F_A}</Text> {appSettings.regionalCurrencyUnit}</Text>
+                </TouchableOpacity>
             </View>}
             <View style={pdX}>
                 <GradientButton onPress={startPayMoney}>{i18n["btn.collect"]}</GradientButton>
@@ -643,10 +650,11 @@ function tabQRCode(props){
                     <Text style={[fs12, fxG1]}>{i18n["coupon.discount"]}</Text>
                     <Text style={[fs12, tcG0]}><Text style={fwB}>-{$tofixed(disAmounts)}</Text> {appSettings.regionalCurrencyUnit}</Text>
                 </View>
-                <View style={fxHC}>
-                    <Text style={[fs12, fxG1]}>{i18n["final.amount"]}</Text>
-                    <Text style={[fs12, tcR0]}><Text style={fwB}>{taxAndFa.F_A}</Text> {appSettings.regionalCurrencyUnit}</Text>
-                </View>
+                <TouchableOpacity style={fxHC} activeOpacity={0.5} onPress={showAmountCalcRule}>
+                    <Text style={fs12}>{i18n["final.amount"]}</Text>
+                    <PosPayIcon name="help-stroke" size={12} color={appMainColor} offset={5} />
+                    <Text style={[fxG1, fs12, tcR0, taR]}><Text style={fwB}>{taxAndFa.F_A}</Text> {appSettings.regionalCurrencyUnit}</Text>
+                </TouchableOpacity>
             </View>}
             <View style={{height: 20}}>{/* 占位用 */}</View>
         </ScrollView>

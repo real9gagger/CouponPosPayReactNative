@@ -120,6 +120,12 @@ function showPayAmountInfo(amountInfo){
     });
 }
 
+//获取欢迎屏幕的图像资源
+function getWelcomeScreenImageSource(){
+    const uriPath = CDHelper.getWelcomeScreenImagePath();
+    return (uriPath ? { uri: uriPath } : null);
+}
+
 //强制关闭副屏
 function turnoff(){
     CDHelper.closeCustomerDisplay(true);
@@ -145,6 +151,7 @@ function status(){
 }
 
 export default {
+    getWelcomeScreenImageSource,
     showPayAmountInfo,
     turnoff,
     close,

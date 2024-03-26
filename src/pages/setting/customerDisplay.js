@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
-import { ScrollView, View, Text, Switch, StatusBar, StyleSheet } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { ScrollView, View, Text, Image, Switch, StatusBar, StyleSheet } from "react-native";
 import { useI18N, useAppSettings } from "@/store/getter";
 import { dispatchUpdateAppSettings } from "@/store/setter";
 import GradientButton from "@/components/GradientButton";
 import CustomerDisplay from "@/modules/CustomerDisplay";
+import PosPayIcon from "@/components/PosPayIcon";
 
 const styles = StyleSheet.create({
     blankBox: {
@@ -19,11 +20,17 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         paddingVertical: 15,
         paddingHorizontal: 15
+    },
+    wsBox: {
+        height: 20,
+        width: 20 * (800 / 480), //欢迎界面图片固定宽高：800 × 480像素
+        resizeMode: "contain"
     }
 });
 
 export default function SettingCustomerDisplay(props){
     const i18n = useI18N();
+    const wsSource = useRef(null);
     const appSettings = useAppSettings();
     const [isOpened, setIsOpened] = useState(false); //副屏是否已打开
     
@@ -48,6 +55,7 @@ export default function SettingCustomerDisplay(props){
     }
     
     useEffect(() => {
+        wsSource.current = CustomerDisplay.getWelcomeScreenImageSource();
         setIsOpened(CustomerDisplay.status());
     }, []);
     
@@ -73,6 +81,17 @@ export default function SettingCustomerDisplay(props){
                     thumbColor={appSettings.customerDisplayShowPayAmountInfo ? appMainColor : switchTrackColor.thumbColor} 
                     trackColor={switchTrackColor}
                     onValueChange={onSPAIChange} />
+            </View>
+            <View style={[pdHX, bgFF]}><View style={styles.boxDivider}>{/*==== 分割线 ====*/}</View></View>
+            <View style={styles.itemBox}>
+                <Text style={[fs16, fxG1]}>{i18n["customer.display.ws"]}</Text>
+                {wsSource.current ? 
+                    <>
+                        <Image source={wsSource.current} style={styles.wsBox} />
+                        <PosPayIcon name="right-arrow" color="#aaa" size={20} />
+                    </> :
+                    <Text style={[fs14, tc99]}>{i18n["customer.display.null"]}</Text>
+                }
             </View>
             <View style={fxG1}>{/* 占位用 */}</View>
             <View style={[pdX, fxR]}>

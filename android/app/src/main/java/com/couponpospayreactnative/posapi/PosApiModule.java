@@ -48,7 +48,7 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
     private Callback mPrintCallback;
     private Callback mCdOpenedCallback;
     private boolean isCdOpened = false;
-    private boolean isSetAppLogo = false;
+    private String mWelcomeScreenPath = null;
 
     private final String TAG = PosApiModule.class.getSimpleName();
     private final String PACKAGE_NAME = BuildConfig.APPLICATION_ID;
@@ -253,14 +253,19 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
     //2024年2月27日显示默认副屏
     private void showDefaultCustomerDisplay() {
         if (mCustomerDisplay != null) {
-            if(!isSetAppLogo){
+            if(mWelcomeScreenPath == null){
+                String myPath = mContext.getExternalCacheDir().getPath() + "/customer_display/";
+
+                File wsFile = new File(myPath + "welcome_screen.jpg");
+
+                mWelcomeScreenPath = myPath + (wsFile.exists() ? "welcome_screen.jpg" : "app_logo.jpg");
+
                 mCustomerDisplay.setCustomerImage(
                         PACKAGE_NAME,
                         ICustomerDisplay.IMAGE_KIND_DISPLAY,
                         0,
-                        mContext.getExternalCacheDir().getPath() + "/customer_display/app_logo.jpg"
+                        mWelcomeScreenPath
                 );
-                isSetAppLogo = true;
             }
             mCustomerDisplay.doDisplayScreen(PACKAGE_NAME,
                     "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" +
@@ -493,6 +498,16 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
     @ReactMethod(isBlockingSynchronousMethod = true)
     public boolean isCustomerDisplayOpened(){
         return isCdOpened;
+    }
+
+    //2024年3月26日 获取副屏欢迎界面的图像路径
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String getWelcomeScreenImagePath() {
+        if(mWelcomeScreenPath != null) {
+            return ("file://" + mWelcomeScreenPath);
+        } else {
+            return "";
+        }
     }
 
     /* ================================ API版本相关信息 ================================ */

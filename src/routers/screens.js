@@ -12,6 +12,7 @@ import SettingPrint from "@/pages/setting/print";
 import SettingCurrency from "@/pages/setting/currency";
 import SettingCustomerDisplay from "@/pages/setting/customerDisplay";
 import SettingTaxRate from "@/pages/setting/taxRate";
+import SettingWelcomeScreen from "@/pages/setting/welcomeScreen";
 import LoginIndex from "@/pages/login/index";
 import TestIndex from "@/pages/test/index";
 import TestDevinfo from "@/pages/test/devinfo";
@@ -133,6 +134,12 @@ const PosPayRouterList = [
         name: "税率设置",
         component: SettingTaxRate,
         i18nTitle: "tax.rate",
+        options: {...defaultScreenOptions}
+    },
+    {
+        name: "欢迎屏幕设置",
+        component: SettingWelcomeScreen,
+        i18nTitle: "welcome.screen.header",
         options: {...defaultScreenOptions}
     },
     {

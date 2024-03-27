@@ -8,7 +8,7 @@ const FIRST_CELL_WIDTH = 70;
 
 const styles = StyleSheet.create({
     containerBox: {
-        padding: 5,
+        paddingHorizontal: 5,
         backgroundColor: "#fff"
     },
     dateBox: {
@@ -151,7 +151,7 @@ export default function OrderStatisticsDetails(props){
         </ScrollView>
         <View style={bgFF}>
             <View style={styles.lineBox}></View>
-            <View style={[fxHC, {paddingHorizontal: 5}]}>
+            <View style={[fxHC, styles.containerBox]}>
                 <Text style={[styles.cellBox1, fwB]} numberOfLines={1}>{i18n["summation"]}</Text>
                 <Text style={[styles.cellBox2, fwB]} numberOfLines={1}>{sumInfo.total}</Text>
                 <Text style={[styles.cellBox2, fwB]} numberOfLines={1}>{sumInfo.tax}</Text>

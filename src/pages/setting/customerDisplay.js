@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { ScrollView, View, Text, Image, Switch, StatusBar, StyleSheet } from "react-native";
+import { useEffect, useState } from "react";
+import { ScrollView, View, TouchableOpacity, Text, Image, Switch, StatusBar, StyleSheet } from "react-native";
 import { useI18N, useAppSettings } from "@/store/getter";
 import { dispatchUpdateAppSettings } from "@/store/setter";
 import GradientButton from "@/components/GradientButton";
@@ -30,10 +30,10 @@ const styles = StyleSheet.create({
 
 export default function SettingCustomerDisplay(props){
     const i18n = useI18N();
-    const wsSource = useRef(null);
+    const wsSource = CustomerDisplay.getWelcomeScreenSource();
     const appSettings = useAppSettings();
     const [isOpened, setIsOpened] = useState(false); //副屏是否已打开
-    
+console.log("lllllllllllll", wsSource);
     const onSPAIChange = (newVal) => {
         dispatchUpdateAppSettings("customerDisplayShowPayAmountInfo", !!newVal);
     }
@@ -53,9 +53,11 @@ export default function SettingCustomerDisplay(props){
         setIsOpened(false);
         CustomerDisplay.turnoff();
     }
+    const gotoWS = () => {
+        props.navigation.navigate("欢迎屏幕设置");
+    }
     
     useEffect(() => {
-        wsSource.current = CustomerDisplay.getWelcomeScreenImageSource();
         setIsOpened(CustomerDisplay.status());
     }, []);
     
@@ -83,16 +85,11 @@ export default function SettingCustomerDisplay(props){
                     onValueChange={onSPAIChange} />
             </View>
             <View style={[pdHX, bgFF]}><View style={styles.boxDivider}>{/*==== 分割线 ====*/}</View></View>
-            <View style={styles.itemBox}>
+            <TouchableOpacity style={styles.itemBox} onPress={gotoWS} activeOpacity={0.7}>
                 <Text style={[fs16, fxG1]}>{i18n["customer.display.ws"]}</Text>
-                {wsSource.current ? 
-                    <>
-                        <Image source={wsSource.current} style={styles.wsBox} />
-                        <PosPayIcon name="right-arrow" color="#aaa" size={20} />
-                    </> :
-                    <Text style={[fs14, tc99]}>{i18n["customer.display.null"]}</Text>
-                }
-            </View>
+                <Image source={wsSource} style={styles.wsBox} />
+                <PosPayIcon name="right-arrow" color="#aaa" size={20} />
+            </TouchableOpacity>
             <View style={fxG1}>{/* 占位用 */}</View>
             <View style={[pdX, fxR]}>
                 <GradientButton style={fxG1} onPress={onCDTurnOn}>{i18n["btn.on"]}</GradientButton>

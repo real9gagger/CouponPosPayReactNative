@@ -34,6 +34,7 @@ import com.panasonic.smartpayment.android.api.PaymentApi;
 import com.panasonic.smartpayment.android.api.Result;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,8 +49,10 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
     private Callback mPrintCallback;
     private Callback mCdOpenedCallback;
     private boolean isCdOpened = false;
-    private String mWelcomeScreenPath = null;
+    private boolean isSetAppLogo = false;
+    private long wsPicModifyTime = 0; //图片修改时间戳，用来更新图片缓存
 
+    private final String mWelcomeScreenPath;
     private final String TAG = PosApiModule.class.getSimpleName();
     private final String PACKAGE_NAME = BuildConfig.APPLICATION_ID;
     private final PaymentApi mPaymentApi;
@@ -130,6 +133,17 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
         mPaymentApi = new PaymentApi();
         if (MainActivity.isPanasonicJTC60Device()) {
             context.addLifecycleEventListener(this);
+        }
+
+        String myPath = context.getExternalCacheDir().getPath() + "/customer_display/";
+        File wsFile = new File(myPath + "welcome_screen.jpg");
+
+        if (wsFile.exists()) {
+            wsPicModifyTime = wsFile.lastModified();
+            mWelcomeScreenPath = (myPath + "welcome_screen.jpg");
+        } else {
+            wsPicModifyTime = 1;
+            mWelcomeScreenPath = (myPath + "app_logo.jpg");
         }
     }
 
@@ -253,19 +267,9 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
     //2024年2月27日显示默认副屏
     private void showDefaultCustomerDisplay() {
         if (mCustomerDisplay != null) {
-            if(mWelcomeScreenPath == null){
-                String myPath = mContext.getExternalCacheDir().getPath() + "/customer_display/";
-
-                File wsFile = new File(myPath + "welcome_screen.jpg");
-
-                mWelcomeScreenPath = myPath + (wsFile.exists() ? "welcome_screen.jpg" : "app_logo.jpg");
-
-                mCustomerDisplay.setCustomerImage(
-                        PACKAGE_NAME,
-                        ICustomerDisplay.IMAGE_KIND_DISPLAY,
-                        0,
-                        mWelcomeScreenPath
-                );
+            if(!isSetAppLogo){
+                mCustomerDisplay.setCustomerImage(PACKAGE_NAME, ICustomerDisplay.IMAGE_KIND_DISPLAY, 0, mWelcomeScreenPath);
+                isSetAppLogo = true;
             }
             mCustomerDisplay.doDisplayScreen(PACKAGE_NAME,
                     "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" +
@@ -503,13 +507,50 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
     //2024年3月26日 获取副屏欢迎界面的图像路径
     @ReactMethod(isBlockingSynchronousMethod = true)
     public String getWelcomeScreenImagePath() {
-        if(mWelcomeScreenPath != null) {
-            return ("file://" + mWelcomeScreenPath);
+        if (mWelcomeScreenPath != null) {
+            return ("file://" + mWelcomeScreenPath + "?ts=" + wsPicModifyTime);
         } else {
             return "";
         }
     }
 
+    //2024年3月27日 更换欢迎泡面图片
+    @ReactMethod
+    public void changeWelcomeScreenPicture(String path, boolean deletes ,Promise promise) {
+        if (path != null && !path.isEmpty()) {
+            File sourceFile = new File(path);
+            if (sourceFile.exists()) {
+                try {
+                    byte[] buffer = new byte[8192];
+                    int readLength = -1;
+                    FileInputStream fis = new FileInputStream(sourceFile);
+                    FileOutputStream fos = new FileOutputStream(mContext.getExternalCacheDir().getPath() + "/customer_display/welcome_screen.jpg");
+                    //复制文件到目标目录
+                    while ((readLength = fis.read(buffer)) != -1) {
+                        fos.write(buffer, 0, readLength);
+                    }
+                    fos.flush();
+                    fos.close();
+                    fis.close();
+
+                    if (deletes && !sourceFile.delete()) {
+                        Log.d(TAG, "删除源文件失败...");
+                    }
+
+                    wsPicModifyTime = System.currentTimeMillis(); //用来更新图片缓存！
+
+                    promise.resolve((double)wsPicModifyTime);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    promise.reject(ex.getMessage());
+                }
+            } else {
+                promise.reject(mContext.getResources().getString(R.string.welcome_screen_path_is_null));
+            }
+        } else {
+            promise.reject(mContext.getResources().getString(R.string.welcome_screen_path_is_null));
+        }
+    }
     /* ================================ API版本相关信息 ================================ */
     //2024年2月29日 获取安装信息
     @ReactMethod

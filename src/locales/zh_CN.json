@@ -8,6 +8,7 @@
         !! 如果内容以双反斜杠开始，则内容必须要有 $[xx] 的占位标记，否则报错；
         !! 如果内容有 $[xx] 的占位标记，但没有以双反斜杠开始，则 $[xx] 不被视为占位标记。
     ## $[xx] 格式表示占位标记，xx 是参数数组的索引
+    ## 对于英文，页面标题的单词，首字母一律大写！
 */
 {
     "development.test": "\\\\这是个测试：今天是$[0]年$[1]月$[2]日。",
@@ -33,6 +34,8 @@
     "btn.off": "关掉",
     "btn.synchronous": "同步",
     "btn.delete": "删除",
+    "btn.save": "保存",
+    "btn.change": "更换",
     "alert.title": "提示",
     "language.disabled.tip": "抱歉，语言包暂未翻译~",
     "language.header": "语言设置",
@@ -123,6 +126,9 @@
     "customer.display.closed": "息屏中",
     "customer.display.null": "无副屏",
     "customer.display.ws": "欢迎屏幕",
+    "welcome.screen.header": "欢迎屏幕",
+    "welcome.screen.errmsg1": "裁剪图片出错：未能获取图像信息！",
+    "welcome.screen.errmsg2": "图片大小最大100kb！",
     "unimplemented.tip": "功能暂未实现，敬请期待~",
     "more.help.tip": "扫码或长按以获取更多帮助",
     "more.help.errmsg1": "不支持打开链接，请扫码获取更多帮助~",
@@ -169,6 +175,7 @@
     "statistics.details": "统计明细",
     "receipt.of.customer": "顾客存根",
     
+    "cropping": "裁剪",
     "yesterday": "昨日",
     "today": "今日",
     "details": "详情",

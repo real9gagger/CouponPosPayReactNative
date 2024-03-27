@@ -7,4 +7,5 @@
     <string name="pinter_connection_failed">Unable to connect to the printer!</string>
     <string name="pinter_xml_is_empty">Printing xml is empty!</string>
     <string name="installed_info_is_null">Can not get the installed information!</string>
+    <string name="welcome_screen_path_is_null">Source file do not exists!</string>
 </resources>

@@ -38,6 +38,8 @@
     <uses-permission android:name="com.panasonic.smartpayment.android.api.permission.HLAPI" />
     <!-- 开机广播 -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- 图像读取权限 -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -71,13 +73,13 @@
           android:exported="true"
           android:fitsSystemWindows="true" />
 
-      <receiver
+      <!--<receiver
           android:name=".BootReceiver"
           android:enabled="true"
           android:exported="true">
           <intent-filter>
               <action android:name="android.intent.action.BOOT_COMPLETED" />
           </intent-filter>
-      </receiver>
+      </receiver>-->
     </application>
 </manifest>

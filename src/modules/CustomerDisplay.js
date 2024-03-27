@@ -121,9 +121,21 @@ function showPayAmountInfo(amountInfo){
 }
 
 //获取欢迎屏幕的图像资源
-function getWelcomeScreenImageSource(){
+function getWelcomeScreenSource(){
     const uriPath = CDHelper.getWelcomeScreenImagePath();
-    return (uriPath ? { uri: uriPath } : null);
+    if(!uriPath){
+        return null;
+    } else {
+        return { uri: uriPath };
+    }
+}
+
+//更换欢迎屏幕图像
+function changeWelcomeScreenPicture(path){
+    if(path?.startsWith("file://")){
+        path = path.substr(7);
+    }
+    return CDHelper.changeWelcomeScreenPicture(path, true);
 }
 
 //强制关闭副屏
@@ -151,7 +163,8 @@ function status(){
 }
 
 export default {
-    getWelcomeScreenImageSource,
+    changeWelcomeScreenPicture,
+    getWelcomeScreenSource,
     showPayAmountInfo,
     turnoff,
     close,

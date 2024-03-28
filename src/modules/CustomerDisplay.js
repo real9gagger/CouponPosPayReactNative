@@ -135,7 +135,14 @@ function changeWelcomeScreenPicture(path){
     if(path?.startsWith("file://")){
         path = path.substr(7);
     }
-    return CDHelper.changeWelcomeScreenPicture(path, true);
+    return CDHelper.changeWelcomeScreenPicture(path, true).catch(errdat => {
+        const msgtxt = errdat.message?.replace(/\b(0x[0-9a-f]+)\b/gim, "\"$1\"");
+        try {
+            $alert(JSON.parse(msgtxt).message || msgtxt);
+        } catch(ex){
+            $alert(msgtxt);
+        }
+    });
 }
 
 //强制关闭副屏

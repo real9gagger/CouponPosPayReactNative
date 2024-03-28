@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable, StatusBar, BackHandler } from "react
 import { createDrawerNavigator, DrawerContentScrollView } from "@react-navigation/drawer";
 import { createPosPayNavigator } from "@/routers/tabsCreater";
 import { useI18N, useAppSettings } from "@/store/getter";
+import { dispatchResetUserInfo } from "@/store/setter";
 import PosPayIcon from "@/components/PosPayIcon";
 import IndexHome from "@/pages/index/home";
 import MineIndex from "@/pages/mine/index";
@@ -116,6 +117,11 @@ const drawerItemList = [
         iconName: "help-stroke"
     },
     {
+        key: "系统-登出",
+        i18nLabel: "btn.logout",
+        iconName: "logout"
+    },
+    {
         key: "系统-退出",
         i18nLabel: "exit",
         iconName: "turn-off"
@@ -139,7 +145,19 @@ function MyTabs(){
 };
 
 //自定义抽屉内容
-function CustomDrawerContent(props) {    
+function CustomDrawerContent(props) {
+    const i18n = useI18N();
+    
+    const callUserLogout = () => {
+        $confirm(i18n["account.logout.tip"], i18n["alert.title"]).then(() => {
+            dispatchResetUserInfo(); //重置用户信息
+            props.navigation.reset({ //清空路由，并跳转到登录页
+                index: 0,
+                routes: [{ name: "登录页" }]
+            });
+        });
+    }
+    
     //抽屉列表中的项点击
     function onDrawerItemPress(itemKey){
         switch(itemKey){
@@ -151,6 +169,7 @@ function CustomDrawerContent(props) {
             case "系统-副屏": props.navigation.navigate("顾客屏幕"); break;
             case "系统-打印": props.navigation.navigate("打印设置"); break;
             case "系统-帮助": props.navigation.navigate("帮助页"); break;
+            case "系统-登出": callUserLogout(); break;
             case "系统-退出": BackHandler.exitApp(); break;
         }
         props.navigation.closeDrawer();
@@ -162,14 +181,14 @@ function CustomDrawerContent(props) {
                 if(!vx.iconName){
                     return (
                         <View key={vx.key} style={styles.titleBox}>
-                            <Text style={[styles.titleLabel, ix&&styles.titleSpliter]}>{vx.label}</Text>
+                            <Text style={[styles.titleLabel, ix&&styles.titleSpliter]}>{i18n[vx.i18nLabel]}</Text>
                         </View>
                     );
                 } else {
                     return (
                         <Pressable key={vx.key} style={styles.itemBox} onPress={() => onDrawerItemPress(vx.key)} android_ripple={tcBB}>
-                            <PosPayIcon name={vx.iconName} size={20} />
-                            <Text style={styles.itemLabel}>{vx.label}</Text>
+                            <PosPayIcon name={vx.iconName} size={18} />
+                            <Text style={styles.itemLabel}>{i18n[vx.i18nLabel]}</Text>
                         </Pressable>
                     )
                 }
@@ -180,20 +199,12 @@ function CustomDrawerContent(props) {
 
 //首页标签栏组件
 export default function IndexIndex(props){
-    const i18n = useI18N();
     const appSettings = useAppSettings();
     
     useEffect(() => {
         StatusBar.setBackgroundColor("#FFF", false);
         StatusBar.setHidden(false, "none");
     }, []);
-    
-    useEffect(() => {
-        drawerItemList.forEach(vxo => {
-            vxo.label = i18n[vxo.i18nLabel];
-        });
-        console.log(">>>> 修改了语言设置...");
-    }, [i18n]);
     
     if(appSettings.isEnableDrawer){//如果启用抽屉
         //如果不启用底部标签栏（默认显示首页）

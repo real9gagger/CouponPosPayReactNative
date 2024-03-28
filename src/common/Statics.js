@@ -162,7 +162,7 @@ export const supportLanguageList = [
     {
         name: "正體中文",
         code: "zh_TW",
-        disabled: true
+        disabled: false
     },
     {
         name: "English",

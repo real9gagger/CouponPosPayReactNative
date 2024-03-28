@@ -4,7 +4,7 @@
 {
     "development.test": "\\\\これはテストです：今日は$[0]年$[1月$[2]日です。",
     "copyright.info": "\\\\xcarbon.cc@$[0]によるテクニカルサポート",
-    "app.alias": "旅行業者マーケティングプラットフォーム",
+    "app.alias": "マーチャントレジ",
     "app.lgname": "日本語",
     "app.clean.caches": "ソフトウェアキャッシュのクリーンアップ",
     "app.icons": "ソフトウェアアイコン",
@@ -34,7 +34,7 @@
     "login.password": "パスワード",
     "login.lasttime": "最終ログイン",
     "login.errmsg1": "ユーザー名を空白にすることはできません",
-    "login.errmsg2": "パスワードは空にできず、長さは4未満にできない",
+    "login.errmsg2": "パスワードは空にできず、長さは6未満にできない",
     "login.waiting": "ログイン中、お待ちください…",
     "account.header": "マイアカウント",
     "account.logout.tip": "ログオンを終了しますか？",
@@ -195,7 +195,7 @@
     "restart": "再起動",
     "goback": "戻る",
     "settlement": "決済",
-    "exit": "終了",
+    "exit": "APPを終了する",
     "setting": "設定",
     "nodata": "データがありません",
     "nomore": "これ以上ないよ～"

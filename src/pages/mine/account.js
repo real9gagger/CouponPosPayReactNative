@@ -40,7 +40,7 @@ export default function MineAccount(props){
     const userInfo = useUserInfo();
     const [userAvatar, setUserAvatar] = useState(userInfo.posLogo ? { uri: userInfo.posLogo } : LocalPictures.defaultUserAvatar);
     const [isLogout, setIsLogout] = useState(false);
-    const [showImageView, setShowImageView] = useState(false);
+    const [isShowIV, setIsShowIV] = useState(false);
         
     const onLogout = () => {
         if(isLogout){
@@ -55,7 +55,7 @@ export default function MineAccount(props){
                     index: 0,
                     routes: [{ name: "登录页" }]
                 });
-            }, 1000);
+            }, 500);
         }).catch(err => {
             setIsLogout(false);
         });
@@ -67,7 +67,7 @@ export default function MineAccount(props){
             <View style={[fxC, fxAC, pdX]}>
                 <Text style={styles.accountTitle}>{i18n["app.alias"]}</Text>
                 <ImageButton 
-                    onPress={() => setShowImageView(true)} 
+                    onPress={() => setIsShowIV(true)} 
                     onError={() => setUserAvatar(LocalPictures.loadingPicError)}
                     style={styles.accountAvatar} 
                     source={userAvatar} />
@@ -83,11 +83,11 @@ export default function MineAccount(props){
                 <Text style={[taC, fs12, tc99, pdVX]}>{i18n["login.lasttime"]} {formatDate(userInfo.loginTimestamp)}</Text>
             </View>
             <ImageView
-                visible={showImageView}
+                visible={isShowIV}
                 images={[userAvatar]}
                 imageIndex={0}
                 swipeToCloseEnabled={false}
-                onRequestClose={() => setShowImageView(false)}
+                onRequestClose={() => setIsShowIV(false)}
             />
         </ScrollView>
     );

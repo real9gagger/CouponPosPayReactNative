@@ -1,21 +1,23 @@
 import { useEffect, useState } from "react";
-import { ScrollView, View, Text, TextInput, TouchableOpacity, StatusBar, StyleSheet, ActivityIndicator } from "react-native";
+import { ScrollView, View, Text, TextInput, TouchableOpacity, StatusBar, StyleSheet, ActivityIndicator, Keyboard } from "react-native";
 import { dispatchSetAccessToken, dispatchUpdateUserInfo } from "@/store/setter";
 import { useI18N, getUserInfo } from "@/store/getter";
 import GradientButton from "@/components/GradientButton";
 import PosPayIcon from "@/components/PosPayIcon";
+import AppPackageInfo from "@/modules/AppPackageInfo";
 
 const LOGIN_BOX_WIDTH = Math.min(Math.round(deviceDimensions.screenWidth * 0.8), 400);
 const COLOR_GREY = "#aaa";
+const APP_VER = AppPackageInfo.getFullVersion();
 
 const styles = StyleSheet.create({
     loginBox: {
         width: LOGIN_BOX_WIDTH,
-        marginTop: (deviceDimensions.screenHeight * 0.15), //需要处理横屏的情况
+        marginTop: (deviceDimensions.screenHeight * 0.125), //需要处理横屏的情况
         marginLeft: (deviceDimensions.screenWidth - LOGIN_BOX_WIDTH) / 2
     },
     loginTitle: {
-        paddingBottom: 50,
+        paddingBottom: 40,
         fontSize: 20,
         fontWeight: "bold",
         textAlign: "center"
@@ -41,13 +43,19 @@ const styles = StyleSheet.create({
         marginTop: 40,
         padding: 10
     },
+    verBox: {
+        paddingVertical: 5,
+        textAlign: "center",
+        fontSize: 12,
+        color: "#aaa"
+    },
     autoLoginTip: {
         position: "absolute",
         left: 0,
         right: 0,
         top: 0,
         bottom: 0,
-        zIndex: 9,
+        zIndex: 99,
         paddingBottom: 80,
         display: "flex",
         flexDirection: "column",
@@ -73,16 +81,17 @@ export default function LoginIndex(props){
         }
         
         if(!username){
-            return !$notify.error(i18n["login.errmsg1"]);
+            return !$toast(i18n["login.errmsg1"]);
         }
-        if(!password || password.length < 4){
-            return !$notify.error(i18n["login.errmsg2"]);
+        if(!password || password.length < 6){
+            return !$toast(i18n["login.errmsg2"]);
         }
         
         if(evt === true){
             setIsAutoLogin(true);
         } else {
             setIsSubmiting(true);
+            Keyboard.dismiss(); //收起键盘
         }
         
         //console.log("用户输入的账户密码：", username, password);
@@ -109,7 +118,7 @@ export default function LoginIndex(props){
     }, []);
     
     return (<>
-        <ScrollView style={pgEE}>
+        <ScrollView style={pgEE} contentContainerStyle={hiF} keyboardShouldPersistTaps="handled">
             <StatusBar backgroundColor={isAutoLogin ? "#FFF" : "#EEE"} barStyle="dark-content" />
             <View style={styles.loginBox}>
                 <Text style={styles.loginTitle}>{i18n["app.alias"]}</Text>
@@ -160,6 +169,8 @@ export default function LoginIndex(props){
                 <Text style={tc99}>{i18n["app.lgname"]}</Text>
                 <PosPayIcon name="right-arrow" color="#999" size={16} offset={3}/>
             </TouchableOpacity>
+            <View style={fxG1}>{/* 占位用 */}</View>
+            <Text style={styles.verBox}>v{APP_VER}</Text>
         </ScrollView>
         {isAutoLogin && <View style={styles.autoLoginTip}>
             <ActivityIndicator color={appMainColor} size={50} />

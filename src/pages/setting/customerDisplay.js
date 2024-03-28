@@ -33,7 +33,7 @@ export default function SettingCustomerDisplay(props){
     const wsSource = CustomerDisplay.getWelcomeScreenSource();
     const appSettings = useAppSettings();
     const [isOpened, setIsOpened] = useState(false); //副屏是否已打开
-console.log("lllllllllllll", wsSource);
+
     const onSPAIChange = (newVal) => {
         dispatchUpdateAppSettings("customerDisplayShowPayAmountInfo", !!newVal);
     }
@@ -54,6 +54,11 @@ console.log("lllllllllllll", wsSource);
         CustomerDisplay.turnoff();
     }
     const gotoWS = () => {
+        if(isOpened !== null){ //先关闭副屏
+            setIsOpened(false);
+            CustomerDisplay.turnoff();
+        }
+        
         props.navigation.navigate("欢迎屏幕设置");
     }
     

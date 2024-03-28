@@ -118,7 +118,7 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
             }
 
             if (mCdOpenedCallback != null) {
-                mCdOpenedCallback.invoke(bo ? (String)null : mContext.getResources().getString(R.string.customer_display_open_failed));
+                mCdOpenedCallback.invoke(bo ? null : mContext.getResources().getString(R.string.customer_display_open_failed));
                 mCdOpenedCallback = null; //立即重置
             }
 
@@ -391,14 +391,14 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
     public void getImagePath(String uri, Promise promise) {
         if (uri != null && !uri.isEmpty()) {
             //防止下载卡顿，因此开启多线程来下载图片
-            //new Thread(() -> {
-            File pic = downloadImage(uri);
-            if (pic != null) {
-                promise.resolve(pic.getPath());
-            } else {
-                promise.resolve(null);
-            }
-            //}).start();
+            new Thread(() -> {
+                File pic = downloadImage(uri);
+                if (pic != null) {
+                    promise.resolve(pic.getPath());
+                } else {
+                    promise.resolve(null);
+                }
+            }).start();
         } else {
             promise.resolve(null);
         }
@@ -523,8 +523,15 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
                 try {
                     byte[] buffer = new byte[8192];
                     int readLength = -1;
+                    File targetFile = new File(mContext.getExternalCacheDir().getPath() + "/customer_display/welcome_screen.jpg");
+
+                    //创建目录和文件
+                    if(!targetFile.exists() && !targetFile.getParentFile().mkdirs()) {
+                        Log.d(TAG, "创建文件所在的目录失败...");
+                    }
+
                     FileInputStream fis = new FileInputStream(sourceFile);
-                    FileOutputStream fos = new FileOutputStream(mContext.getExternalCacheDir().getPath() + "/customer_display/welcome_screen.jpg");
+                    FileOutputStream fos = new FileOutputStream(targetFile);
                     //复制文件到目标目录
                     while ((readLength = fis.read(buffer)) != -1) {
                         fos.write(buffer, 0, readLength);

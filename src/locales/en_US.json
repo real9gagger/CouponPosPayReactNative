@@ -4,7 +4,7 @@
 {
     "development.test": "\\\\This is a test: Today is $[0]/$[1]/$[2].",
     "copyright.info": "\\\\Powered by xcarbon.cc@$[0]",
-    "app.alias": "Tourism Merchant Marketing Platform",
+    "app.alias": "Merchant Cashier",
     "app.lgname": "English",
     "app.clean.caches": "Clean app caches",
     "app.icons": "App Icons",
@@ -34,7 +34,7 @@
     "login.password": "Password",
     "login.lasttime": "Latest login",
     "login.errmsg1": "The username cannot be empty",
-    "login.errmsg2": "The password cannot be empty and at less 4 characters",
+    "login.errmsg2": "The password cannot be empty and at less 6 characters",
     "login.waiting": "Logging in, Please wait...",
     "account.header": "My Account",
     "account.logout.tip": "Are you sure to logout?",

@@ -5,7 +5,9 @@ const initialState = {
     expiresAfterTicks: 0, //令牌过期时间（毫秒数）
     posName: "", //商户名称
     posId: 0, //商户ID
-    posLogo: "" //商户LOGO
+    posLogo: "",//商户LOGO
+    loginAccount: "", //登录用户名
+    loginPassword: "", //登录密码
 };
 
 //更新用户信息，传入的参数是一个对象
@@ -50,7 +52,7 @@ export function setAccessToken(accessToken, expiresIn, loginAccount, loginPasswo
 export default userReducer = (state = initialState, action) => {
     switch(action.type){
         case UPDATE_USERINFO: return {...state, ...action.payload};
-        case RESET_USERINFO: return initialState;
+        case RESET_USERINFO: return {...initialState, loginAccount: state.loginAccount}; //不清除用户名
         case SET_ACCESSTOKEN: return {...state, ...action.payload};
     }
     

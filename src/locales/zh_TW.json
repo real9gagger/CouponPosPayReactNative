@@ -6,7 +6,7 @@
     "development.test": "\\\\這是個測試：今天是$[0]年$[1]月$[2]日。",
     "copyright.info": "\\\\由 xcarbon.cc@$[0] 提供技術支持",
     "app.alias": "商戶收銀臺",
-    "app.lgname": "簡體中文",
+    "app.lgname": "正體中文",
     "app.clean.caches": "清理軟件緩存",
     "app.icons": "軟件圖標",
     "tabbar.home": "結算",

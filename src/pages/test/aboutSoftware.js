@@ -3,8 +3,6 @@ import { useI18N } from "@/store/getter";
 import LocalPictures from "@/common/Pictures";
 import AppPackageInfo from "@/modules/AppPackageInfo";
 import PosPayIcon from "@/components/PosPayIcon"
-import TextualButton from "@/components/TextualButton"
-import ReceiptsPlus from "@/modules/ReceiptsPlus";
 
 const APP_VER = AppPackageInfo.getFullVersion();
 const THIS_YEAR = (new Date()).getFullYear();
@@ -38,12 +36,6 @@ const styles = StyleSheet.create({
 
 export default function TestAboutSoftware(props){
     const i18n = useI18N();
-    
-    const clearCaches = () => {
-        ReceiptsPlus.clearPrintCaches();
-        $toast(i18n["cleaning.completed.tip"]);
-    }
-    
     return (
         <ScrollView style={pgFF} contentContainerStyle={[pdX, fxC, fxAC, mhF]}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
@@ -53,8 +45,6 @@ export default function TestAboutSoftware(props){
                 <Text style={styles.verBox2}>{i18n["version.latest.tip"]}</Text>
                 <PosPayIcon name="check-confirm" color={styles.verBox2.color} size={16} offset={5} />
             </View>
-            <Text style={fxG1}>{/* 占位专用 */}</Text>
-            <TextualButton style={tcMC} onPress={clearCaches}>{i18n["app.clean.caches"]}</TextualButton>
             <Text style={fxG1}>{/* 占位专用 */}</Text>
             <Text style={styles.copyrightBox}>{i18n["copyright.info"].cloze(THIS_YEAR)}</Text>
         </ScrollView>

@@ -5,6 +5,7 @@ import { dispatchUpdateAppSettings } from "@/store/setter";
 import PosPayIcon from "@/components/PosPayIcon";
 import GradientButton from "@/components/GradientButton";
 import AppPackageInfo from "@/modules/AppPackageInfo";
+import ReceiptsPlus from "@/modules/ReceiptsPlus";
 //import AppNavigationInfo from "@/modules/AppNavigationInfo";
 
 const styles = StyleSheet.create({
@@ -31,19 +32,24 @@ const styles = StyleSheet.create({
     },
     switchBox: {
         height: 20,
+    },
+    descBox: {
+        fontSize: 14,
+        color: "#888",
+        flex: 1,
+        textAlign: "right"
     }
 });
 
 const settingList = [
     {
         actionName: "语言设置",
-        i18nLabel: "language.header",
-        disabled: false
+        i18nLabel: "language.header"
     },
     {
         actionName: "税率设置",
         i18nLabel: "tax.rate",
-        disabled: false
+        disabled: runtimeEnvironment.isProduction
     },
     {
         actionName: "金额设置",
@@ -61,13 +67,11 @@ const infoList = [
     {
         actionName: "测试中心",
         i18nLabel: "test.centre",
-        descText: "test.debug.available",
         disabled: runtimeEnvironment.isProduction
     },
     {
         actionName: "软件图标",
         i18nLabel: "app.icons",
-        descText: "test.debug.available",
         disabled: runtimeEnvironment.isProduction
     },
     {
@@ -80,8 +84,12 @@ const infoList = [
     },
     {
         actionName: "关于软件",
-        i18nLabel: "about.software",
-        descText: AppPackageInfo.getFullVersion() //描述性文本，不需要翻译
+        i18nLabel: "about.software"
+    },
+    {
+        actionName: "清理缓存",
+        i18nLabel: "app.clean.caches",
+        actionOnly: true
     }
 ];
 
@@ -108,10 +116,20 @@ export default function SettingIndex(props){
     const i18n = useI18N();
     const appSettings = useAppSettings();
     const [switchItems, setSwitchItems] = useState({});
+    const [descTexts, setDescTexts] = useState({});
     
     const onItemPress = (actionName) => {
         return function(){
-            props.navigation.navigate(actionName);
+            if(actionName === "清理缓存"){
+                $confirm(i18n["app.clean.caches"]).then(() => {
+                    ReceiptsPlus.clearPrintCaches();
+                    $toast(i18n["cleaning.completed.tip"]);
+                    descTexts[actionName] = "0KB";
+                    setDescTexts({...descTexts})
+                });
+            } else {
+                props.navigation.navigate(actionName);
+            }
         };
     }
     
@@ -151,18 +169,22 @@ export default function SettingIndex(props){
             myItems[vx.settingKey] = !!appSettings[vx.settingKey];
         }
         setSwitchItems(myItems);
+        
+        ReceiptsPlus.getAppCacheSize().then(sizeText => {
+            setDescTexts({
+                "语言设置": i18n["app.lgname"],
+                "税率设置": appSettings.generalTaxRate + "%",
+                "金额设置": appSettings.numbersDecimalOfMoney.toString(),
+                "货币设置": appSettings.regionalCurrencyCode,
+                
+                "测试中心": i18n["test.debug.available"],
+                "软件图标": i18n["test.debug.available"],
+                "清理缓存": sizeText,
+                "关于软件": AppPackageInfo.getFullVersion()
+            });
+        });
     }, []);
     
-    //更新一些信息！
-    for(const vxo of settingList){
-        switch(vxo.actionName){
-            case "语言设置": vxo.descText = i18n["app.lgname"]; break;
-            case "税率设置": vxo.descText = appSettings.generalTaxRate + "%"; break;
-            case "金额设置": vxo.descText = appSettings.numbersDecimalOfMoney.toString(); break;
-            case "货币设置": vxo.descText = appSettings.regionalCurrencyCode; break;
-        }
-    }
-
     return (<>
         <ScrollView style={pgEE} contentContainerStyle={mhF}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
@@ -184,8 +206,9 @@ export default function SettingIndex(props){
             {settingList.map((vx, ix) => (
                 <TouchableHighlight key={vx.actionName} style={vx.disabled ? dpN : [pdHX, bgFF]} underlayColor="#eee" onPress={onItemPress(vx.actionName)}>
                     <View style={[pdVX, fxHC, ix && styles.boxDivider]}>
-                        <Text style={[fs16, fxG1]}>{i18n[vx.i18nLabel]}</Text>
-                        <Text style={!vx.descText ? dpN : [fs14, tc99]}>{vx.descText}</Text>
+                        <Text style={fs16}>{i18n[vx.i18nLabel]}</Text>
+                        <PosPayIcon visible={vx.disabled !== undefined} name="debug" color={appMainColor} size={16} />
+                        <Text style={styles.descBox}>{descTexts[vx.actionName]}</Text>
                         <PosPayIcon name="right-arrow" color="#aaa" size={20} />
                     </View>
                 </TouchableHighlight>
@@ -194,9 +217,10 @@ export default function SettingIndex(props){
             {infoList.map((vx, ix) => (
                 <TouchableHighlight key={vx.actionName} style={vx.disabled ? dpN : [pdHX, bgFF]} underlayColor="#eee" onPress={onItemPress(vx.actionName)}>
                     <View style={[pdVX, fxHC, ix && styles.boxDivider]}>
-                        <Text style={[fs16, fxG1]} numberOfLines={1}>{i18n[vx.i18nLabel]}</Text>
-                        <Text style={!vx.descText ? dpN : [fs14, tc99]}>{i18n[vx.descText] || vx.descText}</Text>
-                        <PosPayIcon name="right-arrow" color="#aaa" size={20} />
+                        <Text style={fs16} numberOfLines={1}>{i18n[vx.i18nLabel]}</Text>
+                        <PosPayIcon visible={vx.disabled !== undefined} name="debug" color={appMainColor} size={16} />
+                        <Text style={styles.descBox}>{descTexts[vx.actionName]}</Text>
+                        <PosPayIcon visible={!vx.actionOnly} name="right-arrow" color="#aaa" size={20} />
                     </View>
                 </TouchableHighlight>
             ))}

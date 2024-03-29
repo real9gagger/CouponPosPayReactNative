@@ -9,6 +9,18 @@ const MAX_LETTER_NUMBER = 32;//每行最多允许多少个【半角字符】
 const TEXT_GAPS = 2;//文本之间的间隔（字符数）
 const SPACES_100 = "\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20".repeat(10); //100个空格！！！
 
+//显示错误信息
+function showErrMsg(em){
+    if(em?.message){
+        const msgtxt = em.message.replace(/\b(0x[0-9a-f]+)\b/gim, "\"$1\"");
+        try {
+            $alert(JSON.parse(msgtxt).message || msgtxt);
+        } catch(ex){
+            $alert(msgtxt);
+        }
+    }
+}
+
 //中文占两个字节，英文占一个
 function getTextSize(txt){
     let count = 0;
@@ -256,11 +268,7 @@ function printPaymentReceipts(orderInfo){
             if(code === 0){
                 resolve();
             } else {
-                try{
-                    reject(JSON.parse(msg).message || msg);
-                } catch(ex){
-                    reject(msg);
-                }
+                showErrMsg({ message: msg });
             }
         });
     });
@@ -276,7 +284,21 @@ function clearPrintCaches(){
     return RPHelper.clearImageCaches();
 }
 
+//获取软件缓存大小
+function getAppCacheSize(){
+    return RPHelper.getCacheSize().then(size => {
+        if(size <= 0){
+            return "0KB";
+        } else if(size < 1048576){
+            return Math.round(size / 1024) + "KB";
+        } else {
+            return Math.round(size / 1048576) + "MB";
+        }
+    });
+}
+
 export default {
     printPaymentReceipts,
-    clearPrintCaches
+    clearPrintCaches,
+    getAppCacheSize
 }

@@ -189,7 +189,7 @@ function getCouponInfo(cc) {
                 discount: (+items[3] || 0), //折扣率，或者立减金额
                 condition: (+items[6] || 0), //满免条件
                 expiration: (items[8].replace(/(\d{4})(\d{2})/, "$1-$2-") + " ~ " + items[9].replace(/(\d{4})(\d{2})/, "$1-$2-")),
-                distributor: "", //分销员编号
+                distributor: items[0], //分销员编号
                 createtime: Date.now() //创建时间的时间戳
             };
             resolve(output);

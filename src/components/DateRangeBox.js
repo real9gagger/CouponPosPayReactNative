@@ -1,6 +1,7 @@
 import { Component } from "react"
 import { TouchableOpacity, View, Text, StyleSheet } from "react-native"
 import { formatDate } from "@/utils/helper"
+import { getLanguageCode } from "@/store/getter.js"
 import DatePicker from "react-native-date-picker"
 import PosPayIcon from "./PosPayIcon"
 
@@ -103,6 +104,7 @@ class DateRangeBox extends Component {
         const cacheData = dateRangeCaches[props.uniqueKey]
 
         this.todayDate = new Date()
+        this.lgLocale = getLanguageCode()
         this.state = {
             dateNth: 0,
             beginDate: (cacheData ? cacheData[0] : null),
@@ -250,7 +252,8 @@ class DateRangeBox extends Component {
                 cancelText={this.props.cancelText}
                 title={this.state.dateNth === 1 ? this.props.beginPlaceholder : this.props.endPlaceholder}
                 theme="light"
-                mode="date" />
+                mode="date"
+                locale={this.lgLocale} />
         </>)
     }
 }

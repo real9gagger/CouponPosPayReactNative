@@ -1,10 +1,10 @@
 import { useEffect, useState, useRef, Fragment } from "react";
-import { ScrollView, Pressable, View, Text, StyleSheet } from "react-native";
+import { ScrollView, TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { useI18N, useAppSettings } from "@/store/getter";
 import { getPaymentInfo } from "@/common/Statics";
 import LoadingTip from "@/components/LoadingTip";
 
-const FIRST_CELL_WIDTH = 70;
+const FIRST_CELL_WIDTH = 80;
 
 const styles = StyleSheet.create({
     containerBox: {
@@ -41,6 +41,7 @@ const styles = StyleSheet.create({
 //销售统计明细
 export default function OrderStatisticsDetails(props){
     const i18n = useI18N();
+    const appSettings = useAppSettings();
     const ltRef = useRef(null);
     const [detailsList, setDetailsList] = useState([]);
     const [sumInfo, setSumInfo] = useState({
@@ -131,13 +132,13 @@ export default function OrderStatisticsDetails(props){
             {detailsList.map(vx => 
                 <Fragment key={vx.id}>
                     {vx.tstData && <Text style={styles.dateBox}>{vx.tstData}</Text>}
-                    <Pressable style={fxHC} android_ripple={tcCC} onPress={() => onItemPress(vx)}>
+                    <TouchableOpacity style={fxHC} activeOpacity={0.5} onPress={() => onItemPress(vx)}>
                         <Text style={styles.cellBox1}>{vx.transactionTime.substr(11)}</Text>
                         <Text style={styles.cellBox2}>{vx.orderAmount || 0}</Text>
                         <Text style={styles.cellBox2}>{vx.tax || 0}</Text>
                         <Text style={styles.cellBox2}>-{vx.discountAmount || 0}</Text>
                         <Text style={styles.cellBox2}>{vx.amount || 0}</Text>
-                    </Pressable>
+                    </TouchableOpacity>
                 </Fragment>
             )}
             <LoadingTip
@@ -152,7 +153,7 @@ export default function OrderStatisticsDetails(props){
         <View style={bgFF}>
             <View style={styles.lineBox}></View>
             <View style={[fxHC, styles.containerBox]}>
-                <Text style={[styles.cellBox1, fwB]} numberOfLines={1}>{i18n["summation"]}</Text>
+                <Text style={[styles.cellBox1, fwB]} numberOfLines={1}>{i18n["summation"]} ({appSettings.regionalCurrencyUnit})</Text>
                 <Text style={[styles.cellBox2, fwB]} numberOfLines={1}>{sumInfo.total}</Text>
                 <Text style={[styles.cellBox2, fwB]} numberOfLines={1}>{sumInfo.tax}</Text>
                 <Text style={[styles.cellBox2, fwB]} numberOfLines={1}>-{sumInfo.discount}</Text>

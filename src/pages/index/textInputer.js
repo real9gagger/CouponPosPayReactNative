@@ -6,22 +6,22 @@ import GradientButton from "@/components/GradientButton";
 const CLEAR_BUTTON_LG = ["#ccc", "#aaa"];
 const styles = StyleSheet.create({
     inputBox: {
-        backgroundColor: "#f0f0f0",
-        borderTopColor: "#999",
+        backgroundColor: "#fff",
+        borderTopColor: "#ccc",
         borderTopWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: "#999",
-        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomColor: appMainColor,
+        borderBottomWidth: 1,
         paddingHorizontal: 10,
         paddingVertical: 15,
         fontSize: 16
     },
     maxBox: {
         position: "absolute",
-        right: 10,
+        right: 5,
         bottom: 5,
         zIndex: 1,
         fontSize: 10,
-        color: "#999"
+        color: "#666"
     },
     btnDone: {
         flexGrow: 1,
@@ -51,7 +51,7 @@ export default function IndexTextInputer(props){
     }, []);
     
     return (
-        <View style={pgFF}>
+        <View style={pgEE}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
             <View>
                 <TextInput

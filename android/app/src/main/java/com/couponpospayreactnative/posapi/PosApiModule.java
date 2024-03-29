@@ -430,6 +430,22 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
         promise.resolve(obj);
     }
 
+    //2024年3月29日，获取打印时留下的缓存大小
+    @ReactMethod
+    public void getCacheSize(Promise promise) {
+        File dir = new File(APP_FILES_CACHE_DIR);
+        long size = 0;
+        if (dir.exists() && dir.isDirectory()) {
+            File[] files = dir.listFiles();
+            if (files != null) {
+                for (File ff : files) {
+                    size += ff.length();
+                }
+            }
+        }
+        promise.resolve((double) size);
+    }
+
     /* ================================ 副屏相关 ================================ */
 
     //2024年2月29日 是否有副屏

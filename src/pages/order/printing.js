@@ -61,6 +61,8 @@ export default function OrderPrinting(props){
     
     const onSearchOrder = () => {
         setOrderInfo(null);
+        setIsFocus(false);
+        
         if(!orderSN){
             return !ltRef.current.resetState();
         }
@@ -88,9 +90,8 @@ export default function OrderPrinting(props){
                 <TextInput 
                     style={[styles.inputBox, isFocus && styles.inputActived]} 
                     onFocus={() => setIsFocus(true)}
-                    onBlur={() => setIsFocus(false)}
+                    onBlur={onSearchOrder}
                     autoFocus={true}
-                    onSubmitEditing={onSearchOrder}
                     onChangeText={setOrderSN}
                     maxLength={30} 
                     keyboardType="number-pad"

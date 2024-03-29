@@ -354,7 +354,7 @@ function tabBankCard(props){
                     <Text style={[fs12, fxG1]}>{i18n["input.amount"]}</Text>
                     <Text style={fs12}><Text style={fwB}>{$tofixed(payAmounts)}</Text> {appSettings.regionalCurrencyUnit}</Text>
                 </View>
-                <View style={fxHC}>
+                <View style={appSettings.generalTaxRate > 0 ? fxHC : dpN}>{/* 小于等于0，表示不使用税收功能！ */}
                     <Text style={fs12}>{i18n["tax"]}</Text>
                     <Text style={[fs12, tc99, fxG1]}>&nbsp;({appSettings.generalTaxRate}%)</Text>
                     <Text style={fs12}><Text style={fwB}>{taxAndFa.T_X}</Text> {appSettings.regionalCurrencyUnit}</Text>
@@ -500,7 +500,7 @@ function tabEWallet(props){
                     <Text style={[fs12, fxG1]}>{i18n["input.amount"]}</Text>
                     <Text style={fs12}><Text style={fwB}>{$tofixed(payAmounts)}</Text> {appSettings.regionalCurrencyUnit}</Text>
                 </View>
-                <View style={fxHC}>
+                <View style={appSettings.generalTaxRate > 0 ? fxHC : dpN}>{/* 小于等于0，表示不使用税收功能！ */}
                     <Text style={fs12}>{i18n["tax"]}</Text>
                     <Text style={[fs12, tc99, fxG1]}>&nbsp;({appSettings.generalTaxRate}%)</Text>
                     <Text style={fs12}><Text style={fwB}>{taxAndFa.T_X}</Text> {appSettings.regionalCurrencyUnit}</Text>
@@ -641,7 +641,7 @@ function tabQRCode(props){
                     <Text style={[fs12, fxG1]}>{i18n["input.amount"]}</Text>
                     <Text style={fs12}><Text style={fwB}>{$tofixed(payAmounts)}</Text> {appSettings.regionalCurrencyUnit}</Text>
                 </View>
-                <View style={fxHC}>
+                <View style={appSettings.generalTaxRate > 0 ? fxHC : dpN}>{/* 小于等于0，表示不使用税收功能！ */}
                     <Text style={fs12}>{i18n["tax"]}</Text>
                     <Text style={[fs12, tc99, fxG1]}>&nbsp;({appSettings.generalTaxRate}%)</Text>
                     <Text style={fs12}><Text style={fwB}>{taxAndFa.T_X}</Text> {appSettings.regionalCurrencyUnit}</Text>
@@ -785,7 +785,7 @@ export default function IndexHome(props){
                 fixed={true}
                 visible={inputIndex > 0} 
                 precision={0} 
-                onSetting={gotoSettingPage}
+                onSetting={appSettings.isEnableDrawer || appSettings.isEnableTabbar ? null : gotoSettingPage /* 两者都不显示时，则显示跳转到设置页的小图标 */}
                 onChange={onTxtChange} 
                 onClose={togglePKHidden} 
                 onConfirm={togglePKHidden}

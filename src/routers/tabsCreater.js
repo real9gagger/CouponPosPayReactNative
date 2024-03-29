@@ -3,7 +3,7 @@
 */
 import { TouchableOpacity, View, Text, StyleSheet, Vibration } from "react-native";
 import { createNavigatorFactory, useNavigationBuilder, TabRouter, TabActions } from "@react-navigation/native";
-import { TabIconHome, TabIconMine } from "@/components/TabBarIcon";
+import { TabIconHome, TabIconShop, TabIconMine } from "@/components/TabBarIcon";
 import { useI18N } from "@/store/getter";
 
 const styles = StyleSheet.create({
@@ -110,9 +110,13 @@ function TheTabNavigator({ children, screenOptions, initialRouteName }) {
                 iconComp[0] = (<TabIconHome color={iconColor} key="100" />);
                 iconComp[1] = (<Text style={labelCss} key="101">{i18n["tabbar.home"]}</Text>);
                 break;
+            case "店铺":
+                iconComp[0] = (<TabIconShop color={iconColor}  key="200" />);
+                iconComp[1] = (<Text style={labelCss} key="201">{i18n["tabbar.shop"]}</Text>);
+                break;
             case "个人中心": 
-                iconComp[0] = (<TabIconMine color={iconColor}  key="200" />);
-                iconComp[1] = (<Text style={labelCss} key="201">{i18n["tabbar.mine"]}</Text>);
+                iconComp[0] = (<TabIconMine color={iconColor}  key="300" />);
+                iconComp[1] = (<Text style={labelCss} key="301">{i18n["tabbar.mine"]}</Text>);
                 break;
         }
         

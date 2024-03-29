@@ -7,6 +7,7 @@ import { dispatchResetUserInfo } from "@/store/setter";
 import PosPayIcon from "@/components/PosPayIcon";
 import IndexHome from "@/pages/index/home";
 import MineIndex from "@/pages/mine/index";
+//import MineAccount from "@/pages/mine/account";
 
 const DRAWER_ROUTE_NAME = "抽屉栏"; //路由名称，不需要翻译！
 
@@ -58,10 +59,15 @@ const posPayTabList = [
         options: noHeaderOptions
     },
     {
-        name: "个人中心",
+        name: "店铺",
         component: MineIndex,
         options: noHeaderOptions
-    }
+    },
+    /* {
+        name: "个人中心",
+        component: MineAccount,
+        options: noHeaderOptions
+    } */
 ];
 
 //抽屉列表
@@ -89,7 +95,7 @@ const drawerItemList = [
     {
         key: "业务-统计",
         i18nLabel: "statistics",
-        iconName: "sub-total"
+        iconName: "statistics"
     },
     {
         key: "系统",

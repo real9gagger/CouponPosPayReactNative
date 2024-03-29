@@ -7,6 +7,18 @@ const CDHelper = NativeModules.PosApi;
 const MAX_CHARS = 39; //消息文字一行最多可以显示 50 个半角字符
 const ONE_SPACE = "\x20"; //一个空格
 
+//显示错误信息
+function showErrMsg(em){
+    if(em?.message){
+        const msgtxt = em.message.replace(/\b(0x[0-9a-f]+)\b/gim, "\"$1\"");
+        try {
+            $alert(JSON.parse(msgtxt).message || msgtxt);
+        } catch(ex){
+            $alert(msgtxt);
+        }
+    }
+}
+
 //中文占两个字节，英文占一个
 function getTextSize(txt){
     let count = 0;
@@ -109,14 +121,7 @@ function showPayAmountInfo(amountInfo){
                     <customerString>${msgPA}</customerString>
                 </messageArea>
             </customerDisplayApi>`
-        ).catch(errdat => {
-            const msgtxt = errdat.message?.replace(/\b(0x[0-9a-f]+)\b/gim, "\"$1\"");
-            try{
-                $alert(JSON.parse(msgtxt).message || msgtxt);
-            } catch(ex){
-                $alert(msgtxt);
-            }
-        });
+        ).catch(showErrMsg);
     });
 }
 
@@ -135,14 +140,7 @@ function changeWelcomeScreenPicture(path){
     if(path?.startsWith("file://")){
         path = path.substr(7);
     }
-    return CDHelper.changeWelcomeScreenPicture(path, true).catch(errdat => {
-        const msgtxt = errdat.message?.replace(/\b(0x[0-9a-f]+)\b/gim, "\"$1\"");
-        try {
-            $alert(JSON.parse(msgtxt).message || msgtxt);
-        } catch(ex){
-            $alert(msgtxt);
-        }
-    });
+    return CDHelper.changeWelcomeScreenPicture(path, true).catch(showErrMsg);
 }
 
 //强制关闭副屏

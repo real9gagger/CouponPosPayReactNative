@@ -14,10 +14,11 @@
 * 【如果用 Android Studio 编译 react-native-reanimated 失败：出现 react-native-reanimated:downloadXXX FAILED 的情况】
     *  打开 /node_modules/react-native-reanimated/android/build.gradle 搜索：
     *  https://github.com/react-native-community/boost-for-react-native、
-    *  https://github.com/google/glog/archive、
+    *  https://github.com/google/double-conversion/archive、
     *  https://github.com/facebook/folly/archive、
-    *  https://github.com/google/double-conversion/archive 
+    *  https://github.com/google/glog/archive、
     *  将上述四个链接中的 “github.com” 换成 “kkgithub.com”（或者其他镜像网站也可以）
+    *  【！！！每次新增第三方组件都要重复上述操作！！！】
 
 ## 调试 Panasonic JT-C60 开发专用POS机
 > 注意：必须是【开发专用】POS机。【商用】的无法用于开发

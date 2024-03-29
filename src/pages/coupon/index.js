@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { ScrollView, View, Image, Text, StyleSheet, Pressable, ActivityIndicator } from "react-native";
-import { useI18N, getI18N, getAppSettings, getUserPosName, getCouponInUse } from "@/store/getter";
+import { useI18N, getAppSettings, getUserPosName, getCouponInUse, findCouponInAddedList } from "@/store/getter";
 import { dispatchSetLastUsed } from "@/store/setter";
 import { DISCOUNT_TYPE_LJ } from "@/common/Statics";
 import { parseStringDate } from "@/utils/helper"
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     },
     couponTitle: {
         fontSize: 18,
-        marginBottom: 3
+        marginBottom: 0
     },
     couponPic: {
         width: 45,
@@ -75,26 +75,26 @@ const styles = StyleSheet.create({
     },
     couponDiscount: {
         textAlign: "center",
-        fontSize: 50,
+        fontSize: 40,
         color: appMainColor,
     },
     couponTypeLeft: {
-        fontSize: 16,
+        fontSize: 14,
         paddingRight: 4,
         color: "transparent"
     },
     couponTypeRight: {
-        fontSize: 16,
+        fontSize: 14,
         paddingLeft: 4,
         color: appMainColor,
-        marginTop: 12
+        marginTop: 10
     },
     couponCondition: {
         fontSize: 12,
         textAlign: "center",
-        color: "#ff590e",
-        marginTop: 0,
-        marginBottom: 10
+        color: "#333",
+        marginTop: 2,
+        marginBottom: 12
     },
     couponTip:{
         display: "flex",
@@ -130,15 +130,21 @@ const styles = StyleSheet.create({
         borderLeftWidth: 1,
         borderStyle: "dashed"
     },
-    couponWatermark: {
+    couponWatermark1: {
         position: "absolute",
-        bottom: 10,
+        bottom: 15,
         left: 10,
-        zIndex: 0
+        zIndex: 2
+    },
+    couponWatermark2: {
+        position: "absolute",
+        bottom: 2,
+        left: 10,
+        zIndex: 1
     },
     couponWMText: {
         letterSpacing: 2,
-        fontSize: 12,
+        fontSize: 10,
         color: "#feb797"
     },
     couponEmpty: {
@@ -194,9 +200,8 @@ function getCouponInfo(cc) {
             };
             resolve(output);
         } else {
-            //去服务器查询
-            resolve({});
-            $alert(getI18N("unimplemented.tip"));
+            //查找我添加的优惠券
+            resolve(findCouponInAddedList(cc) || {});
         }
     });
 }
@@ -299,7 +304,8 @@ export default function CouponIndex(props){
                         <View style={[styles.couponSemicircle, styles.couponSC1]}>{/* 优惠券去掉半个圆（上方） */}</View>
                         <View style={[styles.couponSemicircle, styles.couponSC2]}>{/* 优惠券去掉半个圆（下方） */}</View>
                         <View style={styles.couponDashedLine}>{/* 竖杠虚线 */}</View>
-                        <View style={styles.couponWatermark}><Text style={styles.couponWMText}>NO.{couponInfo.cpcode}</Text></View>
+                        <View style={styles.couponWatermark1}><Text style={styles.couponWMText}>NO.{couponInfo.cpcode}</Text></View>
+                        <View style={styles.couponWatermark2}><Text style={styles.couponWMText}>DN.{couponInfo.distributor}</Text></View>
                         <View style={fxHC}>
                             <Image source={couponInfo.picurl || LocalPictures.couponDefaultPic} style={styles.couponPic} />
                             <View>
@@ -310,19 +316,19 @@ export default function CouponIndex(props){
                         {couponInfo.distype===DISCOUNT_TYPE_LJ ? <>
                             <View style={[fxR, fxJC]}>
                                 <Text style={styles.couponTypeLeft}>{i18n["coupon.type2"]/* 为了使金额保持居中，所有需要这个透明文字 */}</Text>
-                                <Text style={styles.couponDiscount}>{appSettings.regionalCurrencySymbol}{couponInfo.discount}</Text>
+                                <Text style={styles.couponDiscount}><Text style={fs18}>{appSettings.regionalCurrencySymbol}</Text>{couponInfo.discount}</Text>
                                 <Text style={styles.couponTypeRight}>{i18n["coupon.type2"]}</Text>
                             </View>
                             <Text style={styles.couponCondition}>{i18n["coupon.reduction"].cloze(couponInfo.condition, couponInfo.discount)}</Text>
                         </> : <>
                             <View style={[fxR, fxJC]}>
                                 <Text style={styles.couponTypeLeft}>{i18n["coupon.type1"] /* 为了使金额保持居中，所有需要这个透明文字 */}</Text>
-                                <Text style={styles.couponDiscount}>{couponInfo.discount}%</Text>
+                                <Text style={styles.couponDiscount}>{couponInfo.discount}<Text style={fs18}>%</Text></Text>
                                 <Text style={styles.couponTypeRight}>{i18n["coupon.type1"]}</Text>
                             </View>
                             <Text style={styles.couponCondition}>{i18n["coupon.off"].cloze(couponInfo.condition, couponInfo.discount)}</Text>
                         </>}
-                        <Text style={[fs10, taR, tc66]}>{i18n["coupon.store"]}&emsp;{getUserPosName()}</Text>
+                        <Text style={[fs10, taR, tc99]}>{i18n["coupon.store"]}&emsp;{getUserPosName()}</Text>
                     </LinearGradient>
                     <GradientButton onPress={useThisCoupon}>{i18n[couponInfo.inuse ? "coupon.disuse" : "btn.use"]}</GradientButton>
                 </View>

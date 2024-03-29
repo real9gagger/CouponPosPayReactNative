@@ -124,8 +124,7 @@ export default function SettingIndex(props){
                 $confirm(i18n["app.clean.caches"]).then(() => {
                     ReceiptsPlus.clearPrintCaches();
                     $toast(i18n["cleaning.completed.tip"]);
-                    descTexts[actionName] = "0KB";
-                    setDescTexts({...descTexts})
+                    setDescTexts({...descTexts, "清理缓存": "0KB"})
                 });
             } else {
                 props.navigation.navigate(actionName);
@@ -169,8 +168,10 @@ export default function SettingIndex(props){
             myItems[vx.settingKey] = !!appSettings[vx.settingKey];
         }
         setSwitchItems(myItems);
-        
-        ReceiptsPlus.getAppCacheSize().then(sizeText => {
+    }, []);
+    
+    useEffect(() => {
+        ReceiptsPlus.getAppCacheSize().then(theCacheSize => {
             setDescTexts({
                 "语言设置": i18n["app.lgname"],
                 "税率设置": appSettings.generalTaxRate + "%",
@@ -179,11 +180,11 @@ export default function SettingIndex(props){
                 
                 "测试中心": i18n["test.debug.available"],
                 "软件图标": i18n["test.debug.available"],
-                "清理缓存": sizeText,
+                "清理缓存": theCacheSize,
                 "关于软件": AppPackageInfo.getFullVersion()
             });
         });
-    }, []);
+    }, [i18n, appSettings]);
     
     return (<>
         <ScrollView style={pgEE} contentContainerStyle={mhF}>
@@ -219,7 +220,7 @@ export default function SettingIndex(props){
                     <View style={[pdVX, fxHC, ix && styles.boxDivider]}>
                         <Text style={fs16} numberOfLines={1}>{i18n[vx.i18nLabel]}</Text>
                         <PosPayIcon visible={vx.disabled !== undefined} name="debug" color={appMainColor} size={16} />
-                        <Text style={styles.descBox}>{descTexts[vx.actionName]}</Text>
+                        <Text style={styles.descBox} numberOfLines={1}>{descTexts[vx.actionName]}</Text>
                         <PosPayIcon visible={!vx.actionOnly} name="right-arrow" color="#aaa" size={20} />
                     </View>
                 </TouchableHighlight>

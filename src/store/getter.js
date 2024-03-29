@@ -89,6 +89,15 @@ export function getCouponInUse(code){
 export function useAddedList(){
     return useSelector(state => state.couponData.addedList);
 }
+export function findCouponInAddedList(code){
+    const al = store.getState().couponData.addedList;
+    
+    if(al && al.length){
+        return al.find(vxo => vxo.cpcode === code);
+    }
+    
+    return null;
+}
 /* ================ 订单相关 ================ */
 export function useFailedOrders(){
     return useSelector(state => state.orderData.postFailedCache);

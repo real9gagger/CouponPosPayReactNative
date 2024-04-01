@@ -588,16 +588,20 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
     //2024年2月29日 获取安装信息（同步）
     @ReactMethod(isBlockingSynchronousMethod = true)
     public WritableMap getInstalledInfoSync() {
+        WritableMap data = Arguments.createMap();
         if (mInstalledInfo != null) {
-            WritableMap data = Arguments.createMap();
             data.putString("tid", mInstalledInfo.getTerminalInfo(IInstalledInformation.ValueType.TID)); //终端识别番号
             data.putString("sysver", mInstalledInfo.getTerminalInfo(IInstalledInformation.ValueType.SYSTEM_VERSION)); //系统版本
             data.putString("sno", mInstalledInfo.getTerminalInfo(IInstalledInformation.ValueType.SERIAL_NUMBER)); //终端序列号
             data.putString("mno", mInstalledInfo.getMerchantInfo(IInstalledInformation.ValueType.MERCHANT_NUMBER)); //加盟店番号
             data.putString("sdkver", mPaymentApi.getSdkVersion()); //支付 API 版本
-            return data;
         } else {
-            return null;
+            data.putString("tid", "--"); //终端识别番号
+            data.putString("sysver", "--"); //系统版本
+            data.putString("sno", "--"); //终端序列号
+            data.putString("mno", "--"); //加盟店番号
+            data.putString("sdkver", "0.0.0"); //支付 API 版本
         }
+        return data;
     }
 }

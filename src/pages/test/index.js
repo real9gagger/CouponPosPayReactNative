@@ -1,6 +1,7 @@
 import { ScrollView, View, Text, Image, Button, StatusBar, StyleSheet, DevSettings } from "react-native";
 import LocalPictures from "@/common/Pictures";
 import CustomerDisplay from "@/modules/CustomerDisplay";
+import AppPackageInfo from "@/modules/AppPackageInfo";
 
 const styles = StyleSheet.create({
     btnBox: {
@@ -37,13 +38,7 @@ export default function TestIndex(props){
     }
     
     const showCD = () => {
-        CustomerDisplay.showPayAmountInfo({
-            total: 100,
-            tax: 10,
-            discount: 10,
-            amount: 100,
-            cysymbol: "元"
-        });
+        AppPackageInfo.gotoAutoLaunchSettingActivity().then(console.log).catch(console.log);
     }
     
     return (
@@ -52,7 +47,7 @@ export default function TestIndex(props){
             <View><Text style={[fs20, taC, tcMC]}>请把要测试的功能放在这里</Text></View>
             <View style={styles.btnBox}><Button title="测试发送短信验证码" onPress={sendMsgCode} /></View>
             <View style={styles.btnBox}><Button title="重启应用" onPress={restartApp} /></View>
-            <View style={styles.btnBox}><Button title="显示副屏" onPress={showCD} /></View>
+            <View style={styles.btnBox}><Button title="转到开机自启设置页" onPress={showCD} /></View>
             <View style={styles.btnBox}><Button title="关闭副屏" onPress={CustomerDisplay.turnoff} /></View>
             <View style={{height: 30}}>{/* 占位专用 */}</View>
             <Text style={[fs18, taC]}>测试专用优惠码</Text>

@@ -35,17 +35,17 @@ class ImageX extends Component {
                 }})
             }
         } else {
-            if(!this.layoutHeight){
+            //if(!this.layoutHeight){
                 this.setState({finalSize: {
                     height: this.layoutWidth * so.height / so.width, 
                     width: this.layoutWidth
                 }})
-            } else {
+            /* } else {
                 this.setState({finalSize: {
                     height: this.layoutHeight, 
                     width: this.layoutWidth
                 }})
-            }
+            } */
         }
     }
     
@@ -64,9 +64,10 @@ class ImageX extends Component {
         }
         
         const imgStyle = (Array.isArray(this.props.style) ? StyleSheet.flatten(this.props.style) : this.props.style)
+        const imgSrc = (!this.props.src ? null : (typeof(this.props.src) !== "string" ? this.props.src : { uri: this.props.src }))
         
         return (<Image
-            source={{ uri: this.props.src }}
+            source={imgSrc}
             style={[imgStyle, this.state.finalSize]}
             resizeMode="contain"
             onLoad={this.callOnImageLoad}

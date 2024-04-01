@@ -18,11 +18,15 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff"
     },
     contentShow: {
-        display: "flex",
-        height: "100%"
+        height: "100%",
+        position: "relative",
+        zIndex: 9999
     },
     contentHide: {
-        display: "none"
+        height: "100%",
+        position: "absolute",
+        zIndex: 0,
+        opacity: 0
     },
     tabbarContaner: {
         flexDirection: "row",
@@ -87,7 +91,7 @@ function TheTabNavigator({ children, screenOptions, initialRouteName }) {
         
         if(!isActiving){
             if(!isTabsRendered[routeIndex]){
-                return null;
+                return null; //首次启动时，除了主页，其他都要懒加载
             }
         } else {
             isTabsRendered[routeIndex] = true;

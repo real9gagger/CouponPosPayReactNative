@@ -13,6 +13,7 @@ const LocalPictures = {
     creditCardPay: require("@/images/pics/credit_card_pay.png"),
     creditCardList: require("@/images/pics/credit_card_list.png"),
     printPreview: require("@/images/pics/print_preview.png"), //打印预览专用图片
+    autoLaunchTrick: require("@/images/pics/auto_launch_trick.png"), //开启自启图文教程
     
     //图标图片
     iconToggleDrawer: require("@/images/icons/toggle_drawer.png"), //切换抽屉图标

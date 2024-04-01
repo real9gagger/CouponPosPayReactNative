@@ -138,8 +138,8 @@ android {
         applicationId "com.couponpospayreactnative"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 20240329
-        versionName "1.2.5"
+        versionCode 20240401
+        versionName "1.2.6"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
         vectorDrawables.useSupportLibrary = true
 

@@ -119,6 +119,8 @@
     "setting.enable.sysnav": "显示系统导航栏",
     "setting.apply.tip": "确定 “应用” 后生效",
     "setting.restart.tip": "重启APP后生效",
+    "setting.auto.launch": "开机自启",
+    "setting.now": "去设置",
     "version.latest.tip": "已是最新版本",
     "customer.display": "顾客屏幕",
     "customer.display.label0": "屏幕状态",

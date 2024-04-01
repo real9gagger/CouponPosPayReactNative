@@ -172,13 +172,13 @@ function callPayment(payMoney, disMoney, taxMoney, couponCode, paymentCode, dist
     //以下属性数据类型都是字符串！
     PaymentHelper.startPay({
         transactionType: TRANSACTION_TYPE_RECEIVE, //1-付款，2-取消付款，3-退款
-        transactionMode: (runtimeEnvironment.isProduction ? "1" : "2"), //1-正常，2-练习
+        transactionMode: "2", //(runtimeEnvironment.isProduction ? "1" : "2"), //1-正常，2-练习
         paymentType: paymentCode,
         amount: $tofixed(payMoney - disMoney), //至少一块钱，否则报错
         tax: taxMoney, //税费
         slipNumber: "" //单据号码，取消付款或者退款时用到
     }, function(payRes){
-        if(payRes.activityResultCode === 0){//支付成功
+        if(payRes.activityResultCode === 0 && payRes.transactionTime){//支付成功
             payRes.action = onTransactionSuccess;
             payRes.discountAmount = disMoney; //优惠总金额
             payRes.orderAmount = payMoney; //订单总金额
@@ -190,7 +190,7 @@ function callPayment(payMoney, disMoney, taxMoney, couponCode, paymentCode, dist
         } else if(payRes.activityResultCode === 2){//取消支付
             $toast(getI18N("payment.errmsg2"));
         } else {//支付失败
-            $alert(getI18N("payment.errmsg3", payRes.errorCode));
+            $alert(getI18N("payment.errmsg3", payRes.errorCode || "E5128"));
         }
     });
 }
@@ -302,7 +302,7 @@ function tabBankCard(props){
         });
         
         setMoneyInfo(mi);
-    }, [payAmounts, cpInfos]);
+    }, [payAmounts, appSettings, cpInfos]);
     
     //银行卡支付界面
     return (
@@ -445,7 +445,7 @@ function tabEWallet(props){
         });
         
         setMoneyInfo(mi);
-    }, [payAmounts, cpInfos]);
+    }, [payAmounts, appSettings, cpInfos]);
     
     //电子钱包支付界面
     return (
@@ -588,7 +588,7 @@ function tabQRCode(props){
         });
         
         setMoneyInfo(mi);
-    }, [payAmounts, cpInfos]);
+    }, [payAmounts, appSettings, cpInfos]);
     
     //二维码支付界面
     return (

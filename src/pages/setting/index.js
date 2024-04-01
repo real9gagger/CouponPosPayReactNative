@@ -47,6 +47,10 @@ const settingList = [
         i18nLabel: "language.header"
     },
     {
+        actionName: "开机自启设置",
+        i18nLabel: "setting.auto.launch"
+    },
+    {
         actionName: "税率设置",
         i18nLabel: "tax.rate",
         disabled: runtimeEnvironment.isProduction

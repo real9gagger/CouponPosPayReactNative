@@ -110,6 +110,8 @@
     "setting.enable.sysnav": "Enable system navigation",
     "setting.apply.tip": "Come into force after apply",
     "setting.restart.tip": "Come into force after restart the APP",
+    "setting.auto.launch": "Auto Launch After Boot",
+    "setting.now": "Set up now",
     "version.latest.tip": "It's already the latest version",
     "customer.display": "Customer Display",
     "customer.display.label0": "Screen status",

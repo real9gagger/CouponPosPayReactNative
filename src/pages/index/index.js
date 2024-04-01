@@ -137,7 +137,7 @@ const drawerItemList = [
 //我的标签栏
 function MyTabs(){
     return (
-        <PosPayTab.Navigator initialRouteName="主页">
+        <PosPayTab.Navigator initialRouteName="主页" screenOptions={noHeaderOptions}>
             {posPayTabList.map(item =>
                 <PosPayTab.Screen
                     key={item.name}

@@ -111,6 +111,8 @@
     "setting.enable.sysnav": "顯示繫統導航欄",
     "setting.apply.tip": "確定 “應用” 後生效",
     "setting.restart.tip": "重啟APP後生效",
+    "setting.auto.launch": "開機自啟",
+    "setting.now": "立即設定",
     "version.latest.tip": "已是最新版本",
     "customer.display": "顧客屏幕",
     "customer.display.label0": "屏幕狀態",

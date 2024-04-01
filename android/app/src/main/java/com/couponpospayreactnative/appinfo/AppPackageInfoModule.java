@@ -1,10 +1,12 @@
 package com.couponpospayreactnative.appinfo;
 
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
 import androidx.annotation.NonNull;
 
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -72,5 +74,22 @@ public class AppPackageInfoModule extends ReactContextBaseJavaModule {
     @ReactMethod(isBlockingSynchronousMethod = true)
     public String getLocaleLanguage() {
         return (Locale.getDefault().getLanguage() + "_" + Locale.getDefault().getCountry());
+    }
+
+    //2024年4月1日 转到开机自启设置页面（第三方设置页面）
+    //探测开机自启设置页的命令行：adb shell dumpsys activity activities
+    //打开方式：POS的设置 >> 系统 >> Operation Settings >> Automatic start service setting
+    @ReactMethod
+    public void gotoAutoLaunchSettingActivity(Promise promise) {
+        try {
+            Intent settingIntent = new Intent();
+            settingIntent.setClassName("com.panasonic.pmc.android.enterpriselauncher", "com.panasonic.pmc.android.enterpriselauncher.DefaultLaunchAppActivity");
+            settingIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            this.getReactApplicationContext().startActivity(settingIntent);
+            promise.resolve(1);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            promise.resolve(ex.getMessage());
+        }
     }
 }

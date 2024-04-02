@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { View, Text, TextInput, StatusBar, Keyboard, StyleSheet } from "react-native";
 import { useI18N } from "@/store/getter";
 import GradientButton from "@/components/GradientButton";
@@ -32,9 +32,9 @@ const styles = StyleSheet.create({
 
 //文本输入器
 export default function IndexTextInputer(props){
-    const maxLen = 100;
+    const maxLen = 120;
     const i18n = useI18N();
-    const [txt, setTxt] = useState(null);
+    const [txt, setTxt] = useState(props.route.params.defaultText);
     
     const clearText = () => {
         setTxt(null);
@@ -45,10 +45,6 @@ export default function IndexTextInputer(props){
         Keyboard.dismiss();
         props.navigation.goBack();
     }
-    
-    useEffect(() => {
-       setTxt(props.route.params.defaultText);
-    }, []);
     
     return (
         <View style={pgEE}>
@@ -62,6 +58,7 @@ export default function IndexTextInputer(props){
                     multiline={true}
                     maxLength={maxLen}
                     onChangeText={setTxt}
+                    keyboardType={!props.route.params.isNumberPad ? "default" : "number-pad"}
                 />
                 <Text style={styles.maxBox}>{maxLen - (txt ? txt.length : 0)}</Text>
             </View>

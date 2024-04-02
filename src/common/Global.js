@@ -38,7 +38,7 @@ global.runtimeEnvironment = {
     isIOS: isIOS,
     isAndroid: isAndroid,
     isIPhoneX: isIPhoneX,
-    isProduction: (process.env.NODE_ENV === "production"), //是否是生成环境
+    isProduction: (process.env.NODE_ENV === "production"), //是否是生产环境
 };
 // APP 主色调
 global.appMainColor = "#30a3fc";

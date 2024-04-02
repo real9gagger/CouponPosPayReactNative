@@ -3,7 +3,7 @@
 */
 {
     "development.test": "\\\\これはテストです：今日は$[0]年$[1月$[2]日です。",
-    "copyright.info": "\\\\xcarbon.cc@$[0]によるテクニカルサポート",
+    "copyright.info": "xcarbon.ccによるテクニカルサポート",
     "app.alias": "マーチャントレジ",
     "app.lgname": "日本語",
     "app.clean.caches": "キャッシュのクリーンアップ",
@@ -40,7 +40,7 @@
     "account.header": "マイアカウント",
     "account.logout.tip": "ログオンを終了しますか？",
     "drawer.sale": "売上",
-    "drawer.returns": "取消/返品",
+    "drawer.returns": "返品",
     "drawer.summary": "日計",
     "drawer.helps": "ヘルプとフィードバック",
     "test.centre": "テストセンター",
@@ -143,7 +143,7 @@
     "order.failed.delete.tip": "データ損失を防ぐために削除することはお勧めしません。削除するには、データがサーバーに同期されていることを確認してください",
     "order.try.times": "\\\\回$[0]回試した",
     "order.status": "取引状態",
-    "order.status.refunded": "返金済み",
+    "order.status.refunded": "返金済",
     "order.status.received": "入金済",
     "how.many.items": "\\\\$[0]アイテム",
     "delete.confirm": "削除の確認",

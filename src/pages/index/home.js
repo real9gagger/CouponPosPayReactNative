@@ -172,7 +172,7 @@ function callPayment(payMoney, disMoney, taxMoney, couponCode, paymentCode, dist
     //以下属性数据类型都是字符串！
     PaymentHelper.startPay({
         transactionType: TRANSACTION_TYPE_RECEIVE, //1-付款，2-取消付款，3-退款
-        transactionMode: "2", //(runtimeEnvironment.isProduction ? "1" : "2"), //1-正常，2-练习
+        transactionMode: (runtimeEnvironment.isProduction ? "1" : "2"), //1-正常，2-练习
         paymentType: paymentCode,
         amount: $tofixed(payMoney - disMoney), //至少一块钱，否则报错
         tax: taxMoney, //税费

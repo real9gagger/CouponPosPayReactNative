@@ -45,7 +45,8 @@ export default function SettingPrint(props){
     const gotoInputBotText = () => {
         props.navigation.navigate("文本输入器", { 
             defaultText: appSettings.paymentReceiptBottomText,
-            onGoBack: onBotTextChange
+            onGoBack: onBotTextChange,
+            isNumberPad: false
         });
     };
     const printPV = () => {

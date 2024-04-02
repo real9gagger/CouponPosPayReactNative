@@ -5,7 +5,6 @@ import AppPackageInfo from "@/modules/AppPackageInfo";
 import PosPayIcon from "@/components/PosPayIcon"
 
 const APP_VER = AppPackageInfo.getFullVersion();
-const THIS_YEAR = (new Date()).getFullYear();
 
 const styles = StyleSheet.create({
     logoBox: {
@@ -46,7 +45,7 @@ export default function TestAboutSoftware(props){
                 <PosPayIcon name="check-confirm" color={styles.verBox2.color} size={16} offset={5} />
             </View>
             <Text style={fxG1}>{/* 占位专用 */}</Text>
-            <Text style={styles.copyrightBox}>{i18n["copyright.info"].cloze(THIS_YEAR)}</Text>
+            <Text style={styles.copyrightBox}>{i18n["copyright.info"]}</Text>
         </ScrollView>
     );
 }

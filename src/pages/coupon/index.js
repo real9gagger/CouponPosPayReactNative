@@ -1,11 +1,10 @@
 import { useEffect, useState, useRef } from "react";
-import { ScrollView, View, Image, Text, StyleSheet, Pressable, ActivityIndicator } from "react-native";
+import { ScrollView, View, Image, Text, TextInput, StyleSheet, Pressable, ActivityIndicator } from "react-native";
 import { useI18N, getAppSettings, getUserPosName, getCouponInUse, findCouponInAddedList } from "@/store/getter";
 import { dispatchSetLastUsed } from "@/store/setter";
 import { DISCOUNT_TYPE_LJ } from "@/common/Statics";
-import { parseStringDate } from "@/utils/helper"
-import LinearGradient from "react-native-linear-gradient"
-import PayKeyboard from "@/components/PayKeyboard";
+import { parseStringDate } from "@/utils/helper";
+import LinearGradient from "react-native-linear-gradient";
 import PosPayIcon from "@/components/PosPayIcon";
 import GradientButton from "@/components/GradientButton";
 import LocalPictures from "@/common/Pictures";
@@ -16,14 +15,11 @@ const styles = StyleSheet.create({
         textAlign: "right",
         borderBottomColor: "#ccc",
         borderBottomWidth: 1,
-        fontSize: 24,
+        fontSize: 20,
         paddingHorizontal: 10,
+        paddingVertical: 5,
         marginHorizontal: 15,
-        lineHeight: 50
-    },
-    codeEmpty: {
-        color: "#aaa",
-        fontSize: 14
+        height: 50
     },
     codeActived: {
         borderBottomColor: appMainColor,
@@ -40,7 +36,8 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: "#000",
         marginTop: -1,
-        paddingLeft: 4
+        paddingLeft: 4,
+        flex: 1
     },
     codeQuery: {
         position: "absolute",
@@ -207,22 +204,22 @@ function getCouponInfo(cc) {
 }
 
 export default function CouponIndex(props){
+    const theCPCode = (props.route.params?.couponCode || "");
     const i18n = useI18N();
+    const tiRef = useRef();
     const appSettings = getAppSettings();
-    const pkRef = useRef();
     const [couponCode, setCouponCode] = useState("");
-    const [pkVisible, setPkVisible] = useState(true);
+    const [isFocus, setIsFocus] = useState(!theCPCode);
     const [couponInfo, setCouponInfo] = useState(couponReady);
-    
-    const showPKBox = () => {
-        pkRef.current.initiText(couponCode);
-        setPkVisible(true);
+
+    const onClearCode = () => {
+        setCouponCode("");
+        tiRef.current.focus();
     }
     const onPKConfirm = () => {
         if(!couponCode){
             return !$notify.info(i18n["coupon.enter.tip"]);
         }
-        setPkVisible(false);
         setCouponInfo(couponLoading);
         getCouponInfo(couponCode).then(setCouponInfo); //查询优惠券信息...
     }
@@ -243,16 +240,19 @@ export default function CouponIndex(props){
     const scanCouponCode = () => {
         QRcodeScanner.openScanner(function(res){
             if(res.scanResult){
-                setPkVisible(false);
                 setCouponCode(res.scanResult);
                 setCouponInfo(couponLoading);
                 getCouponInfo(res.scanResult).then(setCouponInfo); //查询优惠券信息...
+                tiRef.current.blur();
             }
         });
     }
     const onAddNewCoupon = (cpinfo) => {
-        setPkVisible(false);
+        setCouponCode(cpinfo.cpcode);
         setCouponInfo(cpinfo);
+    }
+    const setDistributorNumber = (dn) => { //设置分销员编号
+        setCouponInfo({...couponInfo, distributor: dn});
     }
     const gotoCouponAdds = () => {
         props.navigation.navigate("优惠券录入", { onGoBack: onAddNewCoupon });
@@ -260,30 +260,49 @@ export default function CouponIndex(props){
     const gotoShopCoupons = () => {
         props.navigation.navigate("店铺优惠券", { onGoBack: onAddNewCoupon });
     }
+    const gotoInputBotText = () => {
+        props.navigation.navigate("文本输入器", { 
+            defaultText: couponInfo.distributor,
+            onGoBack: setDistributorNumber,
+            isNumberPad: true
+        });
+    };
     
     useEffect(() => {
-        if(props.route.params?.couponCode){
-            const couponCache = getCouponInUse(props.route.params.couponCode);
+        if(theCPCode){
+            const couponCache = getCouponInUse(theCPCode);
             if(couponCache){
                 setCouponCode(couponCache.cpcode);
                 setCouponInfo({...couponCache, inuse: true});
             } else {
-                setCouponCode(props.route.params.couponCode);
+                setCouponCode(theCPCode);
                 setCouponInfo(couponLoading);
-                getCouponInfo(props.route.params.couponCode).then(setCouponInfo); //查询优惠券信息...
+                getCouponInfo(theCPCode).then(setCouponInfo); //查询优惠券信息...
             }
-            setPkVisible(false);
         }
     }, []);
     
-    return (<>
-        <ScrollView style={pgFF} contentContainerStyle={mhF}>
+    return (
+        <ScrollView style={pgFF} contentContainerStyle={mhF} keyboardShouldPersistTaps="handled">
             <View style={styles.codeIcon}>
                 <PosPayIcon name="coupon-code" size={styles.codeText.fontSize} color={styles.codeText.color} />
                 <Text style={styles.codeText}>{i18n["coupon.code"]}</Text>
+                <Text style={[fs12, tc66, pdLS]} onPress={onClearCode}>{i18n["btn.clear"]}</Text>
+                <PosPayIcon name="close-circle" size={14} color="#666" offset={3} onPress={onClearCode} />
             </View>
-            <Text style={[styles.codeInput, !couponCode&&styles.codeEmpty, pkVisible&&styles.codeActived]} numberOfLines={1} onPress={showPKBox}>{couponCode || i18n["coupon.enter.tip"]}</Text>
-            {!pkVisible ? (couponInfo.loading ?
+            <TextInput 
+                ref={tiRef}
+                style={[styles.codeInput, isFocus&&styles.codeActived]} 
+                onBlur={() => setIsFocus(false)}
+                onFocus={() => setIsFocus(true)}
+                placeholder={i18n["coupon.enter.tip"]}
+                onChangeText={setCouponCode}
+                onSubmitEditing={onPKConfirm}
+                autoFocus={!theCPCode}
+                defaultValue={couponCode}
+                keyboardType="default" />
+            
+            {!isFocus && (couponInfo.loading ?
                 <View style={styles.loadingBox}>
                     <ActivityIndicator color={appMainColor} size={40} />
                     <Text style={[fs14, tcMC, mgTX, taC]}>{i18n["loading"]}</Text>
@@ -337,32 +356,29 @@ export default function CouponIndex(props){
                     <Image source={LocalPictures.noCoupon} style={styles.couponEmpty} />
                     <Text style={[fs18, tc66]}>{i18n["nodata"]}</Text>
                 </View>
-            ))): 
-                <>
-                    <Pressable style={[fxHC, pdX]} android_ripple={tcCC} onPress={scanCouponCode}>
-                        <Text style={[fxG1, tcMC]}>{i18n["qrcode.identify"]}</Text>
-                        <PosPayIcon name="qrcode-scan" color={appMainColor} size={20} />
-                    </Pressable>
-                    <Pressable style={[fxHC, pdX]} android_ripple={tcCC} onPress={gotoCouponAdds}>
-                        <Text style={[fxG1, tcMC]}>{i18n["coupon.adds.manually"]}</Text>
-                        <PosPayIcon name="manual-add" color={appMainColor} size={20} />
-                    </Pressable>
-                    <Pressable style={[fxHC, pdX]} android_ripple={tcCC} onPress={gotoShopCoupons}>
-                        <Text style={[fxG1, tcMC]}>{i18n["coupon.adds.history"]}</Text>
-                        <PosPayIcon name="my-coupons" color={appMainColor} size={20} />
-                    </Pressable>
-                    <Text style={fxG1} onPress={() => setPkVisible(false)}>{/* 点我关闭键盘 */}</Text>
-                </>
-            }
+            )))}
+            
+            {(isFocus || !!couponInfo.ready) && <>
+                <Pressable style={[fxHC, pdX]} android_ripple={tcCC} onPress={scanCouponCode}>
+                    <Text style={[fxG1, tcMC]}>{i18n["qrcode.identify"]}</Text>
+                    <PosPayIcon name="qrcode-scan" color={appMainColor} size={20} />
+                </Pressable>
+                <Pressable style={[fxHC, pdX]} android_ripple={tcCC} onPress={gotoInputBotText}>
+                    <Text style={[fxG1, tcMC]}>{i18n["coupon.distributor.number"]}</Text>
+                    <Text style={[pdRS, tc66]}>{couponInfo.distributor}</Text>
+                    <PosPayIcon name="edit-pen" color={appMainColor} size={20} />
+                </Pressable>
+                <Pressable style={runtimeEnvironment.isProduction ? dpN : [fxHC, pdX]} android_ripple={tcCC} onPress={gotoCouponAdds}>
+                    <Text style={[fxG1, tcMC]}>{i18n["coupon.adds.manually"]}</Text>
+                    <Text style={[fs12, pdRS, tc99]}>({i18n["test.debug.available"]})</Text>
+                    <PosPayIcon name="manual-add" color={appMainColor} size={20} />
+                </Pressable>
+                <Pressable style={runtimeEnvironment.isProduction ? dpN : [fxHC, pdX]} android_ripple={tcCC} onPress={gotoShopCoupons}>
+                    <Text style={[fxG1, tcMC]}>{i18n["coupon.adds.history"]}</Text>
+                    <Text style={[fs12, pdRS, tc99]}>({i18n["test.debug.available"]})</Text>
+                    <PosPayIcon name="my-coupons" color={appMainColor} size={20} />
+                </Pressable>
+            </>}
         </ScrollView>
-        <PayKeyboard
-            ref={pkRef}
-            visible={pkVisible}
-            fixed={true}
-            phoneMode={true} 
-            onChange={setCouponCode} 
-            onClose={setPkVisible} 
-            onConfirm={onPKConfirm}
-        />
-    </>);
+    );
 }

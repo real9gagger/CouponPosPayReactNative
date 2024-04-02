@@ -3,7 +3,7 @@
 */
 {
     "development.test": "\\\\This is a test: Today is $[0]/$[1]/$[2].",
-    "copyright.info": "\\\\Powered by xcarbon.cc@$[0]",
+    "copyright.info": "Powered by xcarbon.cc",
     "app.alias": "Merchant Cashier",
     "app.lgname": "English",
     "app.clean.caches": "Clean Caches",

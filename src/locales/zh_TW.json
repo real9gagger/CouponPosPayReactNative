@@ -79,6 +79,7 @@
     "coupon.promotion.code": "分銷碼",
     "coupon.promotion.tip": "請輸入分銷碼",
     "coupon.inuse": "正在使用的優惠券：",
+    "coupon.identified": "識別到的優惠券：",
     "coupon.errmsg0": "\\\\$[0]不能爲空！",
     "coupon.errmsg1": "起始日期不能大於終止日期！",
     "coupon.errmsg2": "優惠券已過期",

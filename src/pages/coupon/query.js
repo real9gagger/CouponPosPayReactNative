@@ -3,8 +3,6 @@ import { View, Text, TextInput, StyleSheet, Keyboard } from "react-native";
 import { useI18N } from "@/store/getter";
 import { dispatchSetLastUsed } from "@/store/setter";
 import { DISCOUNT_TYPE_ZK, DISCOUNT_TYPE_LJ } from "@/common/Statics";
-import { parseStringDate } from "@/utils/helper";
-import PosPayIcon from "@/components/PosPayIcon";
 import GradientButton from "@/components/GradientButton";
 
 const styles = StyleSheet.create({
@@ -25,8 +23,8 @@ const styles = StyleSheet.create({
 
 export default function CouponQuery(props){
     const i18n = useI18N();
-    const [couponCode, setCouponCode] = useState("JPTDI0001");
-    const [promotionCode, setPromotionCode] = useState("66010101");
+    const [couponCode, setCouponCode] = useState(""); //测试码：JPTDI0001
+    const [promotionCode, setPromotionCode] = useState(""); //测试码：66010101
     const [inputNth, setInputNth] = useState(0);
     const [isQuerying, setIsQuerying] = useState(false);
     

@@ -20,7 +20,7 @@ export default function SettingAutoLaunch(props){
     
     const gotoSettingActivity = () => {
         AppPackageInfo.gotoAutoLaunchSettingActivity().catch(err => {
-            $notify.error(err.message);
+            $alert(err.message);
         });
     }
     

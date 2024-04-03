@@ -3,6 +3,8 @@ import { ScrollView, View, Text, Pressable, Image, StatusBar, StyleSheet, Toucha
 import { useI18N, getI18N, useAppSettings } from "@/store/getter";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
 import { eWalletList, CREDIT_CARD_PAYMENT_CODE, QR_CODE_PAYMENT_CODE, DISCOUNT_TYPE_LJ, TRANSACTION_TYPE_RECEIVE } from "@/common/Statics";
+import { parseCouponScanResult, checkCouponExpiration } from "@/utils/helper";
+import { dispatchSetLastUsed } from "@/store/setter";
 import CustomerDisplay from "@/modules/CustomerDisplay";
 import LocalPictures from "@/common/Pictures";
 import QRcodeScanner from "@/modules/QRcodeScanner";
@@ -150,11 +152,24 @@ const iNthCoupon = 2;
 //扫描二维码结束后调用
 function onScanFinish(dat){
     if(dat.scanResult){
-        DeviceEventEmitter.emit(eventEmitterName, { 
-            nth: iNthCoupon, 
-            txt: dat.scanResult,
-            action: onInputToggle
-        }); //发送数据给父组件
+        const theCoupon = parseCouponScanResult(dat.scanResult);
+        if(theCoupon){
+            if(!checkCouponExpiration(theCoupon.expiration)){
+                return !$notify.error(getI18N("coupon.errmsg2")); //优惠券已过期
+            }
+            
+            DeviceEventEmitter.emit(eventEmitterName, {
+                cpinfo: theCoupon, 
+                action: onCouponInfo,
+            }); //发送数据给父组件
+            dispatchSetLastUsed(theCoupon);
+        } else {
+            DeviceEventEmitter.emit(eventEmitterName, {
+                nth: iNthCoupon, 
+                txt: "",
+                action: onInputToggle
+            }); //发送数据给父组件
+        }
     }
 }
 
@@ -211,9 +226,10 @@ function togglePKHidden(evt){
 function calcPaymentInfo(tl, dc, dt, cd, rt){
     if(!tl){
         return {
-            T_X: 0,
-            F_A: 0,
-            D_C: 0
+            T_X: "0", //tax
+            F_A: "0", //final amount
+            D_C: "0", //discount
+            D_A: false //discount available 
         };
     } else {
         //必须满足条件才能优惠
@@ -222,7 +238,8 @@ function calcPaymentInfo(tl, dc, dt, cd, rt){
         return {
             T_X: $tofixed(temp),
             F_A: $tofixed(tl - dddd + temp),
-            D_C: $tofixed(dddd)
+            D_C: $tofixed(dddd),
+            D_A: !!dddd
         };
     }
 }
@@ -324,8 +341,8 @@ function tabBankCard(props){
                     <Text style={[styles.couponInput, styles.couponEmpty, currentInputBox===iNthCoupon&&styles.InputActived]} onPress={toggleCouponInput}>{i18n["coupon.enter.tip"]}</Text>
                 :<>
                     <View style={styles.couponInfo}>
-                        <Text style={[fs14, fwB]}>{cpInfos.title}&nbsp;<PosPayIcon name="check-fill" color={moneyInfo.D_C ? tcG0.color : tc99.color} size={14} /></Text>
-                        <Text style={[fs12, moneyInfo.D_C ? tcG0 : tc99]}>{i18n[cpInfos.distype===DISCOUNT_TYPE_LJ ? "coupon.reduction" : "coupon.off"].cloze(cpInfos.condition, cpInfos.discount)}</Text>
+                        <Text style={[fs14, fwB]}>{cpInfos.title}&nbsp;<PosPayIcon name="check-fill" color={moneyInfo.D_A ? tcG0.color : tc99.color} size={14} /></Text>
+                        <Text style={[fs12, moneyInfo.D_A ? tcG0 : tc99]}>{i18n[cpInfos.distype===DISCOUNT_TYPE_LJ ? "coupon.reduction" : "coupon.off"].cloze(cpInfos.condition, cpInfos.discount)}</Text>
                     </View>
                     <Text style={[styles.couponInput, currentInputBox===iNthCoupon&&styles.InputActived]} onPress={toggleCouponInput}>-{moneyInfo.D_C}</Text>
                 </>}
@@ -467,8 +484,8 @@ function tabEWallet(props){
                     <Text style={[styles.couponInput, styles.couponEmpty, currentInputBox===iNthCoupon&&styles.InputActived]} onPress={toggleCouponInput}>{i18n["coupon.enter.tip"]}</Text>
                 :<>
                     <View style={styles.couponInfo}>
-                        <Text style={[fs14, fwB]}>{cpInfos.title}&nbsp;<PosPayIcon name="check-fill" color={moneyInfo.D_C ? tcG0.color : tc99.color} size={14} /></Text>
-                        <Text style={[fs12, moneyInfo.D_C ? tcG0 : tc99]}>{i18n[cpInfos.distype===DISCOUNT_TYPE_LJ ? "coupon.reduction" : "coupon.off"].cloze(cpInfos.condition, cpInfos.discount)}</Text>
+                        <Text style={[fs14, fwB]}>{cpInfos.title}&nbsp;<PosPayIcon name="check-fill" color={moneyInfo.D_A ? tcG0.color : tc99.color} size={14} /></Text>
+                        <Text style={[fs12, moneyInfo.D_A ? tcG0 : tc99]}>{i18n[cpInfos.distype===DISCOUNT_TYPE_LJ ? "coupon.reduction" : "coupon.off"].cloze(cpInfos.condition, cpInfos.discount)}</Text>
                     </View>
                     <Text style={[styles.couponInput, currentInputBox===iNthCoupon&&styles.InputActived]} onPress={toggleCouponInput}>-{moneyInfo.D_C}</Text>
                 </>}
@@ -610,8 +627,8 @@ function tabQRCode(props){
                     <Text style={[styles.couponInput, styles.couponEmpty, currentInputBox===iNthCoupon&&styles.InputActived]} onPress={toggleCouponInput}>{i18n["coupon.enter.tip"]}</Text>
                 :<>
                     <View style={styles.couponInfo}>
-                        <Text style={[fs14, fwB]}>{cpInfos.title}&nbsp;<PosPayIcon name="check-fill" color={moneyInfo.D_C ? tcG0.color : tc99.color} size={14} /></Text>
-                        <Text style={[fs12, moneyInfo.D_C ? tcG0 : tc99]}>{i18n[cpInfos.distype===DISCOUNT_TYPE_LJ ? "coupon.reduction" : "coupon.off"].cloze(cpInfos.condition, cpInfos.discount)}</Text>
+                        <Text style={[fs14, fwB]}>{cpInfos.title}&nbsp;<PosPayIcon name="check-fill" color={moneyInfo.D_A ? tcG0.color : tc99.color} size={14} /></Text>
+                        <Text style={[fs12, moneyInfo.D_A ? tcG0 : tc99]}>{i18n[cpInfos.distype===DISCOUNT_TYPE_LJ ? "coupon.reduction" : "coupon.off"].cloze(cpInfos.condition, cpInfos.discount)}</Text>
                     </View>
                     <Text style={[styles.couponInput, currentInputBox===iNthCoupon&&styles.InputActived]} onPress={toggleCouponInput}>-{moneyInfo.D_C}</Text>
                 </>}

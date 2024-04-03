@@ -3,7 +3,7 @@ import { ScrollView, View, Image, Text, TextInput, StyleSheet, Pressable, Activi
 import { useI18N, getAppSettings, getUserShopName, getCouponInUse, findCouponInAddedList } from "@/store/getter";
 import { dispatchSetLastUsed } from "@/store/setter";
 import { DISCOUNT_TYPE_LJ } from "@/common/Statics";
-import { parseStringDate } from "@/utils/helper";
+import { parseStringDate, parseCouponScanResult, checkCouponExpiration } from "@/utils/helper";
 import LinearGradient from "react-native-linear-gradient";
 import PosPayIcon from "@/components/PosPayIcon";
 import GradientButton from "@/components/GradientButton";
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 10,
         marginBottom: 30,
-        marginTop: 10
+        marginTop: 15
     },
     couponTitle: {
         fontSize: 18,
@@ -158,46 +158,12 @@ const lgStartEnd = [{x:0, y:0.5}, {x:1, y:0.5}];
 const couponLoading = {loading: true}; //正在查询优惠券信息
 const couponReady = {ready: true};//已输入优惠码，可查询
 
-//检查优惠券是否已过期
-function checkCouponExpiration(exp){
-    if(!exp){
-        return true; //没有时间限制
-    }
-    const arr = exp.split("~");
-    const nowDate = new Date();
-    
-    if(arr.length === 1){//只有终止日期
-        const endDate = parseStringDate(arr[0]);
-        endDate.setHours(23, 59, 59);
-        return (nowDate <= endDate);
-    } else {//起始日期 ~ 终止日期
-        const startDate = parseStringDate(arr[0]);
-        const endDate = parseStringDate(arr[1]);
-        
-        startDate.setHours(0, 0, 0);
-        endDate.setHours(23, 59, 59);
-        return (nowDate >= startDate && nowDate <= endDate);
-    }
-}
-
 //查询优惠券信息
 function getCouponInfo(cc) {
     return new Promise(function(resolve, reject){
-        const items = cc.split("#");
-        if(items.length >= 8){
-            const output = {
-                picurl: null,
-                title: items[1],
-                cpcode: items[1],
-                ptcode: items[0], //分销码
-                distype: (+items[2] || 0), //1-折扣，2-立减，其他值-未知
-                discount: (+items[3] || 0), //折扣率，或者立减金额
-                condition: (+items[6] || 0), //满免条件
-                expiration: (items[8].replace(/(\d{4})(\d{2})/, "$1-$2-") + " ~ " + items[9].replace(/(\d{4})(\d{2})/, "$1-$2-")),
-                taxfreerate: (+items[5] || 0), //免税比例 tax free rate，百分数，有多少比例是免税的。比如 5%，总金额是 100，那么有 20 块是免税的，剩下80元需要计算税收
-                createtime: Date.now() //创建时间的时间戳
-            };
-            resolve(output);
+        const theCP = parseCouponScanResult(cc);
+        if(theCP){
+            resolve(theCP);
         } else {
             //查找我添加的优惠券
             resolve(findCouponInAddedList(cc) || {});
@@ -286,7 +252,7 @@ export default function CouponIndex(props){
     
     return (
         <ScrollView style={pgFF} contentContainerStyle={mhF} keyboardShouldPersistTaps="handled">
-            {runtimeEnvironment.isProduction && <>
+            {/* 2024年4月3日 功能改为仅开发模式下可用： */ !runtimeEnvironment.isProduction && <>
                 <View style={styles.codeIcon}>
                     <PosPayIcon name="coupon-code" size={styles.codeText.fontSize} color={styles.codeText.color} />
                     <Text style={styles.codeText}>{i18n["coupon.code"]}</Text>
@@ -319,7 +285,7 @@ export default function CouponIndex(props){
                     onPress={onPKConfirm}>{i18n[!couponCode ? "coupon.enter.tip" : "btn.query"]}</GradientButton>
             :(couponInfo.cpcode ?
                 <View style={pdX}>
-                    <Text style={fs14}>{i18n["coupon.inuse"]}</Text>
+                    <Text style={fs16}>{i18n[couponInfo.inuse ? "coupon.inuse" : "coupon.identified"]}</Text>
                     <LinearGradient style={styles.couponBox} colors={lgColors} start={lgStartEnd[0]} end={lgStartEnd[1]}>
                         <View style={styles.couponTip}>
                             <Text style={[fs12, tcG0]}>{i18n["coupon.received"]}</Text>

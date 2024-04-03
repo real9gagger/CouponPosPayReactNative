@@ -80,3 +80,50 @@ export function formatDate(dateObj, formatStr) {
 	
     return formatStr;
 }
+
+//解析优惠券扫描结果
+export function parseCouponScanResult(cc){
+    if(!cc || typeof(cc) !== "string"){
+        return null;
+    }
+    
+    const items = cc.split("#");
+    if(items.length >= 10){
+        return {
+            picurl: null,
+            title: items[1],
+            cpcode: items[1], //优惠码
+            ptcode: items[0], //分销码
+            distype: (+items[2] || 0), //1-折扣，2-立减，其他值-未知
+            discount: (+items[3] || 0), //折扣率，或者立减金额
+            condition: (+items[6] || 0), //满免条件
+            expiration: (items[8].replace(/(\d{4})(\d{2})/, "$1-$2-") + " ~ " + items[9].replace(/(\d{4})(\d{2})/, "$1-$2-")),
+            taxfreerate: (+items[5] || 0), //免税比例 tax free rate，百分数，有多少比例是免税的。比如 5%，总金额是 100，那么有 20 块是免税的，剩下80元需要计算税收
+            createtime: Date.now() //创建时间的时间戳
+        };
+    } else {
+        return null;
+    }
+}
+
+//检查优惠券是否已过期
+export function checkCouponExpiration(exp){
+    if(!exp){
+        return true; //没有时间限制
+    }
+    const arr = exp.split("~");
+    const nowDate = new Date();
+    
+    if(arr.length === 1){//只有终止日期
+        const endDate = parseStringDate(arr[0]);
+        endDate.setHours(23, 59, 59);
+        return (nowDate <= endDate);
+    } else {//起始日期 ~ 终止日期
+        const startDate = parseStringDate(arr[0]);
+        const endDate = parseStringDate(arr[1]);
+        
+        startDate.setHours(0, 0, 0);
+        endDate.setHours(23, 59, 59);
+        return (nowDate >= startDate && nowDate <= endDate);
+    }
+}

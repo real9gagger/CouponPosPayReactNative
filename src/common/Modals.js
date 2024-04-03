@@ -230,7 +230,7 @@ export function showNotify(msg, duration, type){
                 duration={duration}
                 onPress={onDialogPress}>
                 <View style={styles.notifyBox}>
-                    <PosPayIcon name={iconInfo.name} color={iconInfo.color} size={24} />
+                    <PosPayIcon name={iconInfo.name} color={iconInfo.color} size={20} />
                     <Text style={styles.notifyText}>{msg}</Text>
                     <PosPayIcon name="close-x" color={iconInfo.color} size={20} />
                 </View>

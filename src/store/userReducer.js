@@ -3,9 +3,11 @@ import { UPDATE_USERINFO, RESET_USERINFO, SET_ACCESSTOKEN } from "./types";
 const initialState = {
     accessToken: "",
     expiresAfterTicks: 0, //令牌过期时间（毫秒数）
-    posName: "", //商户名称
-    posId: 0, //商户ID
-    posLogo: "",//商户LOGO
+    shopName: "", //店铺名称
+    shopId: 0, //店铺 ID
+    shopLogo: "",//店铺 LOGO
+    shopAddress: "", //店铺地址
+    posId: 0, //店铺所属的商户ID
     loginAccount: "", //登录用户名
     loginPassword: "", //登录密码
 };

@@ -74,7 +74,7 @@ export default function OrderRefundConfirm(props){
     }, []);
     
     return (
-        <View style={[pgEE, pdX]}>
+        <View style={[pgFF, pdX]}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
             <View style={[fxHC, pdBX]}>
                 <Text style={styles.labelBox}>{i18n["refund.amount"]}</Text>
@@ -83,7 +83,6 @@ export default function OrderRefundConfirm(props){
             <Text style={styles.amountBox}>
                 <Text style={fs16}>{appSettings.regionalCurrencySymbol}</Text>
                 <Text>{orderInfo.amount}</Text>
-                <Text style={[fs16, tcEE]}>{appSettings.regionalCurrencySymbol /*因此的文字，目的是让金额居中*/}</Text>
             </Text>
             <Text style={[fs12, taC, pdVX]}>
                 <Text>{i18n["order.amount"]}&nbsp;</Text>

@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { ScrollView, View, Image, Text, TextInput, StyleSheet, Pressable, ActivityIndicator } from "react-native";
-import { useI18N, getAppSettings, getUserPosName, getCouponInUse, findCouponInAddedList } from "@/store/getter";
+import { useI18N, getAppSettings, getUserShopName, getCouponInUse, findCouponInAddedList } from "@/store/getter";
 import { dispatchSetLastUsed } from "@/store/setter";
 import { DISCOUNT_TYPE_LJ } from "@/common/Statics";
 import { parseStringDate } from "@/utils/helper";
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 10,
         marginBottom: 30,
-        marginTop: 15
+        marginTop: 10
     },
     couponTitle: {
         fontSize: 18,
@@ -68,7 +68,8 @@ const styles = StyleSheet.create({
         marginRight: 10,
         borderRadius: 45,
         borderColor: "#fff",
-        borderWidth: 1
+        borderWidth: 1,
+        resizeMode: "contain"
     },
     couponDiscount: {
         textAlign: "center",
@@ -76,15 +77,15 @@ const styles = StyleSheet.create({
         color: appMainColor,
     },
     couponTypeLeft: {
-        fontSize: 14,
+        fontSize: 12,
         paddingRight: 4,
         color: "transparent"
     },
     couponTypeRight: {
-        fontSize: 14,
+        fontSize: 12,
         paddingLeft: 4,
         color: appMainColor,
-        marginTop: 10
+        marginTop: 12
     },
     couponCondition: {
         fontSize: 12,
@@ -188,11 +189,12 @@ function getCouponInfo(cc) {
                 picurl: null,
                 title: items[1],
                 cpcode: items[1],
+                ptcode: items[0], //分销码
                 distype: (+items[2] || 0), //1-折扣，2-立减，其他值-未知
                 discount: (+items[3] || 0), //折扣率，或者立减金额
                 condition: (+items[6] || 0), //满免条件
                 expiration: (items[8].replace(/(\d{4})(\d{2})/, "$1-$2-") + " ~ " + items[9].replace(/(\d{4})(\d{2})/, "$1-$2-")),
-                distributor: items[0], //分销员编号
+                taxfreerate: (+items[5] || 0), //免税比例 tax free rate，百分数，有多少比例是免税的。比如 5%，总金额是 100，那么有 20 块是免税的，剩下80元需要计算税收
                 createtime: Date.now() //创建时间的时间戳
             };
             resolve(output);
@@ -251,8 +253,8 @@ export default function CouponIndex(props){
         setCouponCode(cpinfo.cpcode);
         setCouponInfo(cpinfo);
     }
-    const setDistributorNumber = (dn) => { //设置分销员编号
-        setCouponInfo({...couponInfo, distributor: dn});
+    const updatePromotionCode = (dn) => { //更新分销码
+        setCouponInfo({...couponInfo, ptcode: dn});
     }
     const gotoCouponAdds = () => {
         props.navigation.navigate("优惠券录入", { onGoBack: onAddNewCoupon });
@@ -262,8 +264,8 @@ export default function CouponIndex(props){
     }
     const gotoInputBotText = () => {
         props.navigation.navigate("文本输入器", { 
-            defaultText: couponInfo.distributor,
-            onGoBack: setDistributorNumber,
+            defaultText: couponInfo.ptcode,
+            onGoBack: updatePromotionCode,
             isNumberPad: true
         });
     };
@@ -284,23 +286,25 @@ export default function CouponIndex(props){
     
     return (
         <ScrollView style={pgFF} contentContainerStyle={mhF} keyboardShouldPersistTaps="handled">
-            <View style={styles.codeIcon}>
-                <PosPayIcon name="coupon-code" size={styles.codeText.fontSize} color={styles.codeText.color} />
-                <Text style={styles.codeText}>{i18n["coupon.code"]}</Text>
-                <Text style={[fs12, tc66, pdLS]} onPress={onClearCode}>{i18n["btn.clear"]}</Text>
-                <PosPayIcon name="close-circle" size={14} color="#666" offset={3} onPress={onClearCode} />
-            </View>
-            <TextInput 
-                ref={tiRef}
-                style={[styles.codeInput, isFocus&&styles.codeActived]} 
-                onBlur={() => setIsFocus(false)}
-                onFocus={() => setIsFocus(true)}
-                placeholder={i18n["coupon.enter.tip"]}
-                onChangeText={setCouponCode}
-                onSubmitEditing={onPKConfirm}
-                autoFocus={!theCPCode}
-                defaultValue={couponCode}
-                keyboardType="default" />
+            {runtimeEnvironment.isProduction && <>
+                <View style={styles.codeIcon}>
+                    <PosPayIcon name="coupon-code" size={styles.codeText.fontSize} color={styles.codeText.color} />
+                    <Text style={styles.codeText}>{i18n["coupon.code"]}</Text>
+                    <Text style={[fs12, tc66, pdLS]} onPress={onClearCode}>{i18n["btn.clear"]}</Text>
+                    <PosPayIcon name="close-circle" size={14} color="#666" offset={3} onPress={onClearCode} />
+                </View>
+                <TextInput 
+                    ref={tiRef}
+                    style={[styles.codeInput, isFocus&&styles.codeActived]} 
+                    onBlur={() => setIsFocus(false)}
+                    onFocus={() => setIsFocus(true)}
+                    placeholder={i18n["coupon.enter.tip"]}
+                    onChangeText={setCouponCode}
+                    onSubmitEditing={onPKConfirm}
+                    autoFocus={!theCPCode}
+                    defaultValue={couponCode}
+                    keyboardType="default" />
+            </>}
             
             {!isFocus && (couponInfo.loading ?
                 <View style={styles.loadingBox}>
@@ -315,6 +319,7 @@ export default function CouponIndex(props){
                     onPress={onPKConfirm}>{i18n[!couponCode ? "coupon.enter.tip" : "btn.query"]}</GradientButton>
             :(couponInfo.cpcode ?
                 <View style={pdX}>
+                    <Text style={fs14}>{i18n["coupon.inuse"]}</Text>
                     <LinearGradient style={styles.couponBox} colors={lgColors} start={lgStartEnd[0]} end={lgStartEnd[1]}>
                         <View style={styles.couponTip}>
                             <Text style={[fs12, tcG0]}>{i18n["coupon.received"]}</Text>
@@ -324,9 +329,9 @@ export default function CouponIndex(props){
                         <View style={[styles.couponSemicircle, styles.couponSC2]}>{/* 优惠券去掉半个圆（下方） */}</View>
                         <View style={styles.couponDashedLine}>{/* 竖杠虚线 */}</View>
                         <View style={styles.couponWatermark1}><Text style={styles.couponWMText}>NO.{couponInfo.cpcode}</Text></View>
-                        <View style={styles.couponWatermark2}><Text style={styles.couponWMText}>DN.{couponInfo.distributor}</Text></View>
+                        <View style={styles.couponWatermark2}><Text style={styles.couponWMText}>PC.{couponInfo.ptcode}</Text></View>
                         <View style={fxHC}>
-                            <Image source={couponInfo.picurl || LocalPictures.couponDefaultPic} style={styles.couponPic} />
+                            <Image source={couponInfo.picurl ? {uri: couponInfo.picurl} : LocalPictures.couponDefaultPic} style={styles.couponPic} />
                             <View>
                                 <Text style={styles.couponTitle}>{couponInfo.title}</Text>
                                 <Text style={[fs10, tc66]}>{couponInfo.expiration}</Text>
@@ -347,7 +352,7 @@ export default function CouponIndex(props){
                             </View>
                             <Text style={styles.couponCondition}>{i18n["coupon.off"].cloze(couponInfo.condition, couponInfo.discount)}</Text>
                         </>}
-                        <Text style={[fs10, taR, tc99]}>{i18n["coupon.store"]}&emsp;{getUserPosName()}</Text>
+                        <Text style={[fs10, taR, tc99]}>{i18n["coupon.store"]}&emsp;{getUserShopName()}</Text>
                     </LinearGradient>
                     <GradientButton onPress={useThisCoupon}>{i18n[couponInfo.inuse ? "coupon.disuse" : "btn.use"]}</GradientButton>
                 </View>
@@ -364,8 +369,8 @@ export default function CouponIndex(props){
                     <PosPayIcon name="qrcode-scan" color={appMainColor} size={20} />
                 </Pressable>
                 <Pressable style={[fxHC, pdX]} android_ripple={tcCC} onPress={gotoInputBotText}>
-                    <Text style={[fxG1, tcMC]}>{i18n["coupon.distributor.number"]}</Text>
-                    <Text style={[pdRS, tc66]}>{couponInfo.distributor}</Text>
+                    <Text style={[fxG1, tcMC]}>{i18n["coupon.promotion.code"]}</Text>
+                    <Text style={[pdRS, tc66]}>{couponInfo.ptcode}</Text>
                     <PosPayIcon name="edit-pen" color={appMainColor} size={20} />
                 </Pressable>
                 <Pressable style={runtimeEnvironment.isProduction ? dpN : [fxHC, pdX]} android_ripple={tcCC} onPress={gotoCouponAdds}>

@@ -51,7 +51,7 @@ export default function CouponAdds(props){
     const [couponType, setCouponType] = useState(1); //1-折扣，2-立减
     const [couponDiscount, setCouponDiscount] = useState("");//优惠金额或者比例
     const [couponCondition, setCouponCondition] = useState("");//生效条件
-    const [distributorNumber, setDistributorNumber] = useState("");//分销员编号
+    const [promotionCode, setPromotionCode] = useState("");//分销码
     const [inputNth, setInputNth] = useState(0); //哪个输入框获得了焦点
     
     const onInputFocus = (nth) => {
@@ -86,8 +86,8 @@ export default function CouponAdds(props){
         } else if(!drbRef.current.isLegalDateRange()){
             return !$notify.info(i18n["coupon.errmsg1"]);
         }
-        if(!distributorNumber){
-            return !$notify.info(i18n["coupon.errmsg0"].cloze(i18n["coupon.distributor.number"]));
+        if(!promotionCode){
+            return !$notify.info(i18n["coupon.errmsg0"].cloze(i18n["coupon.promotion.code"]));
         }
         
         const cpExpiration = drbRef.current.getPickResults("yyyy-MM-dd ~ ", "yyyy-MM-dd");
@@ -95,11 +95,12 @@ export default function CouponAdds(props){
             picurl:     null,
             title:      couponTitle.trim(),
             cpcode:     couponCode,
+            ptcode:     promotionCode, //分销码
             distype:    couponType, //1-折扣，2-立减
             discount:   (+couponDiscount || 0),
             expiration: (cpExpiration[0] + cpExpiration[1]),
             condition:  (+couponCondition || 0), //满免条件
-            distributor:distributorNumber, //分销员编号
+            taxfreerate: 0, //免税比例 tax free rate，百分数，有多少比例是免税的。比如 5%，总金额是 100，那么有 20 块是免税的，剩下80元需要计算税收
             createtime: Date.now() //创建时间的时间戳
         };
         
@@ -178,12 +179,12 @@ export default function CouponAdds(props){
                 />
             </View>
             <View style={styles.itemBox}>
-                <Text style={[fs12, inputNth===0xEE44&&tcMC]}>{i18n["coupon.distributor.number"]}</Text>
+                <Text style={[fs12, inputNth===0xEE44&&tcMC]}>{i18n["coupon.promotion.code"]}</Text>
                 <TextInput 
                     style={[styles.inputBox, inputNth===0xEE44&&styles.inputActivated]} 
                     keyboardType="number-pad" 
-                    defaultValue={distributorNumber} 
-                    onChangeText={setDistributorNumber}
+                    defaultValue={promotionCode} 
+                    onChangeText={setPromotionCode}
                     placeholder={i18n["required"]} 
                     onBlur={onInputBlur}
                     onFocus={onInputFocus(0xEE44)} />

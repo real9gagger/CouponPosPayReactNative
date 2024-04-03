@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { ScrollView, View, Text, Pressable , Image, StatusBar, StyleSheet, TouchableOpacity, DeviceEventEmitter } from "react-native";
+import { ScrollView, View, Text, Pressable, Image, StatusBar, StyleSheet, TouchableOpacity, DeviceEventEmitter } from "react-native";
 import { useI18N, getI18N, useAppSettings } from "@/store/getter";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
 import { eWalletList, CREDIT_CARD_PAYMENT_CODE, QR_CODE_PAYMENT_CODE, DISCOUNT_TYPE_LJ, TRANSACTION_TYPE_RECEIVE } from "@/common/Statics";
@@ -159,7 +159,7 @@ function onScanFinish(dat){
 }
 
 //调用支付功能
-function callPayment(payMoney, disMoney, taxMoney, couponCode, paymentCode, distributorNumber){
+function callPayment(payMoney, disMoney, taxMoney, couponCode, paymentCode, promotionCode){
     if(regZeros.test(payMoney)){
         return !$notify.info(getI18N("input.amount.tip"));
     }
@@ -185,7 +185,7 @@ function callPayment(payMoney, disMoney, taxMoney, couponCode, paymentCode, dist
             payRes.couponCode = (disMoney && couponCode ? couponCode : ""); //有折扣才有优惠码
             payRes.remark = (runtimeEnvironment.isProduction ? "" : "开发测试的数据");
             payRes.tax = (payRes.tax || taxMoney);
-            payRes.distributorNumber = distributorNumber; //分销员编号
+            payRes.promotionCode = promotionCode; //分销码
             DeviceEventEmitter.emit(eventEmitterName, payRes); //发
         } else if(payRes.activityResultCode === 2){//取消支付
             $toast(getI18N("payment.errmsg2"));
@@ -211,9 +211,9 @@ function togglePKHidden(evt){
 function calcPaymentInfo(tl, dc, dt, cd, rt){
     if(!tl){
         return {
-            T_X: "0",
-            F_A: "0",
-            D_C: "0"
+            T_X: 0,
+            F_A: 0,
+            D_C: 0
         };
     } else {
         //必须满足条件才能优惠
@@ -260,7 +260,7 @@ function tabBankCard(props){
         QRcodeScanner.openScanner(onScanFinish);
     }
     const startPayMoney = () => {
-        callPayment(payAmounts, moneyInfo.D_C, moneyInfo.T_X, cpInfos?.cpcode, CREDIT_CARD_PAYMENT_CODE, cpInfos?.distributor);
+        callPayment(payAmounts, moneyInfo.D_C, moneyInfo.T_X, cpInfos?.cpcode, CREDIT_CARD_PAYMENT_CODE, cpInfos?.ptcode);
     }
     
     useEffect(() => {
@@ -403,7 +403,7 @@ function tabEWallet(props){
         QRcodeScanner.openScanner(onScanFinish);
     }
     const startPayMoney = () => {
-        callPayment(payAmounts, moneyInfo.D_C, moneyInfo.T_X, cpInfos?.cpcode, eWalletList[paymentIndex].pmcode, cpInfos?.distributor);
+        callPayment(payAmounts, moneyInfo.D_C, moneyInfo.T_X, cpInfos?.cpcode, eWalletList[paymentIndex].pmcode, cpInfos?.ptcode);
     }
     
     useEffect(() => {
@@ -541,7 +541,7 @@ function tabQRCode(props){
         QRcodeScanner.openScanner(onScanFinish);
     }
     const startPayMoney = () => {
-        callPayment(payAmounts, moneyInfo.D_C, moneyInfo.T_X, cpInfos?.cpcode, QR_CODE_PAYMENT_CODE, cpInfos?.distributor);
+        callPayment(payAmounts, moneyInfo.D_C, moneyInfo.T_X, cpInfos?.cpcode, QR_CODE_PAYMENT_CODE, cpInfos?.ptcode);
     }
     const gotoSupportPayment = () => {
         DeviceEventEmitter.emit(eventEmitterName, {
@@ -621,10 +621,10 @@ function tabQRCode(props){
                 <Text style={[styles.paymentLabel, tc99]} onPress={gotoSupportPayment}>{i18n["payment.supports"]}</Text>
                 <PosPayIcon name="right-arrow-double" style={{marginTop: 10}} color="#999" size={14} offset={2} />
             </View>
-            <View style={fxVM}>
-                <ImageButton style={styles.paymentScaning} source={LocalPictures.scanQRcode} onPress={startPayMoney} />
+            <TouchableOpacity style={fxVM} onPress={startPayMoney} activeOpacity={0.5}>
+                <Image style={styles.paymentScaning} source={LocalPictures.scanQRcode} />
                 <Text style={[tcMC, mgTX]}>{i18n["qrcode.collect"]}</Text>
-            </View>
+            </TouchableOpacity>
             <View style={fxG1}>{/* 占位专用 */}</View>
             {!!payAmounts && <View style={styles.paymentDetails}>
                 <View style={fxHC}>
@@ -725,7 +725,7 @@ export default function IndexHome(props){
                     }
                     
                     if(infos.nth === iNthCoupon){
-                        props.navigation.navigate("优惠券查询", { 
+                        props.navigation.navigate(!infos.txt ? "优惠券查询" : "优惠券选择", { 
                             couponCode: infos.txt, 
                             onGoBack: useTheCoupon,
                         });

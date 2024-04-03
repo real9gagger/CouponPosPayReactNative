@@ -1,5 +1,5 @@
 import { NativeModules } from "react-native";
-import { getI18N, getUserPosName } from "@/store/getter";
+import { getI18N, getUserShopName } from "@/store/getter";
 import { formatDate } from "@/utils/helper";
 
 //副屏助手
@@ -76,7 +76,7 @@ function showPayAmountInfo(amountInfo){
         }
         
         const i18n = getI18N();
-        const title1 = getUserPosName();
+        const title1 = getUserShopName();
         const title2 = formatDate();
         const title3 = i18n["settlement"];
         const msgAM = getContentLine(i18n["input.amount"],      `${amountInfo.cysymbol}${amountInfo.total}`);

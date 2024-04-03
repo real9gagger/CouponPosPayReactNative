@@ -38,10 +38,10 @@ const styles = StyleSheet.create({
 export default function MineAccount(props){
     const i18n = useI18N();
     const userInfo = useUserInfo();
-    const [userAvatar, setUserAvatar] = useState(userInfo.posLogo ? { uri: userInfo.posLogo } : LocalPictures.defaultUserAvatar);
+    const [userAvatar, setUserAvatar] = useState(userInfo.shopLogo ? { uri: userInfo.shopLogo } : LocalPictures.defaultUserAvatar);
     const [isLogout, setIsLogout] = useState(false);
     const [isShowIV, setIsShowIV] = useState(false);
-        
+
     const onLogout = () => {
         if(isLogout){
             return; //正在退出，请耐心等待
@@ -71,8 +71,8 @@ export default function MineAccount(props){
                     onError={() => setUserAvatar(LocalPictures.loadingPicError)}
                     style={styles.accountAvatar} 
                     source={userAvatar} />
-                <Text style={styles.accountName}>{userInfo.posName}</Text>
-                <Text style={[fs12, tc99, pdVX]}>{userInfo.posAddress}</Text>
+                <Text style={styles.accountName}>{userInfo.shopName}</Text>
+                <Text style={[fs12, tc99, pdVX]}>{userInfo.shopAddress}</Text>
             </View>
             <View style={fxG1}>{/*占位用*/}</View>
             <View style={styles.logoutBox}>

@@ -136,8 +136,8 @@ export default function OrderPrintPreview(props){
             dat.printTime = formatDate();
             dat.discountAmount = $tofixed(dat.discountAmount);
             dat.orderAmount = $tofixed(dat.orderAmount);
-            dat.shopLogo = (appSettings.paymentReceiptPrintShopLogo ? userInfo.posLogo : null);
-            dat.payeeName = userInfo.posName;
+            dat.shopLogo = (appSettings.paymentReceiptPrintShopLogo ? userInfo.shopLogo : null);
+            dat.payeeName = userInfo.shopName;
             dat.operatorName = userInfo.loginAccount;
             dat.bottomText = appSettings.paymentReceiptBottomText;
             dat.currencySymbol = appSettings.regionalCurrencySymbol;

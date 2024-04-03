@@ -10,10 +10,12 @@
 
 export default {
     sendValidCode: '/auth/sendValidCode?__RM__=POST_FU', //发送短信验证码
-    loginWithPassword: '/auth/login?__RM__=POST', //用户名 + 密码登录
-    getPostInfo: '/pos/pos/getPostInfo', //商户账户获取商户详情
+    loginWithPassword: '/auth/posLogin?__RM__=POST', //用户名 + 密码登录
+    //2024年4月3日弃用 getPostInfo: '/pos/pos/getPostInfo', //商户账户获取商户详情
+    getShopInfo: '/pos/shop/getShopInfo', //POS机门店账户获取门店详情
     savePosAppOrder: '/order/order/savePosAppOrder?__RM__=POST', //保存订单信息
     getPosAppOrderList: '/order/order/getPosAppOrderList', //获取订单列表
     posAppRefund: '/order/order/posAppRefund', //订单退款
     getOrderStatistics: '/order/order/getPosAppStatisticalDetail', //订单统计接口
+    getPosDiscountDetail: '/mgr/paltformDiscount/getPosDiscountDetail?__RM__=POST', //POS机优惠券明细查询
 }

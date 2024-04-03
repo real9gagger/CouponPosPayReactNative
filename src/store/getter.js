@@ -45,8 +45,8 @@ export function getUserInfo(key){
         return store.getState().userInfo;
     }
 }
-export function getUserPosName(){
-    return store.getState().userInfo.posName;
+export function getUserShopName(){
+    return store.getState().userInfo.shopName;
 }
 
 /* ================ APP设置相关 ================ */

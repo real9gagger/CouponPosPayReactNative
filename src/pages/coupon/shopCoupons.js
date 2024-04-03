@@ -92,7 +92,7 @@ export default function CouponShopCoupons(props){
                     <Text style={[fs14, fwB]}>{vxo.title}</Text>
                     <Text style={styles.fs10TC99}>{vxo.expiration}</Text>
                     <Text style={[fs10, tcG0]}>{i18n[vxo.distype===DISCOUNT_TYPE_LJ ? "coupon.reduction" : "coupon.off"].cloze(vxo.condition, vxo.discount)}</Text>
-                    <Text style={styles.fs10TC99}>DN.{vxo.distributor}</Text>
+                    <Text style={styles.fs10TC99}>PC.{vxo.ptcode}</Text>
                     <View style={fxHC}>
                         <Text style={styles.codeText}>NO.{vxo.cpcode}</Text>
                         <Text style={styles.fs10TC99}>{formatDate(vxo.createtime)}</Text>

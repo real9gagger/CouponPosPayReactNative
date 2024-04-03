@@ -7,7 +7,6 @@ import { dispatchResetUserInfo } from "@/store/setter";
 import PosPayIcon from "@/components/PosPayIcon";
 import IndexHome from "@/pages/index/home";
 import MineIndex from "@/pages/mine/index";
-//import MineAccount from "@/pages/mine/account";
 
 const DRAWER_ROUTE_NAME = "抽屉栏"; //路由名称，不需要翻译！
 
@@ -17,10 +16,10 @@ const PosPayDrawer = createDrawerNavigator();
 
 const styles = StyleSheet.create({
     titleBox: {
-        paddingHorizontal: 16
+        paddingHorizontal: 15
     },
     titleLabel: {
-        fontSize: 18,
+        fontSize: 16,
         color: "#000",
         fontWeight: "bold",
         marginTop: 5,
@@ -34,13 +33,13 @@ const styles = StyleSheet.create({
     itemLabel: {
         fontSize: 16,
         color: "#000",
-        paddingLeft: 16
+        paddingLeft: 15
     },
     itemBox: {
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        paddingHorizontal: 16,
+        paddingHorizontal: 15,
         paddingVertical: 10
     }
 });
@@ -65,7 +64,7 @@ const posPayTabList = [
     },
     /* {
         name: "个人中心",
-        component: MineAccount,
+        component: null,
         options: noHeaderOptions
     } */
 ];
@@ -123,12 +122,12 @@ const drawerItemList = [
         iconName: "help-stroke"
     },
     {
-        key: "系统-登出",
+        key: "账户-登出",
         i18nLabel: "btn.logout",
         iconName: "logout"
     },
     {
-        key: "系统-退出",
+        key: "软件-退出",
         i18nLabel: "exit",
         iconName: "turn-off"
     }
@@ -175,8 +174,8 @@ function CustomDrawerContent(props) {
             case "系统-副屏": props.navigation.navigate("顾客屏幕"); break;
             case "系统-打印": props.navigation.navigate("打印设置"); break;
             case "系统-帮助": props.navigation.navigate("帮助页"); break;
-            case "系统-登出": callUserLogout(); break;
-            case "系统-退出": BackHandler.exitApp(); break;
+            case "账户-登出": callUserLogout(); break;
+            case "软件-退出": BackHandler.exitApp(); break;
         }
         props.navigation.closeDrawer();
     }

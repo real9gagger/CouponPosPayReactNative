@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ScrollView, View, StatusBar, Text, Image, StyleSheet, Pressable, TouchableOpacity, DevSettings } from "react-native";
 import { useI18N, useUserInfo, hasFailedOrders } from "@/store/getter";
+import { EMPTY_DEFAULT_TEXT } from "@/common/Statics";
 import LocalPictures from "@/common/Pictures";
 import PosPayIcon from "@/components/PosPayIcon";
 
@@ -123,8 +124,8 @@ export default function MineIndex(props){
     }
     
     useEffect(() => {
-        if(userInfo.posLogo){
-            setUserAvatar({ uri: userInfo.posLogo });
+        if(userInfo.shopLogo){
+            setUserAvatar({ uri: userInfo.shopLogo });
         }
     }, [userInfo]);
     
@@ -136,8 +137,8 @@ export default function MineIndex(props){
                     <Image style={whF} source={userAvatar} onError={onLoadAvatarError} resizeMode="contain" />
                 </View>
                 <View style={fxG1}>
-                    <Text style={fs16}>{userInfo.posName}</Text>
-                    <Text style={[fs10, tc99]}>{userInfo.posAddress}</Text>
+                    <Text style={fs16}>{userInfo.shopName || EMPTY_DEFAULT_TEXT}</Text>
+                    <Text style={[fs10, tc99]}>{userInfo.shopAddress}</Text>
                 </View>
             </TouchableOpacity>
             <Text style={styles.sectionTitle}>{i18n["business"]}</Text>

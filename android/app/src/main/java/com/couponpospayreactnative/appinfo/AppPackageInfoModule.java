@@ -89,7 +89,7 @@ public class AppPackageInfoModule extends ReactContextBaseJavaModule {
             promise.resolve(1);
         } catch (Exception ex) {
             ex.printStackTrace();
-            promise.resolve(ex.getMessage());
+            promise.reject(ex.getMessage());
         }
     }
 }

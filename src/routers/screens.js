@@ -21,6 +21,7 @@ import TestAboutSoftware from "@/pages/test/aboutSoftware";
 import TestSupportPayment from "@/pages/test/supportPayment";
 import TestPospayIcons from "@/pages/test/pospayIcons";
 import CouponIndex from "@/pages/coupon/index";
+import CouponQuery from "@/pages/coupon/query";
 import CouponAdds from "@/pages/coupon/adds";
 import CouponShopCoupons from "@/pages/coupon/shopCoupons";
 import OrderPrintPreview from "@/pages/order/printPreview";
@@ -244,8 +245,13 @@ const PosPayRouterList = [
         options: noHeaderOnly
     },
     {
-        name: "优惠券查询",
+        name: "优惠券选择",
         component: CouponIndex,
+        options: noHeaderOnly
+    },
+    {
+        name: "优惠券查询",
+        component: CouponQuery,
         options: noHeaderOnly
     },
     {

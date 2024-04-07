@@ -238,6 +238,7 @@ function printPaymentReceipts(orderInfo){
         const rowPR = fitTextLine(i18n["payment.payer"], orderInfo.creditCardMaskedPan);
         const rowPE = fitTextLine(i18n["payment.payee"], orderInfo.payeeName);
         const rowCC = fitTextLine(i18n["coupon.code"], orderInfo.couponCode);
+        const rowDN = fitTextLine(i18n["coupon.promotion.code"], orderInfo.distributorNumber);
         const rowTN = fitTextLine(i18n["transaction.number"], orderInfo.slipNumber);
         const rowTT = fitTextLine(i18n["transaction.time"], orderInfo.transactionTime);
         const rowPT = fitTextLine(i18n["print.time"], orderInfo.printTime);
@@ -256,7 +257,7 @@ function printPaymentReceipts(orderInfo){
                 ${solidLine}
                 ${rowOA + rowTX + rowCD + rowTA}
                 ${solidLine}
-                ${rowPM + rowPR + rowPE + rowCC + rowTN + rowTT}
+                ${rowPM + rowPR + rowPE + rowCC + rowDN + rowTN + rowTT}
                 ${solidLine}
                 ${rowPT + rowOP}
                 ${rowBT && (solidLine + blankFeed + rowBT)}

@@ -206,7 +206,7 @@ function callPayment(payMoney, disMoney, taxMoney, couponCode, paymentCode, prom
             payRes.couponCode = (disMoney && couponCode ? couponCode : ""); //有折扣才有优惠码
             payRes.remark = (runtimeEnvironment.isProduction ? "" : "开发测试的数据");
             payRes.tax = (payRes.tax || taxMoney);
-            payRes.promotionCode = promotionCode; //分销码
+            payRes.distributorNumber = promotionCode; //分销码。历史原因导致命名为 “distributorNumber”（分销员编号）
             DeviceEventEmitter.emit(eventEmitterName, payRes); //发
         } else if(payRes.activityResultCode === 2){//取消支付
             $toast(getI18N("payment.errmsg2"));

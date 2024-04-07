@@ -192,6 +192,10 @@ export default function OrderPrintPreview(props){
                 <Text style={styles.textValue1}>{orderInfo.couponCode || EMPTY_DEFAULT_TEXT}</Text>
             </View>
             <View style={styles.rowBox}>
+                <Text style={styles.textLabel1}>{i18n["coupon.promotion.code"]}</Text>
+                <Text style={styles.textValue1}>{orderInfo.distributorNumber || EMPTY_DEFAULT_TEXT}</Text>
+            </View>
+            <View style={styles.rowBox}>
                 <Text style={styles.textLabel1}>{i18n["transaction.number"]}</Text>
                 <Text style={styles.textValue1}>{orderInfo.slipNumber || EMPTY_DEFAULT_TEXT}</Text>
             </View>

@@ -108,6 +108,10 @@ export default function IndexTransactionSuccess(props){
                     <Text>{transactionResult.couponCode || EMPTY_DEFAULT_TEXT}</Text>
                 </View>
                 <View style={styles.itemBox}>
+                    <Text style={fxG1}>{i18n["coupon.promotion.code"]}</Text>
+                    <Text>{transactionResult.distributorNumber || EMPTY_DEFAULT_TEXT}</Text>
+                </View>
+                <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["payment.method"]}</Text>
                     <Image style={styles.pmLogo} source={LocalPictures[transactionResult.paymentLogo] || LocalPictures.unknownPayment} />
                     <Text>{transactionResult.paymentName || transactionResult.paymentType}</Text>

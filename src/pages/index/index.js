@@ -18,6 +18,10 @@ const styles = StyleSheet.create({
     titleBox: {
         paddingHorizontal: 15
     },
+    lineBox: {
+        paddingHorizontal: 15,
+        paddingVertical: 5
+    },
     titleLabel: {
         fontSize: 16,
         color: "#000",
@@ -28,12 +32,13 @@ const styles = StyleSheet.create({
     },
     titleSpliter: {
         borderTopWidth: StyleSheet.hairlineWidth,
-        borderTopColor: "#ccc"
+        borderTopColor: "#d0d0d0"
     },
     itemLabel: {
         fontSize: 16,
         color: "#000",
-        paddingLeft: 15
+        paddingLeft: 15,
+        flex: 1
     },
     itemBox: {
         display: "flex",
@@ -122,6 +127,11 @@ const drawerItemList = [
         iconName: "help-stroke"
     },
     {
+        key: "其他",
+        i18nLabel: "",
+        iconName: ""
+    },
+    {
         key: "账户-登出",
         i18nLabel: "btn.logout",
         iconName: "logout"
@@ -181,14 +191,20 @@ function CustomDrawerContent(props) {
     }
 
     return (
-        <DrawerContentScrollView>
+        <DrawerContentScrollView contentContainerStyle={mhF}>
             {drawerItemList.map((vx, ix) => {
                 if(!vx.iconName){
-                    return (
-                        <View key={vx.key} style={styles.titleBox}>
-                            <Text style={[styles.titleLabel, ix&&styles.titleSpliter]}>{i18n[vx.i18nLabel]}</Text>
-                        </View>
-                    );
+                    if(!vx.i18nLabel){
+                        return (
+                            <View key={vx.key} style={styles.lineBox}><View style={styles.titleSpliter}></View></View>
+                        )
+                    } else {
+                        return (
+                            <View key={vx.key} style={styles.titleBox}>
+                                <Text style={[styles.titleLabel, ix&&styles.titleSpliter]}>{i18n[vx.i18nLabel]}</Text>
+                            </View>
+                        )
+                    }
                 } else {
                     return (
                         <Pressable key={vx.key} style={styles.itemBox} onPress={() => onDrawerItemPress(vx.key)} android_ripple={tcBB}>

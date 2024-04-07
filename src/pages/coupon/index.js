@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import { ScrollView, View, Image, Text, TextInput, StyleSheet, Pressable, ActivityIndicator } from "react-native";
-import { useI18N, getAppSettings, getUserShopName, getCouponInUse, findCouponInAddedList } from "@/store/getter";
+import { useI18N, getAppSettings, getCouponInUse, findCouponInAddedList } from "@/store/getter";
 import { dispatchSetLastUsed } from "@/store/setter";
 import { DISCOUNT_TYPE_LJ } from "@/common/Statics";
-import { parseStringDate, parseCouponScanResult, checkCouponExpiration } from "@/utils/helper";
+import { parseCouponScanResult, checkCouponExpiration } from "@/utils/helper";
 import LinearGradient from "react-native-linear-gradient";
 import PosPayIcon from "@/components/PosPayIcon";
 import GradientButton from "@/components/GradientButton";
@@ -55,8 +55,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#ffe2d5",
         borderRadius: 10,
         padding: 10,
-        marginBottom: 30,
-        marginTop: 15
+        marginVertical: 30
     },
     couponTitle: {
         fontSize: 18,
@@ -318,7 +317,7 @@ export default function CouponIndex(props){
                             </View>
                             <Text style={styles.couponCondition}>{i18n["coupon.off"].cloze(couponInfo.condition, couponInfo.discount)}</Text>
                         </>}
-                        <Text style={[fs10, taR, tc99]}>{i18n["coupon.store"]}&emsp;{getUserShopName()}</Text>
+                        <Text style={[fs10, taR, tcFF]}>{i18n["coupon.store"]}</Text>
                     </LinearGradient>
                     <GradientButton onPress={useThisCoupon}>{i18n[couponInfo.inuse ? "coupon.disuse" : "btn.use"]}</GradientButton>
                 </View>

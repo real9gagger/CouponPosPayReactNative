@@ -97,7 +97,7 @@ export function parseCouponScanResult(cc){
             distype: (+items[2] || 0), //1-折扣，2-立减，其他值-未知
             discount: (+items[3] || 0), //折扣率，或者立减金额
             condition: (+items[6] || 0), //满免条件
-            expiration: (items[8].replace(/(\d{4})(\d{2})/, "$1-$2-") + " ~ " + items[9].replace(/(\d{4})(\d{2})/, "$1-$2-")),
+            expiration: (items[8].replace(/(\d{4})(\d{2})(\d{2})/, "$1-$2-$3 ~ ") + items[9].replace(/(\d{4})(\d{2})/, "$1-$2-")),
             taxfreerate: (+items[5] || 0), //免税比例 tax free rate，百分数，有多少比例是免税的。比如 5%，总金额是 100，那么有 20 块是免税的，剩下80元需要计算税收
             createtime: Date.now() //创建时间的时间戳
         };

@@ -152,6 +152,12 @@ const iNthCoupon = 2;
 //扫描二维码结束后调用
 function onScanFinish(dat){
     if(dat.scanResult){
+        /* 扫码后原本是跳转到 “优惠券选择” 页，2024年4月7日弃用，改成扫码后直接计算优惠信息 DeviceEventEmitter.emit(eventEmitterName, {
+            nth: iNthCoupon, 
+            txt: dat.scanResult,
+            action: onInputToggle
+        }); */
+        
         const theCoupon = parseCouponScanResult(dat.scanResult);
         if(theCoupon){
             if(!checkCouponExpiration(theCoupon.expiration)){
@@ -161,15 +167,15 @@ function onScanFinish(dat){
             DeviceEventEmitter.emit(eventEmitterName, {
                 cpinfo: theCoupon, 
                 action: onCouponInfo,
-            }); //发送数据给父组件
-            dispatchSetLastUsed(theCoupon);
+            });
+            
+            dispatchSetLastUsed(theCoupon); //设置为正在使用的优惠券
         } else {
-            DeviceEventEmitter.emit(eventEmitterName, {
-                nth: iNthCoupon, 
-                txt: "",
-                action: onInputToggle
-            }); //发送数据给父组件
+            return !$notify.error(getI18N("qrcode.failed")); //识别二维码失败
         }
+    } else {
+        //取消扫码了
+        //return !$notify.error(getI18N("qrcode.invalid")); //无效的二维码
     }
 }
 
@@ -298,6 +304,7 @@ function tabBankCard(props){
                     break;
                 case onCouponInfo:
                     setCpInfos(infos.cpinfo);
+                    setCurrentInputBox(iNthCoupon);
                     break;
             }
         });
@@ -336,17 +343,17 @@ function tabBankCard(props){
                 <Text style={[tcMC, mgRX]}>{i18n["qrcode.identify"]}</Text>
                 <PosPayIcon name="qrcode-scan" color={appMainColor} size={24} />
             </Pressable>
-            <View style={pdHX}>
+            <TouchableOpacity style={pdHX} activeOpacity={0.6} onPress={toggleCouponInput}>
                 {!cpInfos ? 
-                    <Text style={[styles.couponInput, styles.couponEmpty, currentInputBox===iNthCoupon&&styles.InputActived]} onPress={toggleCouponInput}>{i18n["coupon.enter.tip"]}</Text>
+                    <Text style={[styles.couponInput, styles.couponEmpty, currentInputBox===iNthCoupon&&styles.InputActived]}>{i18n["coupon.enter.tip"]}</Text>
                 :<>
                     <View style={styles.couponInfo}>
                         <Text style={[fs14, fwB]}>{cpInfos.title}&nbsp;<PosPayIcon name="check-fill" color={moneyInfo.D_A ? tcG0.color : tc99.color} size={14} /></Text>
                         <Text style={[fs12, moneyInfo.D_A ? tcG0 : tc99]}>{i18n[cpInfos.distype===DISCOUNT_TYPE_LJ ? "coupon.reduction" : "coupon.off"].cloze(cpInfos.condition, cpInfos.discount)}</Text>
                     </View>
-                    <Text style={[styles.couponInput, currentInputBox===iNthCoupon&&styles.InputActived]} onPress={toggleCouponInput}>-{moneyInfo.D_C}</Text>
+                    <Text style={[styles.couponInput, currentInputBox===iNthCoupon&&styles.InputActived]}>-{moneyInfo.D_C}</Text>
                 </>}
-            </View>
+            </TouchableOpacity>
             <View style={[fxHC, styles.rowBox]}>
                 <Text style={[fxG1, styles.paymentLabel]}>{i18n["payment.method"]}</Text>
                 <Text style={styles.paymentLabel}>{i18n["credit.card"]}</Text>
@@ -441,6 +448,7 @@ function tabEWallet(props){
                     break;
                 case onCouponInfo:
                     setCpInfos(infos.cpinfo);
+                    setCurrentInputBox(iNthCoupon);
                     break;
             }
         });
@@ -479,17 +487,17 @@ function tabEWallet(props){
                 <Text style={[tcMC, mgRX]}>{i18n["qrcode.identify"]}</Text>
                 <PosPayIcon name="qrcode-scan" color={appMainColor} size={24} />
             </Pressable>
-            <View style={pdHX}>
+            <TouchableOpacity style={pdHX} activeOpacity={0.6} onPress={toggleCouponInput}>
                 {!cpInfos ? 
-                    <Text style={[styles.couponInput, styles.couponEmpty, currentInputBox===iNthCoupon&&styles.InputActived]} onPress={toggleCouponInput}>{i18n["coupon.enter.tip"]}</Text>
+                    <Text style={[styles.couponInput, styles.couponEmpty, currentInputBox===iNthCoupon&&styles.InputActived]}>{i18n["coupon.enter.tip"]}</Text>
                 :<>
                     <View style={styles.couponInfo}>
                         <Text style={[fs14, fwB]}>{cpInfos.title}&nbsp;<PosPayIcon name="check-fill" color={moneyInfo.D_A ? tcG0.color : tc99.color} size={14} /></Text>
                         <Text style={[fs12, moneyInfo.D_A ? tcG0 : tc99]}>{i18n[cpInfos.distype===DISCOUNT_TYPE_LJ ? "coupon.reduction" : "coupon.off"].cloze(cpInfos.condition, cpInfos.discount)}</Text>
                     </View>
-                    <Text style={[styles.couponInput, currentInputBox===iNthCoupon&&styles.InputActived]} onPress={toggleCouponInput}>-{moneyInfo.D_C}</Text>
+                    <Text style={[styles.couponInput, currentInputBox===iNthCoupon&&styles.InputActived]}>-{moneyInfo.D_C}</Text>
                 </>}
-            </View>
+            </TouchableOpacity>
             <View style={[fxHC, styles.rowBox]}>
                 <Text style={[fxG1, styles.paymentLabel]}>{i18n["payment.method"]}</Text>
                 <Text style={styles.paymentLabel}>{eWalletList[paymentIndex].name}</Text>
@@ -584,6 +592,7 @@ function tabQRCode(props){
                     break;
                 case onCouponInfo:
                     setCpInfos(infos.cpinfo);
+                    setCurrentInputBox(iNthCoupon);
                     break;
             }
         });
@@ -622,17 +631,17 @@ function tabQRCode(props){
                 <Text style={[tcMC, mgRX]}>{i18n["qrcode.identify"]}</Text>
                 <PosPayIcon name="qrcode-scan" color={appMainColor} size={24} />
             </Pressable>
-            <View style={pdHX}>
+            <TouchableOpacity style={pdHX} activeOpacity={0.6} onPress={toggleCouponInput}>
                 {!cpInfos ? 
-                    <Text style={[styles.couponInput, styles.couponEmpty, currentInputBox===iNthCoupon&&styles.InputActived]} onPress={toggleCouponInput}>{i18n["coupon.enter.tip"]}</Text>
+                    <Text style={[styles.couponInput, styles.couponEmpty, currentInputBox===iNthCoupon&&styles.InputActived]}>{i18n["coupon.enter.tip"]}</Text>
                 :<>
                     <View style={styles.couponInfo}>
                         <Text style={[fs14, fwB]}>{cpInfos.title}&nbsp;<PosPayIcon name="check-fill" color={moneyInfo.D_A ? tcG0.color : tc99.color} size={14} /></Text>
                         <Text style={[fs12, moneyInfo.D_A ? tcG0 : tc99]}>{i18n[cpInfos.distype===DISCOUNT_TYPE_LJ ? "coupon.reduction" : "coupon.off"].cloze(cpInfos.condition, cpInfos.discount)}</Text>
                     </View>
-                    <Text style={[styles.couponInput, currentInputBox===iNthCoupon&&styles.InputActived]} onPress={toggleCouponInput}>-{moneyInfo.D_C}</Text>
+                    <Text style={[styles.couponInput, currentInputBox===iNthCoupon&&styles.InputActived]}>-{moneyInfo.D_C}</Text>
                 </>}
-            </View>
+            </TouchableOpacity>
             <View style={[fxHC, styles.rowBox]}>
                 <Text style={[fxG1, styles.paymentLabel]}>{i18n["payment.method"]}</Text>
                 <Text style={[styles.paymentLabel, tc99]} onPress={gotoSupportPayment}>{i18n["payment.supports"]}</Text>

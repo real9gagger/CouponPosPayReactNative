@@ -144,7 +144,7 @@ const onInputChange = "ON_INPUT_CHANGE"; //文本变化
 const onTransactionSuccess = "ON_TRANSACTION_SUCCESS"; //建议成功时触发
 const onSeePayments = "ON_SEE_PAYMENTS"; //查看支持的支付方式
 const onCouponInfo = "ON_COUPON_INFO"; //接收到优惠券信息
-const regZeros = /^0*$/;
+const onViewCalcRule = "ON_VIEW_CALC_RULE"; //查看计算规则
 const iNthNone = 0;
 const iNthAmount = 1;
 const iNthCoupon = 2;
@@ -181,7 +181,7 @@ function onScanFinish(dat){
 
 //调用支付功能
 function callPayment(payMoney, disMoney, taxMoney, couponCode, paymentCode, promotionCode){
-    if(regZeros.test(payMoney)){
+    if(/^0*$/.test(payMoney)){
         return !$notify.info(getI18N("input.amount.tip"));
     }
     
@@ -240,19 +240,21 @@ function calcPaymentInfo(tl, dc, dt, cd, rt){
     } else {
         //必须满足条件才能优惠
         const dddd = (!dc || tl < cd) ? 0 : (dt === DISCOUNT_TYPE_LJ ? Math.min(tl, dc) : (tl * dc / 100));
-        const temp = (!rt) ? 0 : ((tl - dddd) * (rt / 100)); //先减去优惠金额在计算
+        const temp = (!rt) ? 0 : (tl * rt / 100); //计算税
         return {
-            T_X: $tofixed(temp),
-            F_A: $tofixed(tl - dddd + temp),
-            D_C: $tofixed(dddd),
-            D_A: !!dddd
+            T_X: $tofixed(temp), //税
+            F_A: $tofixed(tl + temp - dddd), //实际收款金额
+            D_C: $tofixed(dddd), //优惠
+            D_A: !!dddd //是否有优惠
         };
     }
 }
 
 //显示实际金额的计算规则
 function showAmountCalcRule(){
-    $alert(getI18N("final.amount.formula"));
+    DeviceEventEmitter.emit(eventEmitterName, {
+        action: onViewCalcRule
+    });
 }
 
 //银行卡
@@ -763,6 +765,9 @@ export default function IndexHome(props){
                     break;
                 case onSeePayments:
                     props.navigation.navigate("支付合作商");
+                    break;
+                case onViewCalcRule:
+                    props.navigation.navigate("金额计算规则");
                     break;
             }
         });

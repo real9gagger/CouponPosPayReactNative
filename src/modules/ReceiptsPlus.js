@@ -118,7 +118,11 @@ function textAutoWrap(input, limits, align, ngap = TEXT_GAPS, irls = false){
 }
 
 //自动填充文本1和文本2之间需要多少个空格
-function fitTextLine(txt1, txt2){
+function fitTextLine(txt1, txt2, hidden){
+    if(!!hidden){
+        return "";
+    }
+    
     txt1 = (txt1 ? txt1.trim() : "");
     txt2 = (txt2 ? txt2.trim() : "");
     
@@ -231,7 +235,7 @@ function printPaymentReceipts(orderInfo){
         const imageSL = await getImageXml(orderInfo.shopLogo);
         const titlePR = getTextCentered(i18n["payment.receipt"], 2);
         const rowOA = fitTextLine(i18n["order.amount"], `${orderInfo.currencySymbol}${orderInfo.orderAmount}`);
-        const rowTX = fitTextLine(i18n["tax"], `${orderInfo.currencySymbol}${orderInfo.tax}`);
+        const rowTX = fitTextLine(i18n["tax"], `${orderInfo.currencySymbol}${orderInfo.tax}`, !orderInfo.isShowTaxInfo);
         const rowCD = fitTextLine(i18n["coupon.discount"], `${orderInfo.currencySymbol}${orderInfo.discountAmount}`);
         const rowTA = fitTextLine(i18n["transaction.amount"], `${orderInfo.currencySymbol}${orderInfo.amount}`);
         const rowPM = fitTextLine(i18n["payment.method"], orderInfo.paymentName);

@@ -69,6 +69,7 @@ export default function IndexTransactionSuccess(props){
             dat.currencyCode = (params.currencyCode || getAppSettings("regionalCurrencyCode"));
             dat.amount = $tofixed(params.amount);
             dat.tax = $tofixed(params.tax);
+            dat.isShowTaxInfo = (+params.tax ? true : false);
             dat.discountAmount = $tofixed(params.discountAmount);
             dat.orderAmount = $tofixed(params.orderAmount);
 
@@ -90,7 +91,7 @@ export default function IndexTransactionSuccess(props){
                     <Text style={fxG1}>{i18n["order.amount"]}</Text>
                     <Text><Text style={fwB}>{transactionResult.orderAmount}</Text> {transactionResult.currencyCode}</Text>
                 </View>
-                <View style={styles.itemBox}>
+                <View style={transactionResult.isShowTaxInfo ? styles.itemBox : dpN}>
                     <Text style={fxG1}>{i18n["tax"]}</Text>
                     <Text><Text style={fwB}>{transactionResult.tax}</Text> {transactionResult.currencyCode}</Text>
                 </View>

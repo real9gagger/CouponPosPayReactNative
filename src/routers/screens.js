@@ -20,6 +20,7 @@ import TestDevinfo from "@/pages/test/devinfo";
 import TestAboutSoftware from "@/pages/test/aboutSoftware";
 import TestSupportPayment from "@/pages/test/supportPayment";
 import TestPospayIcons from "@/pages/test/pospayIcons";
+import TestCalcRule from "@/pages/test/calcRule";
 import CouponIndex from "@/pages/coupon/index";
 import CouponQuery from "@/pages/coupon/query";
 import CouponAdds from "@/pages/coupon/adds";
@@ -233,6 +234,11 @@ const PosPayRouterList = [
         component: CouponShopCoupons,
         i18nTitle: "coupon.shop.coupons",
         options: {...defaultScreenOptions}
+    },
+    {
+        name: "金额计算规则",
+        component: TestCalcRule,
+        options: noHeaderOnly
     },
     {
         name: "统计明细",

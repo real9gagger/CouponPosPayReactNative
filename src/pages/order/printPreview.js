@@ -133,6 +133,7 @@ export default function OrderPrintPreview(props){
             dat.creditCardMaskedPan = (dat.creditCardMaskedPan || dat.eMoneyNumber || EMPTY_DEFAULT_TEXT);
             dat.amount = $tofixed(dat.amount);
             dat.tax = $tofixed(dat.tax);
+            dat.isShowTaxInfo = (+dat.tax ? true : false);
             dat.printTime = formatDate();
             dat.discountAmount = $tofixed(dat.discountAmount);
             dat.orderAmount = $tofixed(dat.orderAmount);
@@ -162,7 +163,7 @@ export default function OrderPrintPreview(props){
                 <Text style={styles.textLabel2}>{i18n["order.amount"]}</Text>
                 <Text style={styles.textValue2}>{orderInfo.currencySymbol}{orderInfo.orderAmount}</Text>
             </View>
-            <View style={styles.rowBox}>
+            <View style={orderInfo.isShowTaxInfo ? styles.rowBox : dpN}>
                 <Text style={styles.textLabel2}>{i18n["tax"]}</Text>
                 <Text style={styles.textValue2}>{orderInfo.currencySymbol}{orderInfo.tax}</Text>
             </View>

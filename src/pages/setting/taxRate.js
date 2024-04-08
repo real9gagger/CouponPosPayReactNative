@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { ScrollView, TextInput, Text, StatusBar, StyleSheet } from "react-native";
+import { ScrollView, View, TextInput, Text, StatusBar, StyleSheet } from "react-native";
 import { dispatchUpdateAppSettings } from "@/store/setter";
 import { useI18N, getGeneralTaxRate } from "@/store/getter";
+import PosPayIcon from "@/components/PosPayIcon";
 
 const styles = StyleSheet.create({
     inputBox: {
@@ -50,7 +51,10 @@ export default function SettingTaxRate(props){
             />
             <Text style={styles.percentageBox}>%</Text>
             <Text style={[mgTX, tc66, taR, fs12]}>{i18n["tax.formula"]}</Text>
-            <Text style={[mgTX, tcR0, taR, fs12]}>{i18n["tax.disabled.tip"]}</Text>
+            <View style={[mgTX, fxHC]}>
+                <PosPayIcon name="info-solid" size={14} color={tcR0.color} offset={-3} />
+                <Text style={[fxG1, tcR0, fwB, fs12]}>{i18n["tax.disabled.tip"]}</Text>
+            </View>
         </ScrollView>
     )
 }

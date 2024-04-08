@@ -67,7 +67,7 @@ export default function OrderDetails(props){
                         <Text style={fxG1}>{i18n["order.amount"]}</Text>
                         <Text><Text style={fwB}>{orderInfo.orderAmount}</Text> {orderInfo.currencyCode}</Text>
                     </View>
-                    <View style={styles.itemBox}>
+                    <View style={+orderInfo.tax ? styles.itemBox : dpN}>
                         <Text style={fxG1}>{i18n["tax"]}</Text>
                         <Text><Text style={fwB}>{orderInfo.tax}</Text> {orderInfo.currencyCode}</Text>
                     </View>

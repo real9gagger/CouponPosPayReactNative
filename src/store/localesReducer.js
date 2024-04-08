@@ -72,10 +72,11 @@ export function changeLanguage(lgcode){
     const lange = { i18n: null, code: lgcode };
 
     switch(lgcode){
+        case "zh_CN": lange.i18n = require("@/locales/zh_CN.json"); break;
         case "zh_TW": lange.i18n = require("@/locales/zh_TW.json"); break;
         case "ja_JP": lange.i18n = require("@/locales/ja_JP.json"); break;
         case "en_US": lange.i18n = require("@/locales/en_US.json"); break;
-        default: lange.i18n = require("@/locales/zh_CN.json"); lange.code = "zh_CN"; break;// 默认语言：中文简体
+        default: lange.i18n = require("@/locales/ja_JP.json"); lange.code = "ja_JP"; break;// 默认语言：日本语
     }
     
     //如果没有被解析过

@@ -6,7 +6,8 @@ const styles = StyleSheet.create({
         display: "flex",
         flexDirection: "row", 
         alignItems: "center", 
-        paddingVertical: 5
+        paddingVertical: 5,
+        overflow: "hidden"
     }
 })
 
@@ -46,7 +47,7 @@ class RadioBox extends Component {
         return (
             <TouchableOpacity activeOpacity={0.5} onPress={this.props.onPress} style={[styles.containerBox, this.props.style]}>
                 <View style={outerStyle}><View style={innerStyle}></View></View>
-                <Text style={labelStyle}>{this.props.label}</Text>
+                <Text style={labelStyle} numberOfLines={1}>{this.props.label}</Text>
             </TouchableOpacity>
         )
     }

@@ -202,6 +202,15 @@ export default function OrderIndex(props){
         }
         
         getOrderListByParams(params).then(res => {
+            if(!res){
+                res = [];
+            }
+            
+            let nth = (params.pageNum - 1) * params.pageSize;
+            for(const vxo of res){
+                vxo.oid = (nth++); //计算唯一键值！
+            }
+            
             if(ltRef.current.isFirstPage()){
                 setOrderList(res);
             } else {
@@ -255,7 +264,7 @@ export default function OrderIndex(props){
             onScroll={onSVScroll}
             refreshControl={<RefreshControl refreshing={false} onRefresh={queryOrders} />}>
             {orderList.map((vx, ix) => 
-                <TouchableOpacity key={vx.id} style={styles.itemBox} onPress={() => onItemPress(vx)} activeOpacity={0.5}>
+                <TouchableOpacity key={vx.oid} style={styles.itemBox} onPress={() => onItemPress(vx)} activeOpacity={0.5}>
                     <View style={styles.itemLeft}>
                         <View style={fxHC}>
                             <Text style={[fs12, fxG1]}>{i18n["order.amount"]}</Text>

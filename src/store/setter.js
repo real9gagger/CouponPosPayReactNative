@@ -16,8 +16,8 @@ export function dispatchInitiStore(){
         store.dispatch(updateLanguageSettings(actionType.payload.code)); //保存语言编码
     }
     
-    onInitiCouponData(); //初始化优惠券数据
-    onInitiOrderData(); //初始化订单数据
+    store.dispatch(onInitiCouponData()); //初始化优惠券数据
+    store.dispatch(onInitiOrderData()); //初始化订单数据
 }
 
 /* ================ 本地语言相关 ================ */

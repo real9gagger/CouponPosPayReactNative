@@ -20,6 +20,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.panasonic.smartpayment.android.api.FatalException;
 import com.panasonic.smartpayment.android.api.ICustomerDisplay;
@@ -40,6 +41,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 public class PosApiModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
 
@@ -267,7 +269,7 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
     //2024年2月27日显示默认副屏
     private void showDefaultCustomerDisplay() {
         if (mCustomerDisplay != null) {
-            if(!isSetAppLogo){
+            if (!isSetAppLogo) {
                 mCustomerDisplay.setCustomerImage(PACKAGE_NAME, ICustomerDisplay.IMAGE_KIND_DISPLAY, 0, mWelcomeScreenPath);
                 isSetAppLogo = true;
             }
@@ -464,7 +466,7 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
                     mCustomerDisplay.registerCustomerDisplayListeners(PACKAGE_NAME, mCustomerDisplayListener);
                     mCustomerDisplay.openCustomerDisplay(PACKAGE_NAME);
                 } else if (mCdOpenedCallback != null) {
-                    mCdOpenedCallback.invoke((String)null);
+                    mCdOpenedCallback.invoke((String) null);
                     mCdOpenedCallback = null; //立即重置
                 }
             } else {
@@ -499,7 +501,7 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
     public void setCustomerDisplayContent(String content, Promise promise) {
         if (mCustomerDisplay != null) {
             try {
-                if(content == null || content.isEmpty()){
+                if (content == null || content.isEmpty()) {
                     showDefaultCustomerDisplay(); //显示欢迎界面
                 } else {
                     mCustomerDisplay.doDisplayScreen(PACKAGE_NAME, content);
@@ -516,7 +518,7 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
 
     //2024年2月29日 副屏是否开启中
     @ReactMethod(isBlockingSynchronousMethod = true)
-    public boolean isCustomerDisplayOpened(){
+    public boolean isCustomerDisplayOpened() {
         return isCdOpened;
     }
 
@@ -532,7 +534,7 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
 
     //2024年3月27日 更换欢迎泡面图片
     @ReactMethod
-    public void changeWelcomeScreenPicture(String path, boolean deletes ,Promise promise) {
+    public void changeWelcomeScreenPicture(String path, boolean deletes, Promise promise) {
         if (path != null && !path.isEmpty()) {
             File sourceFile = new File(path);
             if (sourceFile.exists()) {
@@ -542,7 +544,7 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
                     File targetFile = new File(mContext.getExternalCacheDir().getPath() + "/customer_display/welcome_screen.jpg");
 
                     //创建目录和文件
-                    if(!targetFile.exists() && !targetFile.getParentFile().mkdirs()) {
+                    if (!targetFile.exists() && !targetFile.getParentFile().mkdirs()) {
                         Log.d(TAG, "创建文件所在的目录失败...");
                     }
 
@@ -562,7 +564,7 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
 
                     wsPicModifyTime = System.currentTimeMillis(); //用来更新图片缓存！
 
-                    promise.resolve((double)wsPicModifyTime);
+                    promise.resolve((double) wsPicModifyTime);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     promise.reject(ex.getMessage());
@@ -574,8 +576,9 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
             promise.reject(mContext.getResources().getString(R.string.welcome_screen_path_is_null));
         }
     }
+
     /* ================================ API版本相关信息 ================================ */
-    //2024年2月29日 获取安装信息
+    //2024年2月29日 获取安装信息（异步）
     @ReactMethod
     public void getInstalledInfo(Promise promise) {
         if (mInstalledInfo != null) {
@@ -593,15 +596,44 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
             data.putString("tid", mInstalledInfo.getTerminalInfo(IInstalledInformation.ValueType.TID)); //终端识别番号
             data.putString("sysver", mInstalledInfo.getTerminalInfo(IInstalledInformation.ValueType.SYSTEM_VERSION)); //系统版本
             data.putString("sno", mInstalledInfo.getTerminalInfo(IInstalledInformation.ValueType.SERIAL_NUMBER)); //终端序列号
+            data.putString("pno", mInstalledInfo.getTerminalInfo(IInstalledInformation.ValueType.PRODUCT_NUMBER)); //产品代码
             data.putString("mno", mInstalledInfo.getMerchantInfo(IInstalledInformation.ValueType.MERCHANT_NUMBER)); //加盟店番号
+            data.putString("industry_code", mInstalledInfo.getMerchantInfo(IInstalledInformation.ValueType.INDUSTRY_CODE)); //行业代码
+            data.putString("industry_name", mInstalledInfo.getMerchantInfo(IInstalledInformation.ValueType.INDUSTRY_NAME)); //行业名称
             data.putString("sdkver", mPaymentApi.getSdkVersion()); //支付 API 版本
         } else {
             data.putString("tid", "--"); //终端识别番号
             data.putString("sysver", "--"); //系统版本
             data.putString("sno", "--"); //终端序列号
+            data.putString("pno", "--"); //产品代码
             data.putString("mno", "--"); //加盟店番号
-            data.putString("sdkver", "0.0.0"); //支付 API 版本
+            data.putString("industry_code", "--"); //行业代码
+            data.putString("industry_name", "--"); //行业名称
+            data.putString("sdkver", "--"); //支付 API 版本
         }
         return data;
+    }
+
+    //2024年4月17日 获取支持的支付方式（异步）
+    @ReactMethod
+    public void getSupportPaymentList(Promise promise) {
+        promise.resolve(this.getSupportPaymentListSync());
+    }
+
+    //2024年4月17日 获取支持的支付方式（同步）
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public WritableArray getSupportPaymentListSync() {
+        WritableArray wa = Arguments.createArray();
+
+        if (mInstalledInfo != null) {
+            List<String> ls = mInstalledInfo.getPaymentType();
+            if (ls != null) {
+                for (String item : ls) {
+                    wa.pushString(item);
+                }
+            }
+        }
+
+        return wa;
     }
 }

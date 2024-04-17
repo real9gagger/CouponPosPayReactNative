@@ -14,6 +14,7 @@ import SettingCustomerDisplay from "@/pages/setting/customerDisplay";
 import SettingTaxRate from "@/pages/setting/taxRate";
 import SettingWelcomeScreen from "@/pages/setting/welcomeScreen";
 import SettingAutoLaunch from "@/pages/setting/autoLaunch";
+import SettingPayTypeTabs from "@/pages/setting/payTypeTabs";
 import LoginIndex from "@/pages/login/index";
 import TestIndex from "@/pages/test/index";
 import TestDevinfo from "@/pages/test/devinfo";
@@ -155,6 +156,12 @@ const PosPayRouterList = [
         name: "开机自启设置",
         component: SettingAutoLaunch,
         i18nTitle: "setting.auto.launch",
+        options: {...defaultScreenOptions}
+    },
+    {
+        name: "支付类型设置",
+        component: SettingPayTypeTabs,
+        i18nTitle: "setting.paytype.tabs",
         options: {...defaultScreenOptions}
     },
     {

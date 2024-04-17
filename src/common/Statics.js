@@ -1,5 +1,6 @@
 /**************** 一些静态数据 ****************/
 
+export const CASH_PAYMENT_CODE = "00";//现金支付
 export const CREDIT_CARD_PAYMENT_CODE = "01";//信用卡
 export const E_MONEY_PAYMENT_CODE = "02"; //电子钱包
 export const QR_CODE_PAYMENT_CODE = "03";//二维码
@@ -10,17 +11,21 @@ export const TRANSACTION_TYPE_RECEIVE = "1"; //收款
 export const TRANSACTION_TYPE_CANCEL = "2"; //取消收款
 export const TRANSACTION_TYPE_REFUND = "3"; //退款
 
+//现金支付方式
+export const cashPayList = [
+    {
+        logo: "logoCashPay", //LOGO 图片键名！请参考本目录下的 ./Pictures 文件
+        name: "現金",
+        pmcode: "00-00" //Payment Code
+    }
+];
+
 //信用卡付款方式
 export const creditCardList = [
-    /* {
-        logo: "unknownPayment", //LOGO 图片键名！请参考本目录下的 ./Pictures 文件
-        name: "支持手动输入信用卡号",
-        pmcode: "01-00" //Payment Code
-    }, */
     {
-        logo: "logoVisa",
+        logo: "logoVisa", //LOGO 图片键名！请参考本目录下的 ./Pictures 文件
         name: "VISA",
-        pmcode: "01-01" 
+        pmcode: "01-01" //Payment Code
     },
     {
         logo: "logoMastercard",
@@ -91,7 +96,7 @@ export const eWalletList = [
 //二维码支持的扫描支付方式
 export const qrPayList = [
     {
-        logo: "logoRakutenPay",
+        logo: "logoRakutenPay", //LOGO 图片键名！请参考本目录下的 ./Pictures 文件
         name: "楽天ペイ",
         pmcode: "03-11" //Payment Code
     },
@@ -137,7 +142,7 @@ export const qrPayList = [
     },
     {
         logo: "logoYunshanfu",
-        name: "銀聯",
+        name: "云闪付",
         pmcode: "03-23"
     },
     {
@@ -199,15 +204,37 @@ export const supportCurrencyList = [
     }
 ];
 
+//主页全部支付类型标签页
+export const allPayTypeMap = {
+    tabQRCode: {
+        ptname: "qrcode.pay",
+        pticon: "qrcode-pay"
+    },
+    tabBankCard: {
+        ptname: "credit.card",
+        pticon: "bank-card"
+    },
+    tabEWallet: {
+        ptname: "e.wallet",
+        pticon: "e-wallet"
+    },
+    tabCashPay: {
+        ptname: "cash.pay",
+        pticon: "cash-pay"
+    }
+};
+
 //获取支付方式信息
 export function getPaymentInfo(pmcode, subcode){
     if(pmcode && (typeof pmcode === "string")){
         const fullCode = `${pmcode}-${subcode}`;
-        if(pmcode.startsWith("01")){
+        if(pmcode === CASH_PAYMENT_CODE){
+            return cashPayList[0];
+        } else if(pmcode === CREDIT_CARD_PAYMENT_CODE){
             return creditCardList.find(vx => vx.pmcode === fullCode);
-        } else if(pmcode.startsWith("02")){
+        } else if(pmcode === E_MONEY_PAYMENT_CODE){
             return eWalletList.find(vx => vx.pmcode === fullCode);
-        } else {
+        } else { //QR_CODE_PAYMENT_CODE
             return qrPayList.find(vx => vx.pmcode === fullCode);
         }
     }

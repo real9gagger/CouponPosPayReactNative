@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ScrollView, TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { useI18N, useAppSettings } from "@/store/getter";
-import { EMPTY_DEFAULT_TEXT, CREDIT_CARD_PAYMENT_CODE, E_MONEY_PAYMENT_CODE, QR_CODE_PAYMENT_CODE, TRANSACTION_TYPE_RECEIVE, TRANSACTION_TYPE_REFUND } from "@/common/Statics";
+import { EMPTY_DEFAULT_TEXT, CASH_PAYMENT_CODE, CREDIT_CARD_PAYMENT_CODE, E_MONEY_PAYMENT_CODE, QR_CODE_PAYMENT_CODE, TRANSACTION_TYPE_RECEIVE, TRANSACTION_TYPE_REFUND } from "@/common/Statics";
 import DateRangeBox, { clearDateRangeCache, setDateRangeData, getBeginDateString, getEndDateString } from "@/components/DateRangeBox";
 import PosPayIcon from "@/components/PosPayIcon";
 import GradientButton from "@/components/GradientButton";
@@ -52,10 +52,14 @@ const styles = StyleSheet.create({
     selectsBox: {
         display: "flex",
         flexDirection: "row",
+        flexWrap: "wrap",
         borderBottomColor: "#ccc",
         borderBottomWidth: StyleSheet.hairlineWidth,
         paddingTop: 5,
         paddingBottom: 10
+    },
+    selectsItem: {
+        flexBasis: "50%"
     },
     headerBox: {
         display: "flex",
@@ -158,6 +162,7 @@ export default function OrderStatistics(props){
             case CREDIT_CARD_PAYMENT_CODE: return i18n["credit.card"];
             case E_MONEY_PAYMENT_CODE: return i18n["e.wallet"];
             case QR_CODE_PAYMENT_CODE: return i18n["qrcode.pay"];
+            case CASH_PAYMENT_CODE: return i18n["cash.pay"];
             default: return "";
         }
     }
@@ -329,12 +334,13 @@ export default function OrderStatistics(props){
                 
                 <Text style={styles.labelBox}>{i18n["payment.method"]}</Text>
                 <View style={styles.selectsBox}>
-                    <CheckBox size={18} label={i18n["credit.card"]} style={fxG1} checked={pmc.includes(CREDIT_CARD_PAYMENT_CODE)} onPress={onPmcChange(CREDIT_CARD_PAYMENT_CODE)} />
-                    <CheckBox size={18} label={i18n["e.wallet"]} style={fxG1} checked={pmc.includes(E_MONEY_PAYMENT_CODE)} onPress={onPmcChange(E_MONEY_PAYMENT_CODE)} />
-                    <CheckBox size={18} label={i18n["qrcode.pay"]} style={fxG1} checked={pmc.includes(QR_CODE_PAYMENT_CODE)} onPress={onPmcChange(QR_CODE_PAYMENT_CODE)} />
+                    <CheckBox size={18} label={i18n["qrcode.pay"]} style={styles.selectsItem} checked={pmc.includes(QR_CODE_PAYMENT_CODE)} onPress={onPmcChange(QR_CODE_PAYMENT_CODE)} />
+                    <CheckBox size={18} label={i18n["credit.card"]} style={styles.selectsItem} checked={pmc.includes(CREDIT_CARD_PAYMENT_CODE)} onPress={onPmcChange(CREDIT_CARD_PAYMENT_CODE)} />
+                    <CheckBox size={18} label={i18n["e.wallet"]} style={styles.selectsItem} checked={pmc.includes(E_MONEY_PAYMENT_CODE)} onPress={onPmcChange(E_MONEY_PAYMENT_CODE)} />
+                    <CheckBox size={18} label={i18n["cash.pay"]} style={styles.selectsItem} checked={pmc.includes(CASH_PAYMENT_CODE)} onPress={onPmcChange(CASH_PAYMENT_CODE)} />
                 </View>
             </View>
-            <View style={[fxR, pdX, {marginTop: 100}]}>
+            <View style={[fxR, pdX, {marginTop: 50}]}>
                 <GradientButton style={fxG1} onPress={onPopupClose}>{i18n["btn.cancel"]}</GradientButton>
                 <GradientButton style={[fxG1, mgLS]} onPress={onFilterConfirm}>{i18n["btn.confirm"]}</GradientButton>
             </View>

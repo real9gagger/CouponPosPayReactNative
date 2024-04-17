@@ -1,6 +1,6 @@
 import { ScrollView, View, Text, Image, StatusBar, StyleSheet } from "react-native";
 import { useI18N } from "@/store/getter";
-import { creditCardList, eWalletList, qrPayList } from "@/common/Statics";
+import { creditCardList, eWalletList, qrPayList, cashPayList } from "@/common/Statics";
 import LocalPictures from "@/common/Pictures";
 
 const styles = StyleSheet.create({
@@ -68,6 +68,17 @@ export default function TestSupportPayment(props){
             <Text style={styles.titleBox}>{i18n["qrcode.pay"]}</Text>
             <View style={[fxR, fxWP]}>
                 {qrPayList.map((vx, ix) => (
+                    <View key={vx.pmcode} style={ix%2===0 ? styles.itemBox1 : styles.itemBox2}>
+                        <View style={styles.itemContent}>
+                            <Image source={LocalPictures[vx.logo]} style={styles.imgBox} />
+                            <Text style={fxG1}>{vx.name}</Text>
+                        </View>
+                    </View>
+                ))}
+            </View>
+            <Text style={styles.titleBox}>{i18n["cash.pay"]}</Text>
+            <View style={[fxR, fxWP]}>
+                {cashPayList.map((vx, ix) => (
                     <View key={vx.pmcode} style={ix%2===0 ? styles.itemBox1 : styles.itemBox2}>
                         <View style={styles.itemContent}>
                             <Image source={LocalPictures[vx.logo]} style={styles.imgBox} />

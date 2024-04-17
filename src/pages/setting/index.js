@@ -51,6 +51,10 @@ const settingList = [
         i18nLabel: "setting.auto.launch"
     },
     {
+        actionName: "支付类型设置",
+        i18nLabel: "setting.paytype.tabs"
+    },
+    {
         actionName: "税率设置",
         i18nLabel: "tax.rate",
         disabled: runtimeEnvironment.isProduction
@@ -93,7 +97,7 @@ const infoList = [
     {
         actionName: "清理缓存",
         i18nLabel: "app.clean.caches",
-        actionOnly: true
+        iconName: "cleans"
     }
 ];
 
@@ -201,7 +205,7 @@ export default function SettingIndex(props){
                         <Switch 
                             style={styles.switchBox}
                             value={switchItems[vx.settingKey]} 
-                            thumbColor={switchItems[vx.settingKey] ? appMainColor :switchTrackColor.thumbColor} 
+                            thumbColor={switchItems[vx.settingKey] ? appMainColor : switchTrackColor.thumbColor} 
                             trackColor={switchTrackColor} 
                             onValueChange={onSwitchChange(vx.settingKey)}/>
                     </View>
@@ -225,7 +229,7 @@ export default function SettingIndex(props){
                         <Text style={fs16} numberOfLines={1}>{i18n[vx.i18nLabel]}</Text>
                         <PosPayIcon visible={vx.disabled !== undefined} name="debug" color={appMainColor} size={16} />
                         <Text style={styles.descBox} numberOfLines={1}>{descTexts[vx.actionName]}</Text>
-                        <PosPayIcon visible={!vx.actionOnly} name="right-arrow" color="#aaa" size={20} />
+                        <PosPayIcon name={vx.iconName || "right-arrow"} color="#aaa" size={20} />
                     </View>
                 </TouchableHighlight>
             ))}

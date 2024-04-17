@@ -8,12 +8,18 @@ const initialState = {
     regionalCurrencyUnit: "円", //所在地区的货币单元，默认円（日元）
     isEnableDrawer: true, //启用抽屉栏
     isEnableTabbar: true, //启用底部导航栏
-    isEnableHomeHeader: true, //是否显示主页标题栏
+    isEnableHomeHeader: false, //是否显示主页标题栏
     isEnableSystemNavigation: true, //显示系统导航栏
     numbersDecimalOfMoney: 0, //金额保留的小数位数
     paymentReceiptBottomText: "", //付款单底部自定义文本
     paymentReceiptPrintShopLogo: true, //款单小票是否打印付店铺LOGO
     customerDisplayShowPayAmountInfo: true, //结账时副屏显示付款金额
+    homePayTypeTabs: [
+        { tabkey: "tabQRCode", disabled: false },
+        { tabkey: "tabBankCard", disabled: false },
+        { tabkey: "tabEWallet", disabled: false },
+        { tabkey: "tabCashPay", disabled: false },
+    ], //首页支付类型显示哪些标签页，以及标签页的排序顺序。【空数组表示全部显示（默认）！】
 };
 
 //单个更新本地设置

@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { ScrollView, View, Text, Pressable, Image, StatusBar, StyleSheet, TouchableOpacity, DeviceEventEmitter } from "react-native";
 import { useI18N, getI18N, useAppSettings } from "@/store/getter";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
-import { eWalletList, CREDIT_CARD_PAYMENT_CODE, QR_CODE_PAYMENT_CODE, DISCOUNT_TYPE_LJ, TRANSACTION_TYPE_RECEIVE } from "@/common/Statics";
+import { eWalletList, allPayTypeMap, CASH_PAYMENT_CODE, CREDIT_CARD_PAYMENT_CODE, QR_CODE_PAYMENT_CODE, DISCOUNT_TYPE_LJ, TRANSACTION_TYPE_RECEIVE } from "@/common/Statics";
 import { parseCouponScanResult, checkCouponExpiration } from "@/utils/helper";
 import { dispatchSetLastUsed } from "@/store/setter";
 import CustomerDisplay from "@/modules/CustomerDisplay";
@@ -42,13 +42,13 @@ const styles = StyleSheet.create({
         color: appMainColor,
         fontSize: 14,
         fontWeight: "bold",
-        paddingLeft: 5
+        paddingLeft: 2.5
     },
     tabInactived: {
         color: "#333",
         fontSize: 14,
         fontWeight: "bold",
-        paddingLeft: 5
+        paddingLeft: 2.5
     },
     tabView: {
         width: deviceDimensions.screenWidth
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
         borderRadius: 10
     }
 });
-const renderScene = SceneMap({ tabBankCard, tabEWallet, tabQRCode });
+const renderScene = SceneMap({ tabBankCard, tabEWallet, tabQRCode, tabCashPay });
 const eventEmitterName = "HOME_EVENT_BUS"; //事件总枢纽
 const onInputToggle = "ON_INPUT_TOGGLE"; //切换输入框
 const onInputChange = "ON_INPUT_CHANGE"; //文本变化
@@ -540,7 +540,7 @@ function tabEWallet(props){
     );
 }
 
-//二维码
+//二维码收款
 function tabQRCode(props){
     const i18n = useI18N();
     const appSettings = useAppSettings();
@@ -679,18 +679,147 @@ function tabQRCode(props){
     );
 }
 
-//自定义标签项
-function customTabItem(args){
-    let iconName = null;
-    switch(args.route.key){
-        case "tabBankCard": iconName = "bank-card"; break;
-        case "tabEWallet": iconName = "e-wallet"; break;
-        case "tabQRCode": iconName = "qrcode-pay"; break;
+//现金收款
+function tabCashPay(props){
+    const i18n = useI18N();
+    const appSettings = useAppSettings();
+    const [payAmounts, setPayAmounts] = useState("");
+    const [moneyInfo, setMoneyInfo] = useState({}); //收款信息
+    const [cpInfos, setCpInfos] = useState(null);
+    const [currentInputBox, setCurrentInputBox] = useState(0);
+    
+    const toggleAmountInput = () => {
+        DeviceEventEmitter.emit(eventEmitterName, {
+            nth: (currentInputBox !== iNthAmount ? iNthAmount : iNthNone), 
+            txt: payAmounts,
+            action: onInputToggle
+        });
+    }
+    const toggleCouponInput = () => {
+        DeviceEventEmitter.emit(eventEmitterName, {
+            nth: iNthCoupon,
+            txt: (cpInfos?.cpcode || ""),
+            action: onInputToggle
+        });
+    }
+    const scanCouponCode = () => {
+        togglePKHidden(currentInputBox);
+        QRcodeScanner.openScanner(onScanFinish);
+    }
+    const startPayMoney = () => {
+        callPayment(payAmounts, moneyInfo.D_C, moneyInfo.T_X, cpInfos?.cpcode, CASH_PAYMENT_CODE, cpInfos?.ptcode);
+    }
+    const gotoSupportPayment = () => {
+        DeviceEventEmitter.emit(eventEmitterName, {
+            action: onSeePayments
+        });
     }
     
+    useEffect(() => {
+        const evt3000 = DeviceEventEmitter.addListener(eventEmitterName, function(infos){
+            switch(infos.action){
+                case onInputChange:
+                    if(infos.nth === iNthAmount){
+                        setPayAmounts(infos.txt);
+                    }
+                    break;
+                case onInputToggle:
+                    setCurrentInputBox(infos.nth);
+                    break;
+                case onTransactionSuccess: //交易成功重置数据
+                    setPayAmounts("");
+                    setCpInfos(null);
+                    setCurrentInputBox(iNthNone);
+                    break;
+                case onCouponInfo:
+                    setCpInfos(infos.cpinfo);
+                    setCurrentInputBox(iNthCoupon);
+                    break;
+            }
+        });
+        return () => { 
+            evt3000.remove();
+        }
+    }, []);
+    
+    useEffect(() => {
+        const mi = calcPaymentInfo(payAmounts, cpInfos?.discount, cpInfos?.distype, cpInfos?.condition, appSettings.generalTaxRate);
+        
+        //加入防抖功能
+        appSettings.customerDisplayShowPayAmountInfo && $debounce(CustomerDisplay.showPayAmountInfo, 800, {
+            total: payAmounts,
+            tax: mi.T_X,
+            discount: mi.D_C,
+            amount: mi.F_A,
+            cysymbol: appSettings.regionalCurrencySymbol
+        });
+        
+        setMoneyInfo(mi);
+    }, [payAmounts, appSettings, cpInfos]);
+    
+    //二维码支付界面
+    return (
+        <ScrollView style={fxG1} contentContainerStyle={mhF}>
+            <View style={[fxHC, styles.moneyLabel]}>
+                <Text style={[fxG1, fs16]}>{i18n["input.amount"]}</Text>
+                <Text style={tc99}>{appSettings.regionalCurrencyUnit}</Text>
+            </View>
+            <View style={styles.rowBox}>
+                <Text style={[styles.moneyInput, currentInputBox===iNthAmount&&styles.InputActived]} onPress={toggleAmountInput}>{appSettings.regionalCurrencySymbol}{payAmounts}</Text>
+            </View>
+            <Pressable style={[fxHC, styles.couponLabel]} android_ripple={tcCC} onPress={scanCouponCode}>
+                <Text style={[fxG1, fs16]}>{i18n["coupon"]}</Text>
+                <Text style={[tcMC, mgRX]}>{i18n["qrcode.identify"]}</Text>
+                <PosPayIcon name="qrcode-scan" color={appMainColor} size={24} />
+            </Pressable>
+            <TouchableOpacity style={pdHX} activeOpacity={0.6} onPress={toggleCouponInput}>
+                {!cpInfos ? 
+                    <Text style={[styles.couponInput, styles.couponEmpty, currentInputBox===iNthCoupon&&styles.InputActived]}>{i18n["coupon.enter.tip"]}</Text>
+                :<>
+                    <View style={styles.couponInfo}>
+                        <Text style={[fs14, fwB]}>{cpInfos.title}&nbsp;<PosPayIcon name="check-fill" color={moneyInfo.D_A ? tcG0.color : tc99.color} size={14} /></Text>
+                        <Text style={[fs12, moneyInfo.D_A ? tcG0 : tc99]}>{i18n[cpInfos.distype===DISCOUNT_TYPE_LJ ? "coupon.reduction" : "coupon.off"].cloze(cpInfos.condition, cpInfos.discount)}</Text>
+                    </View>
+                    <Text style={[styles.couponInput, currentInputBox===iNthCoupon&&styles.InputActived]}>-{moneyInfo.D_C}</Text>
+                </>}
+            </TouchableOpacity>
+            <View style={[fxHC, styles.rowBox]}>
+                <Text style={[fxG1, styles.paymentLabel]}>{i18n["payment.method"]}</Text>
+                <Text style={styles.paymentLabel}>{i18n["cash.pay"]}</Text>
+            </View>
+            <View style={fxG1}>{/* 占位专用 */}</View>
+            {!!payAmounts && <View style={styles.paymentDetails}>
+                <View style={fxHC}>
+                    <Text style={[fs12, fxG1]}>{i18n["input.amount"]}</Text>
+                    <Text style={fs12}><Text style={fwB}>{$tofixed(payAmounts)}</Text> {appSettings.regionalCurrencyUnit}</Text>
+                </View>
+                <View style={appSettings.generalTaxRate > 0 ? fxHC : dpN}>{/* 小于等于0，表示不使用税收功能！ */}
+                    <Text style={fs12}>{i18n["tax"]}</Text>
+                    <Text style={[fs12, tc99, fxG1]}>&nbsp;({appSettings.generalTaxRate}%)</Text>
+                    <Text style={fs12}><Text style={fwB}>{moneyInfo.T_X}</Text> {appSettings.regionalCurrencyUnit}</Text>
+                </View>
+                <View style={fxHC}>
+                    <Text style={[fs12, fxG1]}>{i18n["coupon.discount"]}</Text>
+                    <Text style={[fs12, tcG0]}><Text style={fwB}>-{moneyInfo.D_C}</Text> {appSettings.regionalCurrencyUnit}</Text>
+                </View>
+                <TouchableOpacity style={fxHC} activeOpacity={0.5} onPress={showAmountCalcRule}>
+                    <Text style={fs12}>{i18n["final.amount"]}</Text>
+                    <PosPayIcon name="help-stroke" size={12} color={appMainColor} offset={5} />
+                    <Text style={[fxG1, fs12, tcR0, taR]}><Text style={fwB}>{moneyInfo.F_A}</Text> {appSettings.regionalCurrencyUnit}</Text>
+                </TouchableOpacity>
+            </View>}
+            <View style={pdX}>
+                <GradientButton onPress={startPayMoney}>{i18n["btn.collect"]}</GradientButton>
+            </View>
+        </ScrollView>
+    );
+}
+
+//自定义标签项
+function customTabItem(args){
     return (
         <View style={fxHC}>
-            <PosPayIcon name={iconName} color={args.focused ? styles.tabActived.color : styles.tabInactived.color} size={20} />
+            <PosPayIcon name={allPayTypeMap[args.route.key]?.pticon} color={args.focused ? styles.tabActived.color : styles.tabInactived.color} size={18} />
             <Text style={args.focused ? styles.tabActived : styles.tabInactived} numberOfLines={1}>{args.route.title}</Text>
         </View>
     )
@@ -778,11 +907,29 @@ export default function IndexHome(props){
     }, []);
     
     useEffect(() => {
-        setTabList([
-            { key: "tabBankCard", title: i18n["credit.card"], isehh: appSettings.isEnableHomeHeader },
-            { key: "tabEWallet", title: i18n["e.wallet"] },
-            { key: "tabQRCode", title: i18n["qrcode.pay"] },
-        ]);
+        const tabs = [];
+        
+        if(appSettings.homePayTypeTabs && appSettings.homePayTypeTabs.length){
+            for(const item of appSettings.homePayTypeTabs){
+                if(!item.disabled){
+                    tabs.push({
+                        key: item.tabkey,
+                        title: i18n[allPayTypeMap[item.tabkey].ptname],
+                        isehh: appSettings.isEnableHomeHeader
+                    });
+                }
+            }
+        } else {
+            for(const kkkk in allPayTypeMap){
+                tabs.push({
+                    key: kkkk,
+                    title: i18n[allPayTypeMap[kkkk].ptname],
+                    isehh: appSettings.isEnableHomeHeader
+                });
+            }
+        }
+        
+        setTabList(tabs);
     }, [i18n, appSettings]);
 
     return (

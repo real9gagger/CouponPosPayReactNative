@@ -5,10 +5,11 @@ import { getPaymentInfo } from "@/common/Statics";
 import LoadingTip from "@/components/LoadingTip";
 
 const FIRST_CELL_WIDTH = 80;
+const CONTENT_PADDING_TB = 0;
 
 const styles = StyleSheet.create({
     containerBox: {
-        paddingHorizontal: 5,
+        paddingHorizontal: CONTENT_PADDING_TB,
         backgroundColor: "#fff"
     },
     dateBox: {
@@ -17,6 +18,10 @@ const styles = StyleSheet.create({
         padding: 5,
         color: appMainColor
     },
+    cellBox0: {
+        backgroundColor: "#A0E9FF",
+        color: "#000"
+    },
     cellBox1: {
         fontSize: 12,
         width: FIRST_CELL_WIDTH,
@@ -24,17 +29,15 @@ const styles = StyleSheet.create({
         paddingVertical: 10
     },
     cellBox2: {
-        width: (deviceDimensions.screenWidth - FIRST_CELL_WIDTH - 10) / 4,
+        width: (deviceDimensions.screenWidth - FIRST_CELL_WIDTH - CONTENT_PADDING_TB * 2) / 4,
         fontSize: 12,
         paddingHorizontal: 5,
         paddingVertical: 10,
         textAlign: "right"
     },
     lineBox: {
-        backgroundColor: "#fff",
-        borderTopColor: "#aaa", 
-        borderTopWidth: StyleSheet.hairlineWidth,
-        marginHorizontal: 5
+        borderTopColor: "#ccc", 
+        borderTopWidth: StyleSheet.hairlineWidth
     }
 });
 
@@ -50,17 +53,20 @@ export default function OrderStatisticsDetails(props){
         discount: 0, //折扣
         amount: 0 //实际金额
     });
+    const [activedColumn, setActivedColumn] = useState(0);
     
     const onItemPress = (oo) => {
-        if(!oo.paymentName){
-            const pmInfo = getPaymentInfo(oo.paymentType, oo.creditCardBrand || oo.eMoneyType || oo.qrPayType);
-            if(pmInfo){
-                oo.paymentName = pmInfo.name;
-                oo.paymentLogo = pmInfo.logo;
+        return function(){
+            if(!oo.paymentName){
+                const pmInfo = getPaymentInfo(oo.paymentType, oo.creditCardBrand || oo.eMoneyType || oo.qrPayType);
+                if(pmInfo){
+                    oo.paymentName = pmInfo.name;
+                    oo.paymentLogo = pmInfo.logo;
+                }
             }
+            
+            props.navigation.navigate("订单详情", oo);
         }
-        
-        props.navigation.navigate("订单详情", oo);
     }
     const getDetailsList = () => {
         if(!ltRef.current.canLoadMore()){
@@ -93,14 +99,9 @@ export default function OrderStatisticsDetails(props){
                 sumInfo.amount += (+item.amount || 0);
             }
             
-            if(ltRef.current.isFirstPage()){
-                setDetailsList(list);
-            } else {
-                setDetailsList([...detailsList, ...list]);
-            }
-            
             ltRef.current.setNoMore(queryParams.pageSize, list.length);
             
+            setDetailsList([...detailsList, ...list]);
             setSumInfo({...sumInfo});
         }).catch(ltRef.current.setErrMsg);
     }
@@ -115,29 +116,38 @@ export default function OrderStatisticsDetails(props){
         }
         ltRef.current.setScrollTop(contentOffset.y);
     }
+    const onACChanged = (code) => {
+        return function(){
+            if(code === activedColumn){
+                setActivedColumn(0);
+            } else {
+                setActivedColumn(code);
+            }
+        }
+    }
     
-    useEffect(getDetailsList, [])
+    useEffect(getDetailsList, []);
     
     return (<>
         <View style={styles.containerBox}>
             <View style={[fxHC, bgEE]}>
-                <Text style={styles.cellBox1} numberOfLines={1}>{i18n["transaction.time"]}</Text>
-                <Text style={styles.cellBox2} numberOfLines={1}>{i18n["order.amount"]}</Text>
-                <Text style={styles.cellBox2} numberOfLines={1}>{i18n["tax"]}</Text>
-                <Text style={styles.cellBox2} numberOfLines={1}>{i18n["coupon.discount"]}</Text>
-                <Text style={styles.cellBox2} numberOfLines={1}>{i18n["transaction.amount"]}</Text>
+                <Text style={[styles.cellBox1, activedColumn===0xFF && styles.cellBox0]} onPress={onACChanged(0xFF)} numberOfLines={1}>{i18n["transaction.time"]}</Text>
+                <Text style={[styles.cellBox2, activedColumn===0xEE && styles.cellBox0]} onPress={onACChanged(0xEE)} numberOfLines={1}>{i18n["order.amount"]}</Text>
+                <Text style={[styles.cellBox2, activedColumn===0xDD && styles.cellBox0]} onPress={onACChanged(0xDD)} numberOfLines={1}>{i18n["tax"]}</Text>
+                <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]} onPress={onACChanged(0xCC)} numberOfLines={1}>{i18n["coupon.discount"]}</Text>
+                <Text style={[styles.cellBox2, activedColumn===0xBB && styles.cellBox0]} onPress={onACChanged(0xBB)} numberOfLines={1}>{i18n["transaction.amount"]}</Text>
             </View>
         </View>
         <ScrollView style={pgFF} onScroll={onSVScroll} contentContainerStyle={styles.containerBox}>
             {detailsList.map(vx => 
                 <Fragment key={vx.id}>
                     {vx.tstData && <Text style={styles.dateBox}>{vx.tstData}</Text>}
-                    <TouchableOpacity style={fxHC} activeOpacity={0.5} onPress={() => onItemPress(vx)}>
-                        <Text style={styles.cellBox1}>{vx.transactionTime.substr(11)}</Text>
-                        <Text style={styles.cellBox2}>{vx.orderAmount || 0}</Text>
-                        <Text style={styles.cellBox2}>{vx.tax || 0}</Text>
-                        <Text style={styles.cellBox2}>-{vx.discountAmount || 0}</Text>
-                        <Text style={styles.cellBox2}>{vx.amount || 0}</Text>
+                    <TouchableOpacity style={fxHC} activeOpacity={0.5} onPress={onItemPress(vx)}>
+                        <Text style={[styles.cellBox1, activedColumn===0xFF && styles.cellBox0]}>{vx.transactionTime.substr(11)}</Text>
+                        <Text style={[styles.cellBox2, activedColumn===0xEE && styles.cellBox0]}>{vx.orderAmount || 0}</Text>
+                        <Text style={[styles.cellBox2, activedColumn===0xDD && styles.cellBox0]}>{vx.tax || 0}</Text>
+                        <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]}>-{vx.discountAmount || 0}</Text>
+                        <Text style={[styles.cellBox2, activedColumn===0xBB && styles.cellBox0]}>{vx.amount || 0}</Text>
                     </TouchableOpacity>
                 </Fragment>
             )}
@@ -150,15 +160,15 @@ export default function OrderStatisticsDetails(props){
                 alwaysShowLoading={true}
                 onRetry={getDetailsList} />
         </ScrollView>
-        <View style={bgFF}>
+        <View style={styles.containerBox}>
             <View style={styles.lineBox}></View>
-            <View style={[fxHC, styles.containerBox]}>
-                <Text style={[styles.cellBox1, fwB]} numberOfLines={1}>{i18n["summation"]} ({appSettings.regionalCurrencyUnit})</Text>
-                <Text style={[styles.cellBox2, fwB]} numberOfLines={1}>{sumInfo.total}</Text>
-                <Text style={[styles.cellBox2, fwB]} numberOfLines={1}>{sumInfo.tax}</Text>
-                <Text style={[styles.cellBox2, fwB]} numberOfLines={1}>-{sumInfo.discount}</Text>
-                <Text style={[styles.cellBox2, fwB]} numberOfLines={1}>{sumInfo.amount}</Text>
-            </View>
+        </View>
+        <View style={[fxHC, styles.containerBox]}>
+            <Text style={[styles.cellBox1, fwB, activedColumn===0xFF && styles.cellBox0]} numberOfLines={1}>{i18n["summation"]} ({appSettings.regionalCurrencyUnit})</Text>
+            <Text style={[styles.cellBox2, fwB, activedColumn===0xEE && styles.cellBox0]} numberOfLines={1}>{sumInfo.total}</Text>
+            <Text style={[styles.cellBox2, fwB, activedColumn===0xDD && styles.cellBox0]} numberOfLines={1}>{sumInfo.tax}</Text>
+            <Text style={[styles.cellBox2, fwB, activedColumn===0xCC && styles.cellBox0]} numberOfLines={1}>-{sumInfo.discount}</Text>
+            <Text style={[styles.cellBox2, fwB, activedColumn===0xBB && styles.cellBox0]} numberOfLines={1}>{sumInfo.amount}</Text>
         </View>
     </>)
 }

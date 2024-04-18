@@ -50,6 +50,7 @@
     "credit.card": "Credit card",
     "e.wallet": "E-wallet",
     "cash.pay": "Cash collect",
+    "cash.receive.tip": "Are you sure received the cash?",
     "about.software": "About Software",
     "qrcode.pay": "QR code",
     "qrcode.collect": "Scan to collect",

@@ -53,8 +53,17 @@ const styles = StyleSheet.create({
     tabView: {
         width: deviceDimensions.screenWidth
     },
-    tabItem: {
-        width: deviceDimensions.screenWidth / 3
+    tabItemElt1: {//等于小于1个标签页时使用的样式
+        width: deviceDimensions.screenWidth / 1.0
+    },
+    tabItemEq2: {//等于2个标签页时使用的样式
+        width: deviceDimensions.screenWidth / 2.0
+    },
+    tabItemEq3: {//等于3个标签页时使用的样式
+        width: deviceDimensions.screenWidth / 3.0
+    },
+    tabItemEgt4: {//等于大于4个标签页时使用的样式
+        width: deviceDimensions.screenWidth / 3.5
     },
     rowBox: {
         paddingHorizontal: 15,
@@ -185,11 +194,6 @@ function callPayment(payMoney, disMoney, taxMoney, couponCode, paymentCode, prom
         return !$notify.info(getI18N("input.amount.tip"));
     }
     
-    //如果不支持支付功能
-    if(!PaymentHelper.isSupport()){
-        return $alert(getI18N("payment.errmsg1"));
-    }
-    
     //以下属性数据类型都是字符串！
     PaymentHelper.startPay({
         transactionType: TRANSACTION_TYPE_RECEIVE, //1-付款，2-取消付款，3-退款
@@ -199,7 +203,9 @@ function callPayment(payMoney, disMoney, taxMoney, couponCode, paymentCode, prom
         tax: taxMoney, //税费
         slipNumber: "" //单据号码，取消付款或者退款时用到
     }, function(payRes){
-        if(payRes.activityResultCode === 0 && payRes.transactionTime){//支付成功
+        if(!payRes){
+            $alert(getI18N("payment.errmsg1")); //不支持支付功能
+        } else if(payRes.activityResultCode === 0 && payRes.transactionTime){//支付成功
             payRes.action = onTransactionSuccess;
             payRes.discountAmount = disMoney; //优惠总金额
             payRes.orderAmount = payMoney; //订单总金额
@@ -243,7 +249,7 @@ function calcPaymentInfo(tl, dc, dt, cd, rt){
         const temp = (!rt) ? 0 : (tl * rt / 100); //计算税
         return {
             T_X: $tofixed(temp), //税
-            F_A: $tofixed(tl + temp - dddd), //实际收款金额
+            F_A: $tofixed(+tl + temp - dddd), //实际收款金额
             D_C: $tofixed(dddd), //优惠
             D_A: !!dddd //是否有优惠
         };
@@ -707,7 +713,15 @@ function tabCashPay(props){
         QRcodeScanner.openScanner(onScanFinish);
     }
     const startPayMoney = () => {
-        callPayment(payAmounts, moneyInfo.D_C, moneyInfo.T_X, cpInfos?.cpcode, CASH_PAYMENT_CODE, cpInfos?.ptcode);
+        if(!payAmounts){
+            return !$notify.info(i18n["input.amount.tip"]);
+        }
+        
+        $confirm(i18n["cash.receive.tip"], i18n["alert.title"]).then(res => {
+            callPayment(payAmounts, moneyInfo.D_C, moneyInfo.T_X, cpInfos?.cpcode, CASH_PAYMENT_CODE, cpInfos?.ptcode);
+        }).catch(err => {
+           console.log("收银员未收到现金...");
+        });
     }
     const gotoSupportPayment = () => {
         DeviceEventEmitter.emit(eventEmitterName, {
@@ -816,7 +830,7 @@ function tabCashPay(props){
 }
 
 //自定义标签项
-function customTabItem(args){
+function customTabLabel(args){
     return (
         <View style={fxHC}>
             <PosPayIcon name={allPayTypeMap[args.route.key]?.pticon} color={args.focused ? styles.tabActived.color : styles.tabInactived.color} size={18} />
@@ -827,15 +841,20 @@ function customTabItem(args){
 
 //自定义顶部标签页
 function customTabBar(props) {
-    //是否显示页面标头
-    const isehh = (props.navigationState.routes.length ? props.navigationState.routes[0].isehh : true); //is enable home header
+    const tabCount = props.navigationState.routes.length;
+    const tabItemStyle = 
+        (tabCount <= 1 ? styles.tabItemElt1 :
+        (tabCount <= 2 ? styles.tabItemEq2 :
+        (tabCount <= 3 ? styles.tabItemEq3 : styles.tabItemEgt4)));
+    const isehh = (tabCount ? props.navigationState.routes[0].isehh : true); //is enable home header
+
     return (
         <TabBar
             {...props}
             scrollEnabled={true}
-            renderLabel={customTabItem}
+            renderLabel={customTabLabel}
             indicatorStyle={styles.tabIndicator}
-            tabStyle={styles.tabItem}
+            tabStyle={tabItemStyle}
             style={isehh ? styles.tabBar1 : styles.tabBar2}
         />
     );
@@ -930,7 +949,16 @@ export default function IndexHome(props){
         }
         
         setTabList(tabs);
+        
+        if(tabIndex >= tabs.length){
+            setTabIndex(0);
+        }
     }, [i18n, appSettings]);
+    
+    //没有标签页先不渲染！
+    if(!tabList.length){
+        return null;
+    }
 
     return (
         <View style={pgFF}>

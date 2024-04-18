@@ -51,6 +51,7 @@
     "credit.card": "信用卡",
     "e.wallet": "電子錢包",
     "cash.pay": "現金收款",
+    "cash.receive.tip": "確定已收到現金？",
     "about.software": "關於軟件",
     "qrcode.pay": "二維碼收款",
     "qrcode.collect": "掃碼收款",

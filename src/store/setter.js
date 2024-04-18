@@ -1,7 +1,7 @@
 import { store } from "./index"; //使用 useDispatch 报错，因此直接使用 store.dispatch，但官方不推荐：https://github.com/reduxjs/react-redux/discussions/1789
 import { changeLanguage, initiLanguage } from "./localesReducer";
 import { updateUserInfo, resetUserInfo, setAccessToken } from "./userReducer";
-import { updateAppSettings, updateLanguageSettings } from "./settingsReducer";
+import { updateAppSettings, initiAppSettings, updateLanguageSettings } from "./settingsReducer";
 import { setLastUsed, addNewCoupon, deleteAddedCoupon, onInitiCouponData } from "./couponReducer";
 import { addFailedOrder, removeFailedOrder, updateFailedOrder, synchronousAllOrder, onRefundSuccessful, onInitiOrderData } from "./orderReducer";
 
@@ -16,6 +16,7 @@ export function dispatchInitiStore(){
         store.dispatch(updateLanguageSettings(actionType.payload.code)); //保存语言编码
     }
     
+    store.dispatch(initiAppSettings());
     store.dispatch(onInitiCouponData()); //初始化优惠券数据
     store.dispatch(onInitiOrderData()); //初始化订单数据
 }

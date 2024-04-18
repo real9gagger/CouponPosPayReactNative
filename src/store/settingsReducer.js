@@ -1,4 +1,6 @@
-import { UPDATE_SETTINGS, UNKNOWN_ACTION } from "./types";
+import { UPDATE_SETTINGS, INITI_SETTINGS, UNKNOWN_ACTION } from "./types";
+import { CASH_PAYMENT_CODE, CREDIT_CARD_PAYMENT_CODE, E_MONEY_PAYMENT_CODE, QR_CODE_PAYMENT_CODE } from "@/common/Statics";
+import { getSupportPaymentMap } from "@/modules/PaymentHelper";
 
 const initialState = {
     generalTaxRate: 0, //通用税率（%）
@@ -15,12 +17,30 @@ const initialState = {
     paymentReceiptPrintShopLogo: true, //款单小票是否打印付店铺LOGO
     customerDisplayShowPayAmountInfo: true, //结账时副屏显示付款金额
     homePayTypeTabs: [
-        { tabkey: "tabQRCode", disabled: false },
-        { tabkey: "tabBankCard", disabled: false },
-        { tabkey: "tabEWallet", disabled: false },
-        { tabkey: "tabCashPay", disabled: false },
+        { tabkey: "tabQRCode", disabled: false, pmtype: QR_CODE_PAYMENT_CODE },
+        { tabkey: "tabBankCard", disabled: false, pmtype: CREDIT_CARD_PAYMENT_CODE },
+        { tabkey: "tabEWallet", disabled: false, pmtype: E_MONEY_PAYMENT_CODE },
+        { tabkey: "tabCashPay", disabled: false, pmtype: CASH_PAYMENT_CODE },
     ], //首页支付类型显示哪些标签页，以及标签页的排序顺序。【空数组表示全部显示（默认）！】
+    isAppFirstLaunch: true, //是否是软件安装之后首次启动！
 };
+
+//检查是否系统支持某个支付类型
+function checkIfIsIncludesPayType(ptype){
+    const myPmMap = getSupportPaymentMap();
+    
+    if(myPmMap[ptype]){
+        return true;
+    }
+    
+    for(const kkk in myPmMap){
+        if(kkk.startsWith(ptype)){
+            return true;
+        }
+    }
+    
+    return false;
+}
 
 //单个更新本地设置
 export function updateAppSettings(key, value){
@@ -55,9 +75,26 @@ export function updateLanguageSettings(code){
     }
 }
 
+//初始化配置项
+export function initiAppSettings(){
+    return {
+        type: INITI_SETTINGS,
+        payload: null
+    }
+}
+
 export default settingsReducer = (state = initialState, action) => {
     switch(action.type){
         case UPDATE_SETTINGS: return {...state, ...action.payload};
+        case INITI_SETTINGS: 
+            if(state.isAppFirstLaunch){//仅首次运行时初始化
+                for(const tab of state.homePayTypeTabs){
+                    tab.disabled = !checkIfIsIncludesPayType(tab.pmtype);
+                }
+                state.isAppFirstLaunch = false;
+                return {...state};
+            }
+            break;
     }
 
     return state;

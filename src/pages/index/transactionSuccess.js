@@ -86,7 +86,7 @@ export default function IndexTransactionSuccess(props){
             <CircleTick progressing={2} size={80} style={styles.tickBox} color={styles.tickText.color} />
             <Text style={styles.tickText}>{i18n["transaction.success"]}</Text>
             {transactionResult && <>
-                <Text style={styles.moneyText}>+{transactionResult.amount}<Text style={tcTP}>+</Text></Text>
+                <Text style={styles.moneyText}>+{transactionResult.amount}</Text>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["order.amount"]}</Text>
                     <Text><Text style={fwB}>{transactionResult.orderAmount}</Text> {transactionResult.currencyCode}</Text>
@@ -105,11 +105,12 @@ export default function IndexTransactionSuccess(props){
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["coupon.code"]}</Text>
-                    <PosPayIcon name="coupon-code" size={14} color="#f90" offset={-5} />
+                    <PosPayIcon visible={!!transactionResult.couponCode} name="coupon-code" size={14} color="#f90" offset={-5} />
                     <Text>{transactionResult.couponCode || EMPTY_DEFAULT_TEXT}</Text>
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["coupon.promotion.code"]}</Text>
+                    <PosPayIcon visible={!!transactionResult.distributorNumber} name="coupon-code" size={14} color="#f90" offset={-5} />
                     <Text>{transactionResult.distributorNumber || EMPTY_DEFAULT_TEXT}</Text>
                 </View>
                 <View style={styles.itemBox}>

@@ -50,6 +50,7 @@
     "credit.card": "クレジットカード",
     "e.wallet": "電子マネー",
     "cash.pay": "現金取引",
+    "cash.receive.tip": "現金を受け取りましたか？",
     "about.software": "ソフトウェアについて",
     "qrcode.pay": "QRコード",
     "qrcode.collect": "スキャンコード入金",

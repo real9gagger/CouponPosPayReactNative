@@ -19,12 +19,16 @@ const styles = StyleSheet.create({
     },
     contentShow: {
         height: "100%",
+        width: "100%",
         position: "relative",
         zIndex: 9999
     },
     contentHide: {
         height: "100%",
+        width: "100%",
         position: "absolute",
+        top: 0,
+        left: 0,
         zIndex: 0,
         opacity: 0
     },

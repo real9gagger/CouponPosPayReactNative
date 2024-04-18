@@ -34,17 +34,15 @@ export default function OrderRefundConfirm(props){
     const [canRefund, setCanRefund] = useState(false); //是否可以退款
 
     const confirmRefund = () => {
-        //如果不支持支付功能
-        if(!PaymentHelper.isSupport()){
-            return $alert(i18n["payment.errmsg1"]);
-        }
-        
         PaymentHelper.startPay({
             transactionMode: (runtimeEnvironment.isProduction ? "1" : "2"), //1-正常，2-练习
             transactionType: TRANSACTION_TYPE_REFUND, //1-付款，2-取消付款，3-退款
-            slipNumber: orderInfo.slipNumber //单据号码，取消付款或者退款时用到
+            slipNumber: orderInfo.slipNumber, //单据号码，取消付款或者退款时用到
+            paymentType: orderInfo.paymentType //付款方式
         }, function(payRes){
-            if(payRes.activityResultCode === 0){//退款成功
+            if(!payRes){
+                $alert(i18n["payment.errmsg1"]); //不支持支付功能
+            } else if(payRes.activityResultCode === 0){//退款成功
                 const dat = { id: orderInfo.id, slipNumber: orderInfo.slipNumber };
                 $request("posAppRefund", dat).then(res => {
                     dispatchOnRefundSuccessful(orderInfo.id);

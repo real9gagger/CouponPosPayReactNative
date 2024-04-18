@@ -135,6 +135,8 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
         mPaymentApi = new PaymentApi();
         if (MainActivity.isPanasonicJTC60Device()) {
             context.addLifecycleEventListener(this);
+        } else {
+            this.copyCustomerDisplayPics(); //虽然不是 POS 机，但也复制一份
         }
 
         String myPath = context.getExternalCacheDir().getPath() + "/customer_display/";
@@ -416,7 +418,7 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
 
         if (dir.exists() && dir.isDirectory()) {
             File[] files = dir.listFiles();
-            if (files != null) {
+            if (files != null && files.length > 1) { //2024年4月18日 至少需要两个以上的文件才会清理，否则不必浪费时间去处理
                 for (File ff : files) {
                     if (ff.delete()) {
                         deleted++;

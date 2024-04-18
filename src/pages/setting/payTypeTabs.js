@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: StyleSheet.hairlineWidth
     },
     btnBox0: {
-        opacity: 0.3,
+        opacity: 0.2,
         padding: 10
     },
     btnBox1: {
@@ -79,6 +79,7 @@ export default function SettingPayTypeTabs(props){
             for(const kk in vxo){
                 switch(kk){
                     case "tabkey":
+                    case "pmtype":
                     case "disabled": break;
                     default: delete vxo[kk]; break; //删除用不到的数据，以便节省存储空间
                 }

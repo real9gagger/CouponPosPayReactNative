@@ -236,7 +236,7 @@ function printPaymentReceipts(orderInfo){
         const titlePR = getTextCentered(i18n["payment.receipt"], 2);
         const rowOA = fitTextLine(i18n["order.amount"], `${orderInfo.currencySymbol}${orderInfo.orderAmount}`);
         const rowTX = fitTextLine(i18n["tax"], `${orderInfo.currencySymbol}${orderInfo.tax}`, !orderInfo.isShowTaxInfo);
-        const rowCD = fitTextLine(i18n["coupon.discount"], `${orderInfo.currencySymbol}${orderInfo.discountAmount}`);
+        const rowCD = fitTextLine(i18n["coupon.discount"], `-${orderInfo.currencySymbol}${orderInfo.discountAmount}`);
         const rowTA = fitTextLine(i18n["transaction.amount"], `${orderInfo.currencySymbol}${orderInfo.amount}`);
         const rowPM = fitTextLine(i18n["payment.method"], orderInfo.paymentName);
         const rowPR = fitTextLine(i18n["payment.payer"], orderInfo.creditCardMaskedPan);

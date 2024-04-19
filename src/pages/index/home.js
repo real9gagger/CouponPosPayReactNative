@@ -263,6 +263,13 @@ function showAmountCalcRule(){
     });
 }
 
+//跳转到支持的支付方式
+function gotoSupportPayment(){
+    DeviceEventEmitter.emit(eventEmitterName, {
+        action: onSeePayments
+    });
+}
+    
 //银行卡
 function tabBankCard(props){
     const i18n = useI18N();
@@ -364,7 +371,7 @@ function tabBankCard(props){
             </TouchableOpacity>
             <View style={[fxHC, styles.rowBox]}>
                 <Text style={[fxG1, styles.paymentLabel]}>{i18n["payment.method"]}</Text>
-                <Text style={styles.paymentLabel}>{i18n["credit.card"]}</Text>
+                <Text style={styles.paymentLabel} onPress={gotoSupportPayment}>{i18n["credit.card"]}</Text>
             </View>
             <View style={[fxR, fxWP, pdHX]}>
                 <TouchableOpacity activeOpacity={0.5} style={[styles.paymentBox, styles.paymentSelected]}>
@@ -508,7 +515,7 @@ function tabEWallet(props){
             </TouchableOpacity>
             <View style={[fxHC, styles.rowBox]}>
                 <Text style={[fxG1, styles.paymentLabel]}>{i18n["payment.method"]}</Text>
-                <Text style={styles.paymentLabel}>{eWalletList[paymentIndex].name}</Text>
+                <Text style={styles.paymentLabel} onPress={gotoSupportPayment}>{eWalletList[paymentIndex].name}</Text>
             </View>
             <View style={[fxR, fxWP, pdHX]}>
                 {eWalletList.map((vx, ix) => (
@@ -575,11 +582,6 @@ function tabQRCode(props){
     }
     const startPayMoney = () => {
         callPayment(payAmounts, moneyInfo.D_C, moneyInfo.T_X, cpInfos?.cpcode, QR_CODE_PAYMENT_CODE, cpInfos?.ptcode);
-    }
-    const gotoSupportPayment = () => {
-        DeviceEventEmitter.emit(eventEmitterName, {
-            action: onSeePayments
-        });
     }
     
     useEffect(() => {
@@ -652,8 +654,7 @@ function tabQRCode(props){
             </TouchableOpacity>
             <View style={[fxHC, styles.rowBox]}>
                 <Text style={[fxG1, styles.paymentLabel]}>{i18n["payment.method"]}</Text>
-                <Text style={[styles.paymentLabel, tc99]} onPress={gotoSupportPayment}>{i18n["payment.supports"]}</Text>
-                <PosPayIcon name="right-arrow-double" style={{marginTop: 10}} color="#999" size={14} offset={2} />
+                <Text style={styles.paymentLabel} onPress={gotoSupportPayment}>{i18n["qrcode.pay"]}</Text>
             </View>
             <TouchableOpacity style={fxVM} onPress={startPayMoney} activeOpacity={0.5}>
                 <Image style={styles.paymentScaning} source={LocalPictures.scanQRcode} />
@@ -723,11 +724,6 @@ function tabCashPay(props){
            console.log("收银员未收到现金...");
         });
     }
-    const gotoSupportPayment = () => {
-        DeviceEventEmitter.emit(eventEmitterName, {
-            action: onSeePayments
-        });
-    }
     
     useEffect(() => {
         const evt3000 = DeviceEventEmitter.addListener(eventEmitterName, function(infos){
@@ -799,7 +795,7 @@ function tabCashPay(props){
             </TouchableOpacity>
             <View style={[fxHC, styles.rowBox]}>
                 <Text style={[fxG1, styles.paymentLabel]}>{i18n["payment.method"]}</Text>
-                <Text style={styles.paymentLabel}>{i18n["cash.pay"]}</Text>
+                <Text style={styles.paymentLabel} onPress={gotoSupportPayment}>{i18n["cash.pay"]}</Text>
             </View>
             <View style={fxG1}>{/* 占位专用 */}</View>
             {!!payAmounts && <View style={styles.paymentDetails}>

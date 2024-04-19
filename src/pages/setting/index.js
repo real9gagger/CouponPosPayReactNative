@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { TouchableHighlight, ScrollView, View, Text, Switch, StatusBar, StyleSheet } from "react-native";
 import { useI18N, useAppSettings } from "@/store/getter";
 import { dispatchUpdateAppSettings } from "@/store/setter";
+import useStateRef from "@/utils/useStateRef";
 import PosPayIcon from "@/components/PosPayIcon";
-import GradientButton from "@/components/GradientButton";
 import AppPackageInfo from "@/modules/AppPackageInfo";
 import ReceiptsPlus from "@/modules/ReceiptsPlus";
 //import AppNavigationInfo from "@/modules/AppNavigationInfo";
@@ -15,20 +15,6 @@ const styles = StyleSheet.create({
     boxDivider: {
         borderTopColor: "#ddd",
         borderTopWidth: StyleSheet.hairlineWidth
-    },
-    bthBox: {
-        position: "absolute",
-        bottom: 20,
-        left: 15,
-        right: 15,
-        zIndex: 9
-    },
-    tipBox: {
-        color: "#f90",
-        textAlign: "center",
-        paddingHorizontal: 10,
-        paddingVertical: 20,
-        fontSize: 14
     },
     switchBox: {
         height: 20,
@@ -123,7 +109,7 @@ const switchList = [
 export default function SettingIndex(props){
     const i18n = useI18N();
     const appSettings = useAppSettings();
-    const [switchItems, setSwitchItems] = useState({});
+    const [switchItems, setSwitchItems, switchItemsRef] = useStateRef({});
     const [descTexts, setDescTexts] = useState({});
     
     const onItemPress = (actionName) => {
@@ -156,18 +142,21 @@ export default function SettingIndex(props){
         }
     }
     
-    const onPressConfirm = () => {
-        const newSettings = {};
-        
-        for(const vx of switchList){
-            newSettings[vx.settingKey] = switchItems[vx.settingKey];
+    const onPageGoBack = () => {
+        //必须使用引用，否则无法获取最新的值，因为此函数不是用户点击、触摸屏幕触发的，而是页面退出时，软件调用的
+        if(switchItemsRef.current.isSomeItemHasBeenChanged){
+            $toast(i18n["setting.apply.tip"]);
+            
+            const newSettings = {};
+            
+            for(const vx of switchList){
+                newSettings[vx.settingKey] = switchItemsRef.current[vx.settingKey];
+            }
+            
+            dispatchUpdateAppSettings({}, newSettings);
+            
+            //AppNavigationInfo.setVisible(newSettings.isEnableSystemNavigation);
         }
-        
-        dispatchUpdateAppSettings({}, newSettings);
-        
-        //AppNavigationInfo.setVisible(newSettings.isEnableSystemNavigation);
-        
-        props.navigation.goBack();
     }
     
     useEffect(() => {
@@ -176,6 +165,8 @@ export default function SettingIndex(props){
             myItems[vx.settingKey] = !!appSettings[vx.settingKey];
         }
         setSwitchItems(myItems);
+        
+        return onPageGoBack;
     }, []);
     
     useEffect(() => {
@@ -233,12 +224,7 @@ export default function SettingIndex(props){
                     </View>
                 </TouchableHighlight>
             ))}
-            <Text style={[styles.tipBox, !switchItems.isSomeItemHasBeenChanged && op00]}>{i18n["setting.apply.tip"]}</Text>
-            <View style={{height:60}}>{/* 占位专用 */}</View>
+            <View style={{height:50}}>{/* 占位专用 */}</View>
         </ScrollView>
-        <GradientButton
-            style={styles.bthBox}
-            disabled={!switchItems.isSomeItemHasBeenChanged} 
-            onPress={onPressConfirm}>{i18n["btn.apply"]}</GradientButton>
     </>)
 }

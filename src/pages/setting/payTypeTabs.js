@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { useI18N, getAppSettings } from "@/store/getter";
 import { dispatchUpdateAppSettings } from "@/store/setter";
 import { allPayTypeMap } from "@/common/Statics";
+import { refreshSupportPaymentMap, isSupportPayType } from "@/modules/PaymentHelper";
 import GradientButton from "@/components/GradientButton";
+import TextualButton from "@/components/TextualButton";
 import PosPayIcon from "@/components/PosPayIcon";
 
 const styles = StyleSheet.create({
@@ -18,11 +20,19 @@ const styles = StyleSheet.create({
     },
     btnBox1: {
         padding: 10
+    },
+    txtBtn: {
+        color: appLightColor,
+        marginVertical: 20,
+        paddingVertical: 10,
+        fontSize: 12
     }
 });
 
 export default function SettingPayTypeTabs(props){
     const i18n = useI18N();
+    const isWarned = useRef(false); //启用或停用支付方式前，是否已弹窗警告框！
+    const initHash = useRef(""); //初始哈希值，用于检查是否有项目被改变了
     const [payTypeList, setPayTypeList] = useState([]);
     const lastOne = payTypeList.length - 1;
     
@@ -59,14 +69,26 @@ export default function SettingPayTypeTabs(props){
         }
     }
     const onSetDisabled = (idx) => {
-        return function(){
-            const acColor = (payTypeList[idx].disabled ? tcG0.color : tcCC.color);
+        return async function(){
+            let isContinue = true;
             
-            payTypeList.forEach((pp, ii) => (pp.activeco = (idx===ii ? acColor : null)));
-            payTypeList[idx].disabled = !payTypeList[idx].disabled;
+            if(!isWarned.current){
+                await $confirm(i18n["setting.paytype.tip"], i18n["alert.title"], i18n["btn.ok"], i18n["btn.continue"]).then(() => {
+                    isContinue = isWarned.current = true;
+                }).catch(() => {
+                    isContinue = false;
+                });
+            }
             
-            setPayTypeList([...payTypeList]);
-            $debounce(resetActived, 500, idx);
+            if(isContinue){
+                const acColor = (payTypeList[idx].disabled ? tcG0.color : tcCC.color);
+                
+                payTypeList.forEach((pp, ii) => (pp.activeco = (idx===ii ? acColor : null)));
+                payTypeList[idx].disabled = !payTypeList[idx].disabled;
+                
+                setPayTypeList([...payTypeList]);
+                $debounce(resetActived, 500, idx);
+            }
         }
     }
     const onConfirm = () => {
@@ -90,7 +112,27 @@ export default function SettingPayTypeTabs(props){
         
         props.navigation.goBack();
     }
-    
+    const onRefreshPayments = () => {
+        refreshSupportPaymentMap().then(() => {
+            let diffCount = 0;
+            for(const pt of payTypeList){
+                const newVal = !isSupportPayType(pt.pmtype);
+                if(pt.disabled !== newVal){
+                    pt.disabled = newVal;
+                    diffCount++;
+                }
+            }
+            if(diffCount){
+                setPayTypeList([...payTypeList]);
+            }
+            $toast(i18n["updated"]);
+        });
+    }
+    const nothingChanged = () => {
+        const newHash = payTypeList.map(vxo => (vxo.pmtype + vxo.disabled)).join();
+        return (initHash.current === newHash);
+    }
+
     useEffect(() => {
         const ptl = [];
         const tabs = getAppSettings("homePayTypeTabs");
@@ -112,6 +154,8 @@ export default function SettingPayTypeTabs(props){
             }
         }
         
+        initHash.current = ptl.map(vxo => (vxo.pmtype + vxo.disabled)).join();
+        
         setPayTypeList(ptl);
     }, []);
     
@@ -132,7 +176,8 @@ export default function SettingPayTypeTabs(props){
                     </TouchableOpacity>
                 </View>
             )}
-            <GradientButton style={{marginTop: 60}} onPress={onConfirm}>{i18n["btn.apply"]}</GradientButton>
+            <GradientButton disabled={nothingChanged()} style={{marginTop: 60}} onPress={onConfirm}>{i18n["btn.apply"]}</GradientButton>
+            <TextualButton style={styles.txtBtn} onPress={onRefreshPayments}>{i18n["setting.paytype.refresh"]}</TextualButton>
         </View>
     );
 }

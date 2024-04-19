@@ -149,6 +149,10 @@ const styles = StyleSheet.create({
         width: 150,
         marginTop: 50,
         marginBottom: 30
+    },
+    pdRt5: {
+        paddingRight: 5,
+        fontSize: 12
     }
 });
 
@@ -330,22 +334,22 @@ export default function CouponIndex(props){
             
             {(isFocus || !!couponInfo.ready) && <>
                 <Pressable style={[fxHC, pdX]} android_ripple={tcCC} onPress={scanCouponCode}>
-                    <Text style={[fxG1, tcMC]}>{i18n["qrcode.identify"]}</Text>
+                    <Text style={[fxG1, tcMC]} numberOfLines={1}>{i18n["qrcode.identify"]}</Text>
                     <PosPayIcon name="qrcode-scan" color={appMainColor} size={20} />
                 </Pressable>
                 <Pressable style={[fxHC, pdX]} android_ripple={tcCC} onPress={gotoInputBotText}>
-                    <Text style={[fxG1, tcMC]}>{i18n["coupon.promotion.code"]}</Text>
-                    <Text style={[pdRS, tc66]}>{couponInfo.ptcode}</Text>
+                    <Text style={[fxG1, tcMC]} numberOfLines={1}>{i18n["coupon.promotion.code"]}</Text>
+                    <Text style={styles.pdRt5}>{couponInfo.ptcode}</Text>
                     <PosPayIcon name="edit-pen" color={appMainColor} size={20} />
                 </Pressable>
                 <Pressable style={runtimeEnvironment.isProduction ? dpN : [fxHC, pdX]} android_ripple={tcCC} onPress={gotoCouponAdds}>
-                    <Text style={[fxG1, tcMC]}>{i18n["coupon.adds.manually"]}</Text>
-                    <Text style={[fs12, pdRS, tc99]}>({i18n["test.debug.available"]})</Text>
+                    <Text style={[fxG1, tcMC]} numberOfLines={1}>{i18n["coupon.adds.manually"]}</Text>
+                    <Text style={[styles.pdRt5, tc99]}>({i18n["test.debug.available"]})</Text>
                     <PosPayIcon name="manual-add" color={appMainColor} size={20} />
                 </Pressable>
                 <Pressable style={runtimeEnvironment.isProduction ? dpN : [fxHC, pdX]} android_ripple={tcCC} onPress={gotoShopCoupons}>
-                    <Text style={[fxG1, tcMC]}>{i18n["coupon.adds.history"]}</Text>
-                    <Text style={[fs12, pdRS, tc99]}>({i18n["test.debug.available"]})</Text>
+                    <Text style={[fxG1, tcMC]} numberOfLines={1}>{i18n["coupon.adds.history"]}</Text>
+                    <Text style={[styles.pdRt5, tc99]}>({i18n["test.debug.available"]})</Text>
                     <PosPayIcon name="my-coupons" color={appMainColor} size={20} />
                 </Pressable>
             </>}

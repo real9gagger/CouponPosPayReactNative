@@ -99,6 +99,8 @@
     "coupon.errmsg2": "优惠券已过期",
     "payment.method": "支付方式",
     "payment.supports": "支持的支付方式",
+    "payment.supports.show": "仅显示支持的支付方式",
+    "payment.all.show": "显示全部支付方式",
     "payment.payer": "付款人账户",
     "payment.payee": "收款人账户",
     "payment.receipt": "付款回执单",

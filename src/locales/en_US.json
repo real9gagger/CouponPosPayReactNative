@@ -90,6 +90,8 @@
     "coupon.errmsg2": "The coupon has expired",
     "payment.method": "Payment method",
     "payment.supports": "Supported Payment Method",
+    "payment.supports.show": "Show supported payment methods only",
+    "payment.all.show": "Show all payment methods",
     "payment.payer": "Payer account",
     "payment.payee": "Payee account",
     "payment.receipt": "Payment receipt",

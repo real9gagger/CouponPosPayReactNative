@@ -90,6 +90,8 @@
     "coupon.errmsg2": "クーポン券は期限切れ",
     "payment.method": "支払い方法",
     "payment.supports": "利用可能な支払い方法",
+    "payment.supports.show": "サポートされている支払い方法のみを表示",
+    "payment.all.show": "すべての支払い方法を表示",
     "payment.payer": "口座番号",
     "payment.payee": "受取人口座",
     "payment.receipt": "伝票",

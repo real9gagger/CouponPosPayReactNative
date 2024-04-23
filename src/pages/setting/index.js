@@ -9,9 +9,6 @@ import ReceiptsPlus from "@/modules/ReceiptsPlus";
 //import AppNavigationInfo from "@/modules/AppNavigationInfo";
 
 const styles = StyleSheet.create({
-    blankBox: {
-        height: 10
-    },
     boxDivider: {
         borderTopColor: "#ddd",
         borderTopWidth: StyleSheet.hairlineWidth
@@ -24,13 +21,42 @@ const styles = StyleSheet.create({
         color: "#888",
         flex: 1,
         textAlign: "right"
+    },
+    rowBox1: {
+        backgroundColor: "#fff",
+        paddingHorizontal: 15
+    },
+    rowBox2: {
+        backgroundColor: "#fff",
+        paddingHorizontal: 15,
+        marginTop: 10
     }
 });
+
+const switchList = [
+    {
+        i18nLabel: "setting.enable.drawer",
+        settingKey: "isEnableDrawer"
+    },
+    {
+        i18nLabel: "setting.enable.tabbar",
+        settingKey: "isEnableTabbar"
+    },
+    {
+        i18nLabel: "setting.enable.homeheader",
+        settingKey: "isEnableHomeHeader"
+    },
+    /* {
+        i18nLabel: "setting.enable.sysnav",
+        settingKey: "isEnableSystemNavigation"
+    } */
+];
 
 const settingList = [
     {
         actionName: "语言设置",
-        i18nLabel: "language.header"
+        i18nLabel: "language.header",
+        isAddGap: true
     },
     {
         actionName: "开机自启设置",
@@ -54,14 +80,12 @@ const settingList = [
         actionName: "货币设置",
         i18nLabel: "currency.header",
         disabled: runtimeEnvironment.isProduction
-    }
-];
-
-const infoList = [
+    },
     {
         actionName: "测试中心",
         i18nLabel: "test.centre",
-        disabled: runtimeEnvironment.isProduction
+        disabled: runtimeEnvironment.isProduction,
+        isAddGap: true
     },
     {
         actionName: "软件图标",
@@ -70,7 +94,8 @@ const infoList = [
     },
     {
         actionName: "设备信息",
-        i18nLabel: "test.devinfo"
+        i18nLabel: "test.devinfo",
+        isAddGap: runtimeEnvironment.isProduction
     },
     {
         actionName: "支付合作商",
@@ -83,27 +108,9 @@ const infoList = [
     {
         actionName: "清理缓存",
         i18nLabel: "app.clean.caches",
-        iconName: "cleans"
+        iconName: "cleans",
+        isAddGap: true
     }
-];
-
-const switchList = [
-    {
-        i18nLabel: "setting.enable.drawer",
-        settingKey: "isEnableDrawer"
-    },
-    {
-        i18nLabel: "setting.enable.tabbar",
-        settingKey: "isEnableTabbar"
-    },
-    {
-        i18nLabel: "setting.enable.homeheader",
-        settingKey: "isEnableHomeHeader"
-    },
-    /* {
-        i18nLabel: "setting.enable.sysnav",
-        settingKey: "isEnableSystemNavigation"
-    } */
 ];
 
 export default function SettingIndex(props){
@@ -115,11 +122,11 @@ export default function SettingIndex(props){
     const onItemPress = (actionName) => {
         return function(){
             if(actionName === "清理缓存"){
-                $confirm(i18n["app.clean.caches"]).then(() => {
+                $confirm(i18n["app.clean.caches"], i18n["alert.title"]).then(() => {
                     ReceiptsPlus.clearPrintCaches();
                     $toast(i18n["cleaning.completed.tip"]);
                     setDescTexts({...descTexts, "清理缓存": "0KB"})
-                });
+                }).catch(console.log);
             } else {
                 props.navigation.navigate(actionName);
             }
@@ -185,10 +192,10 @@ export default function SettingIndex(props){
         });
     }, [i18n, appSettings]);
     
-    return (<>
+    return (
         <ScrollView style={pgEE} contentContainerStyle={mhF}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
-            <View style={styles.blankBox}>{/*==== 占位专用 ====*/}</View>
+            <View style={{height:10}}>{/*==== 占位专用 ====*/}</View>
             {switchList.map((vx, ix) => (
                 <View key={vx.settingKey} style={[pdHX, bgFF]}>
                     <View style={[pdVX, fxHC, ix && styles.boxDivider]}>
@@ -202,21 +209,9 @@ export default function SettingIndex(props){
                     </View>
                 </View>
             ))}
-            <View style={styles.blankBox}>{/*==== 占位专用 ====*/}</View>
-            {settingList.map((vx, ix) => (
-                <TouchableHighlight key={vx.actionName} style={vx.disabled ? dpN : [pdHX, bgFF]} underlayColor="#eee" onPress={onItemPress(vx.actionName)}>
-                    <View style={[pdVX, fxHC, ix && styles.boxDivider]}>
-                        <Text style={fs16}>{i18n[vx.i18nLabel]}</Text>
-                        <PosPayIcon visible={vx.disabled !== undefined} name="debug" color={appMainColor} size={16} />
-                        <Text style={styles.descBox}>{descTexts[vx.actionName]}</Text>
-                        <PosPayIcon name="right-arrow" color="#aaa" size={20} />
-                    </View>
-                </TouchableHighlight>
-            ))}
-            <View style={styles.blankBox}>{/*==== 占位专用 ====*/}</View>
-            {infoList.map((vx, ix) => (
-                <TouchableHighlight key={vx.actionName} style={vx.disabled ? dpN : [pdHX, bgFF]} underlayColor="#eee" onPress={onItemPress(vx.actionName)}>
-                    <View style={[pdVX, fxHC, ix && styles.boxDivider]}>
+            {settingList.map(vx => (!vx.disabled && 
+                <TouchableHighlight key={vx.actionName} style={!vx.isAddGap ? styles.rowBox1 : styles.rowBox2} underlayColor="#eee" onPress={onItemPress(vx.actionName)}>
+                    <View style={[pdVX, fxHC, !vx.isAddGap && styles.boxDivider]}>
                         <Text style={fs16} numberOfLines={1}>{i18n[vx.i18nLabel]}</Text>
                         <PosPayIcon visible={vx.disabled !== undefined} name="debug" color={appMainColor} size={16} />
                         <Text style={styles.descBox} numberOfLines={1}>{descTexts[vx.actionName]}</Text>
@@ -226,5 +221,5 @@ export default function SettingIndex(props){
             ))}
             <View style={{height:50}}>{/* 占位专用 */}</View>
         </ScrollView>
-    </>)
+    )
 }

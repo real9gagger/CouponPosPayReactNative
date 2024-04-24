@@ -194,25 +194,34 @@ function callPayment(payMoney, disMoney, taxMoney, couponCode, paymentCode, prom
         return !$notify.info(getI18N("input.amount.tip"));
     }
     
+    const finalAmount = (payMoney - disMoney); //Number 类型
+    
     //以下属性数据类型都是字符串！
     PaymentHelper.startPay({
         transactionType: TRANSACTION_TYPE_RECEIVE, //1-付款，2-取消付款，3-退款
         transactionMode: (runtimeEnvironment.isProduction ? "1" : "2"), //1-正常，2-练习
         paymentType: paymentCode,
-        amount: $tofixed(payMoney - disMoney), //至少一块钱，否则报错
+        amount: $tofixed(finalAmount), //至少一块钱，否则报错
         tax: taxMoney, //税费
-        slipNumber: "" //单据号码，取消付款或者退款时用到
+        slipNumber: "" //单据号码，取消付款或者退款时才用到！
     }, function(payRes){
         if(!payRes){
             $alert(getI18N("payment.errmsg1")); //不支持支付功能
-        } else if(payRes.activityResultCode === 0 && payRes.transactionTime){//支付成功
+        } else if(payRes.activityResultCode === 0 && payRes.transactionTime){//用户支付已成功
+        
+            if(payRes.amount != finalAmount){
+                console.log(`POS机的交易金额（${payRes.amount}）和本APP的实际收款（${finalAmount}）不一致，交易金额已改为本APP的实际收款金额！`);
+            }
+            
             payRes.action = onTransactionSuccess;
             payRes.discountAmount = disMoney; //优惠总金额
             payRes.orderAmount = payMoney; //订单总金额
+            payRes.amount = (runtimeEnvironment.isProduction ? payRes.amount : finalAmount); //练习模式返回的交易金额不对，因此需要特殊处理！
             payRes.couponCode = (disMoney && couponCode ? couponCode : ""); //有折扣才有优惠码
             payRes.remark = (runtimeEnvironment.isProduction ? "" : "开发测试的数据");
             payRes.tax = (payRes.tax || taxMoney);
             payRes.distributorNumber = promotionCode; //分销码。历史原因导致命名为 “distributorNumber”（分销员编号）
+
             DeviceEventEmitter.emit(eventEmitterName, payRes); //发
         } else if(payRes.activityResultCode === 2){//取消支付
             $toast(getI18N("payment.errmsg2"));
@@ -256,7 +265,7 @@ function calcPaymentInfo(tl, dc, dt, cd, rt){
     }
 }
 
-//显示实际金额的计算规则
+//显示实际收款金额的计算规则
 function showAmountCalcRule(){
     DeviceEventEmitter.emit(eventEmitterName, {
         action: onViewCalcRule

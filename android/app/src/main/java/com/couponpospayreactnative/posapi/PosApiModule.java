@@ -1,6 +1,7 @@
 package com.couponpospayreactnative.posapi;
 
-import static com.couponpospayreactnative.Constants.APP_FILES_CACHE_DIR;
+import static android.os.Environment.DIRECTORY_PICTURES;
+import static android.os.Environment.DIRECTORY_DOWNLOADS;
 
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -54,9 +55,10 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
     private boolean isSetAppLogo = false;
     private long wsPicModifyTime = 0; //图片修改时间戳，用来更新图片缓存
 
-    private final String mWelcomeScreenPath;
     private final String TAG = PosApiModule.class.getSimpleName();
+    private final String DIRECTORY_CUSTOMER_DISPLAY = "CustomerDisplay"; //副屏图片专用文件夹
     private final String PACKAGE_NAME = BuildConfig.APPLICATION_ID;
+    private final String mWelcomeScreenPath;
     private final PaymentApi mPaymentApi;
     private final ReactApplicationContext mContext;
     private final IPaymentApiListener mPaymentApiListener = new IPaymentApiListener.Stub() {
@@ -139,16 +141,10 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
             this.copyCustomerDisplayPics(); //虽然不是 POS 机，但也复制一份
         }
 
-        String myPath = context.getExternalCacheDir().getPath() + "/customer_display/";
-        File wsFile = new File(myPath + "welcome_screen.jpg");
+        File wsFile = new File(context.getExternalFilesDir(DIRECTORY_CUSTOMER_DISPLAY), "welcome_screen.jpg");
 
-        if (wsFile.exists()) {
-            wsPicModifyTime = wsFile.lastModified();
-            mWelcomeScreenPath = (myPath + "welcome_screen.jpg");
-        } else {
-            wsPicModifyTime = 1;
-            mWelcomeScreenPath = (myPath + "app_logo.jpg");
-        }
+        wsPicModifyTime = wsFile.lastModified();
+        mWelcomeScreenPath = wsFile.getPath();
     }
 
     private void intiAPIService() {
@@ -181,15 +177,18 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
         //必须保存为 bmp 格式的图片！否则无法打印
         final String picFileName = (picurl.substring(lastIndex, endIndex > lastIndex ? endIndex : picurl.length()) + ".bmp");
 
-        File dir = new File(APP_FILES_CACHE_DIR);
-        if (dir.exists()) {
+        File dir = mContext.getExternalFilesDir(DIRECTORY_DOWNLOADS);
+        if(dir == null) {
+            Log.d(TAG, "APP下载目录为 NULL，无法继续下去了！");
+            return null;
+        } else if (dir.exists()) {
             File pfo = new File(dir, picFileName);//pic file object
             if (pfo.exists() && pfo.isFile()) {
                 return pfo;
             }
         } else {
             if (!dir.mkdir()) { //存储数据到本地
-                Log.d(TAG, "创建缓存目录失败:::" + APP_FILES_CACHE_DIR);
+                Log.d(TAG, "创建缓存目录失败:::" + dir.getPath());
                 return null;
             }
         }
@@ -293,13 +292,18 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
             AssetManager am = mContext.getResources().getAssets();
             String[] filePaths = am.list("customer_display");
             if (filePaths != null && filePaths.length > 0) {
-                File cdDir = new File(mContext.getExternalCacheDir().getPath() + "/customer_display");
+                File cdDir = mContext.getExternalFilesDir(DIRECTORY_CUSTOMER_DISPLAY);
+
+                if (cdDir == null) {
+                    Log.d(TAG, "创建副屏图像保存目录失败:::路径为NULL");
+                    return;
+                }
+
                 if (!cdDir.exists() && !cdDir.mkdir()) {
                     Log.d(TAG, "创建副屏图像保存目录失败:::" + cdDir.getPath());
                     return;
                 }
 
-                //Log.d(TAG, "副屏图像保存目录:::" + cdDir.getPath());
                 for (String fp : filePaths) {
                     File theFile = new File(cdDir, fp);
                     if (!theFile.exists()) {
@@ -411,20 +415,35 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
     //2024年2月23日 清空缓存图像
     @ReactMethod
     public void clearImageCaches(Promise promise) {
-        File dir = new File(APP_FILES_CACHE_DIR);
         WritableMap obj = Arguments.createMap();
         int total = 0; //文件总数
         int deleted = 0; //被删除的文件数量
 
-        if (dir.exists() && dir.isDirectory()) {
-            File[] files = dir.listFiles();
+        //清理打印小票时下载的店铺 LOGO 图片文件！
+        File dir1 = mContext.getExternalFilesDir(DIRECTORY_DOWNLOADS);
+        if (dir1 != null && dir1.exists() && dir1.isDirectory()) {
+            File[] files = dir1.listFiles();
             if (files != null && files.length > 1) { //2024年4月18日 至少需要两个以上的文件才会清理，否则不必浪费时间去处理
                 for (File ff : files) {
                     if (ff.delete()) {
                         deleted++;
                     }
                 }
-                total = files.length;
+                total += files.length;
+            }
+        }
+
+        //清理欢迎屏幕裁剪后留下来的缓存图片文件
+        File dir2 = mContext.getExternalFilesDir(DIRECTORY_PICTURES);
+        if (dir2 != null && dir2.exists() && dir2.isDirectory()) {
+            File[] files = dir2.listFiles();
+            if (files != null) {
+                for (File ff : files) {
+                    if (ff.delete()) {
+                        deleted++;
+                    }
+                }
+                total += files.length;
             }
         }
 
@@ -437,16 +456,24 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
     //2024年3月29日，获取打印时留下的缓存大小
     @ReactMethod
     public void getCacheSize(Promise promise) {
-        File dir = new File(APP_FILES_CACHE_DIR);
+
+        File[] dirs = new File[]{
+                mContext.getExternalFilesDir(DIRECTORY_DOWNLOADS), //打印店铺 LOGO 时，下载的 LOGO 图片临时文件
+                mContext.getExternalFilesDir(DIRECTORY_PICTURES), //副屏欢迎屏幕裁剪图片后留下的临时文件
+        };
         long size = 0;
-        if (dir.exists() && dir.isDirectory()) {
-            File[] files = dir.listFiles();
-            if (files != null) {
-                for (File ff : files) {
-                    size += ff.length();
+
+        for (File dddd : dirs) {
+            if (dddd != null && dddd.exists() && dddd.isDirectory()) {
+                File[] files = dddd.listFiles();
+                if (files != null) {
+                    for (File ff : files) {
+                        size += ff.length();
+                    }
                 }
             }
         }
+
         promise.resolve((double) size);
     }
 
@@ -543,12 +570,7 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
                 try {
                     byte[] buffer = new byte[8192];
                     int readLength = -1;
-                    File targetFile = new File(mContext.getExternalCacheDir().getPath() + "/customer_display/welcome_screen.jpg");
-
-                    //创建目录和文件
-                    if (!targetFile.exists() && !targetFile.getParentFile().mkdirs()) {
-                        Log.d(TAG, "创建文件所在的目录失败...");
-                    }
+                    File targetFile = new File(mContext.getExternalFilesDir(DIRECTORY_CUSTOMER_DISPLAY), "welcome_screen.jpg");
 
                     FileInputStream fis = new FileInputStream(sourceFile);
                     FileOutputStream fos = new FileOutputStream(targetFile);

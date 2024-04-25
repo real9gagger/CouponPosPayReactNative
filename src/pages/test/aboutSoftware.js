@@ -4,8 +4,6 @@ import LocalPictures from "@/common/Pictures";
 import AppPackageInfo from "@/modules/AppPackageInfo";
 import PosPayIcon from "@/components/PosPayIcon"
 
-const APP_VER = AppPackageInfo.getFullVersion();
-
 const styles = StyleSheet.create({
     logoBox: {
         width: 80,
@@ -39,7 +37,7 @@ export default function TestAboutSoftware(props){
         <ScrollView style={pgFF} contentContainerStyle={[pdX, fxC, fxAC, mhF]}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
             <Image source={LocalPictures.logoApp} style={styles.logoBox} />
-            <Text style={styles.verBox1}>PosPay {APP_VER}</Text>
+            <Text style={styles.verBox1}>{AppPackageInfo.getAppName()} {AppPackageInfo.getFullVersion()}</Text>
             <View style={fxHC}>
                 <Text style={styles.verBox2}>{i18n["version.latest.tip"]}</Text>
                 <PosPayIcon name="check-confirm" color={styles.verBox2.color} size={16} offset={5} />

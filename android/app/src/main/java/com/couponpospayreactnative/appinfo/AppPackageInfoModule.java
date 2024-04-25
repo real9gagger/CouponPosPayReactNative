@@ -18,6 +18,7 @@ public class AppPackageInfoModule extends ReactContextBaseJavaModule {
     private final String mAppVersionName;
     private final String mAppFullVersion;
     private final String mAppPackageName;
+    private final String mApplicationName;
     private final long mLastUpdateTime;
 
     public AppPackageInfoModule(ReactApplicationContext context) {
@@ -25,6 +26,7 @@ public class AppPackageInfoModule extends ReactContextBaseJavaModule {
 
         String verStr = "";
         String verNm = "";
+        String appNm = "";
         long updateTime = 0;
 
         mAppPackageName = context.getPackageName();
@@ -35,6 +37,7 @@ public class AppPackageInfoModule extends ReactContextBaseJavaModule {
 
             verNm = pi.versionName;
             verStr = (pi.versionName + "." + pi.versionCode);
+            appNm = pm.getApplicationLabel(pm.getApplicationInfo(mAppPackageName, 0)).toString();
             updateTime = pi.lastUpdateTime;
         } catch (PackageManager.NameNotFoundException ex) {
             ex.printStackTrace();
@@ -43,6 +46,7 @@ public class AppPackageInfoModule extends ReactContextBaseJavaModule {
         mAppVersionName = verNm;
         mLastUpdateTime = updateTime;
         mAppFullVersion = verStr;
+        mApplicationName = appNm;
     }
 
     @NonNull
@@ -69,6 +73,11 @@ public class AppPackageInfoModule extends ReactContextBaseJavaModule {
     @ReactMethod(isBlockingSynchronousMethod = true)
     public double getLastUpdateTime() {
         return ((double) mLastUpdateTime);
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String getAppName(){
+        return mApplicationName;
     }
 
     @ReactMethod(isBlockingSynchronousMethod = true)

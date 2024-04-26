@@ -51,10 +51,10 @@ export default function OrderDetails(props){
         }
     }, [useOrs]);
     
-    return (
+    return (<>
         <ScrollView style={pgEE} contentContainerStyle={pdS}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
-            {!!orderInfo ? <>
+            {!!orderInfo ?
                 <View style={[bgFF, brX, pdHX]}>
                     <View style={styles.itemBox}>
                         <Text style={fxG1}>{i18n["order.status"]}</Text>
@@ -118,12 +118,12 @@ export default function OrderDetails(props){
                         <Text style={fxG1}>{i18n["remarks"]}</Text>
                         <Text>{orderInfo.remark || EMPTY_DEFAULT_TEXT}</Text>
                     </View>
-                </View>
-                <View style={[fxR, mgTX]}>
-                    <GradientButton disabled={!orderInfo} style={fxG1} onPress={printOrder}>{i18n["reprint"]}</GradientButton>
-                    <GradientButton disabled={orderInfo?.transactionType===TRANSACTION_TYPE_REFUND} style={[fxG1, mgLX]} onPress={refundMoney}>{i18n["transaction.refund"]}</GradientButton>
-                </View>
-            </>: <Text style={[pdX, tc99, fs16, taC]}>{i18n["nodata"]}</Text>}
+                </View> : <Text style={[pdX, tc99, fs16, taC]}>{i18n["nodata"]}</Text>
+            }
         </ScrollView>
-    );
+        <View style={[fxR, pdS, bgEE]}>
+            <GradientButton disabled={!orderInfo} style={fxG1} onPress={printOrder}>{i18n["reprint"]}</GradientButton>
+            <GradientButton disabled={!orderInfo || orderInfo.transactionType===TRANSACTION_TYPE_REFUND} style={[fxG1, mgLX]} onPress={refundMoney}>{i18n["transaction.refund"]}</GradientButton>
+        </View>
+    </>);
 }

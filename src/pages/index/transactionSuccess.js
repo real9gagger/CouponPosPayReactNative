@@ -3,10 +3,11 @@ import { ScrollView, View, Text, Image, StatusBar, StyleSheet, TouchableOpacity 
 import { useI18N, getUserInfo, getAppSettings } from "@/store/getter";
 import { dispatchAddFailedOrder } from "@/store/setter";
 import { formatDate } from "@/utils/helper";
-import { getPaymentInfo, EMPTY_DEFAULT_TEXT } from "@/common/Statics";
+import { getPaymentInfo, EMPTY_DEFAULT_TEXT, CASH_PAYMENT_CODE } from "@/common/Statics";
 import LocalPictures from "@/common/Pictures";
 import CircleTick from "@/components/CircleTick"
 import PosPayIcon from "@/components/PosPayIcon";
+import ReceiptsPlus from "@/modules/ReceiptsPlus";
 
 const styles = StyleSheet.create({
     tickBox: {
@@ -57,6 +58,7 @@ export default function IndexTransactionSuccess(props){
         if(params && !transactionResult){//防止重复调用
             const dat = {...params}; //复制一份！！！
             const uif = getUserInfo();
+            const aps = getAppSettings();
             const pmi = getPaymentInfo(params.paymentType, params.creditCardBrand || params.eMoneyType || params.qrPayType);
             
             dat.paymentName = pmi?.name;
@@ -66,17 +68,26 @@ export default function IndexTransactionSuccess(props){
             dat.posId = uif.posId; //商户ID
             dat.shopId = uif.shopId; //店铺ID（店铺隶属于商户）
             dat.transactionTime = formatDate(params.transactionTime);
-            dat.currencyCode = (params.currencyCode || getAppSettings("regionalCurrencyCode"));
+            dat.currencySymbol = aps.regionalCurrencySymbol;
             dat.amount = $tofixed(params.amount);
             dat.tax = $tofixed(params.tax);
             dat.isShowTaxInfo = (+params.tax ? true : false);
             dat.discountAmount = $tofixed(params.discountAmount);
             dat.orderAmount = $tofixed(params.orderAmount);
-
+            dat.printTime = formatDate();
+            dat.shopLogo = (aps.paymentReceiptPrintShopLogo ? uif.shopLogo : null);
+            dat.operatorName = uif.loginAccount;
+            dat.bottomText = aps.paymentReceiptBottomText;
+            
             setTransactionResult(dat);
             
             //保存订单信息！！！如果保存失败则存入缓存，留下次手动同步到服务器
             $request("savePosAppOrder", dat).catch(err => dispatchAddFailedOrder("savePosAppOrder", dat, err));
+            
+            //2024年4月26日 现金支付不经过 POS 机内置交易APP，因此需要在此处自行打印
+            if(dat.paymentType === CASH_PAYMENT_CODE){
+                ReceiptsPlus.printPaymentReceipts(dat).catch($alert);
+            }
         }
     }, []);
     

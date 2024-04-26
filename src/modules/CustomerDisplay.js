@@ -85,43 +85,17 @@ function showPayAmountInfo(amountInfo){
         const msgFA = getContentLine(i18n["final.amount"],      `${amountInfo.cysymbol}${amountInfo.amount}`);
         const msgPA = getContentCentered(i18n["payment.amount"].cloze(amountInfo.cysymbol, amountInfo.amount));
         
-        CDHelper.setCustomerDisplayContent(`<?xml version="1.0" encoding="UTF-8" ?>
-            <customerDisplayApi id="settlementCD">
-                <screenPattern>11</screenPattern>
-                <headerArea>
-                    <headerAreaNumber>1</headerAreaNumber>
-                    <customerString>${title1}</customerString>
-                </headerArea>
-                <headerArea>
-                    <headerAreaNumber>2</headerAreaNumber>
-                    <customerString>${title2}</customerString>
-                </headerArea>
-                <headerArea>
-                    <headerAreaNumber>3</headerAreaNumber>
-                    <customerString>${title3}</customerString>
-                </headerArea>
-                <messageArea>
-                    <messageAreaNumber>1</messageAreaNumber>
-                    <customerString>${msgAM}</customerString>
-                </messageArea>
-                <messageArea>
-                    <messageAreaNumber>2</messageAreaNumber>
-                    <customerString>${msgTX}</customerString>
-                </messageArea>
-                <messageArea>
-                    <messageAreaNumber>3</messageAreaNumber>
-                    <customerString>${msgDC}</customerString>
-                </messageArea>
-                <messageArea>
-                    <messageAreaNumber>4</messageAreaNumber>
-                    <customerString>${msgFA}</customerString>
-                </messageArea>
-                <messageArea>
-                    <messageAreaNumber>5</messageAreaNumber>
-                    <customerString>${msgPA}</customerString>
-                </messageArea>
-            </customerDisplayApi>`
-        ).catch(showErrMsg);
+        CDHelper.setCustomerDisplayContent(`<?xml version="1.0" encoding="UTF-8" ?><customerDisplayApi id="settlementCD">
+            <screenPattern>11</screenPattern>
+            <headerArea><headerAreaNumber>1</headerAreaNumber><customerString>${title1}</customerString></headerArea>
+            <headerArea><headerAreaNumber>2</headerAreaNumber><customerString>${title2}</customerString></headerArea>
+            <headerArea><headerAreaNumber>3</headerAreaNumber><customerString>${title3}</customerString></headerArea>
+            <messageArea><messageAreaNumber>1</messageAreaNumber><customerString>${msgAM}</customerString></messageArea>
+            <messageArea><messageAreaNumber>2</messageAreaNumber><customerString>${msgTX}</customerString></messageArea>
+            <messageArea><messageAreaNumber>3</messageAreaNumber><customerString>${msgDC}</customerString></messageArea>
+            <messageArea><messageAreaNumber>4</messageAreaNumber><customerString>${msgFA}</customerString></messageArea>
+            <messageArea><messageAreaNumber>5</messageAreaNumber><customerString>${msgPA}</customerString></messageArea>
+        </customerDisplayApi>`).catch(showErrMsg);
     });
 }
 

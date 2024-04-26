@@ -67,6 +67,19 @@ const styles = StyleSheet.create({
         textAlign: "center",
         paddingTop: 10
     },
+    /* textLabel4: {
+        fontSize: 14,
+        fontWeight: "normal",
+        flexGrow: 1,
+        paddingVertical: 5,
+        transform: [{scaleY: 2}]
+    },
+    textValue4: {
+        fontSize: 14,
+        fontWeight: "normal",
+        paddingVertical: 5,
+        transform: [{scaleY: 2}]
+    }, */
     printBtn: {
         display: "flex",
         flexDirection: "row",
@@ -217,7 +230,8 @@ export default function OrderPrintPreview(props){
                 <View style={styles.hrLine}>{/*水平线*/}</View>
                 <Text style={styles.textValue3}>{orderInfo.bottomText}</Text>
             </>}
-            <Text style={[fs14, taR, pdTX]}>{i18n["receipt.of.customer"]}</Text>
+            <Text style={[fs14, taR, pdTX]}>{i18n["receipt.of.customer"]} / {i18n["receipt.of.shop"]}</Text>
+            <Text style={[fs12, taC, pdTX, tcO0]}>{i18n["receipt.twice.tip"]}</Text>
         </ScrollView>
         <View style={styles.printBtn}>
             <GradientButton style={fxG1} onPress={resetContentXY} lgColors={!contentXY.scaleXY && OVERVIEW_DEFAULT_LG}>{i18n["overview"]}</GradientButton>

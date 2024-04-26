@@ -1,5 +1,9 @@
 /**************** 一些静态数据 ****************/
 
+/* 
+    【！！！不建议在此引用任何组件、脚本文件，避免互相引用冲突！！！】
+*/
+
 export const CASH_PAYMENT_CODE = "00";//现金支付
 export const CREDIT_CARD_PAYMENT_CODE = "01";//信用卡
 export const E_MONEY_PAYMENT_CODE = "02"; //电子钱包
@@ -15,7 +19,7 @@ export const TRANSACTION_TYPE_REFUND = "3"; //退款
 export const cashPayList = [
     {
         logo: "logoCashPay", //LOGO 图片键名！请参考本目录下的 ./Pictures 文件
-        name: "現金",
+        name: "現金/Cash",
         pmcode: "00-00" //Payment Code
     }
 ];

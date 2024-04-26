@@ -2,6 +2,7 @@ import { ScrollView, View, Text, Image, Button, StatusBar, StyleSheet, DevSettin
 import LocalPictures from "@/common/Pictures";
 import asyncStorage from "@react-native-async-storage/async-storage";
 import AppPackageInfo from "@/modules/AppPackageInfo";
+import ReceiptsPlus from "@/modules/ReceiptsPlus";
 
 const styles = StyleSheet.create({
     btnBox: {
@@ -42,6 +43,10 @@ export default function TestIndex(props){
         asyncStorage.getItem("persist:root").then(console.log);
     }
     
+    const printTest = () => {
+        ReceiptsPlus.printPaymentReceipts4SC({}).catch(console.log);
+    }
+    
     return (
         <ScrollView style={pgEE} contentContainerStyle={pdX}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
@@ -49,6 +54,7 @@ export default function TestIndex(props){
             <View style={styles.btnBox}><Button title="测试发送短信验证码" onPress={sendMsgCode} /></View>
             <View style={styles.btnBox}><Button title="重启应用" onPress={restartApp} /></View>
             <View style={styles.btnBox}><Button title="显示本地存储信息" onPress={showCD} /></View>
+            <View style={styles.btnBox}><Button title="打印测试" onPress={printTest} /></View>
             <View style={{height: 30}}>{/* 占位专用 */}</View>
             <Text style={[fs18, taC]}>测试专用优惠码</Text>
             <Image style={styles.imgBox} source={LocalPictures.couponCodeTest} resizeMode="contain" />

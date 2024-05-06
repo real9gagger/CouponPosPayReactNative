@@ -46,6 +46,7 @@ export default function OrderStatisticsDetails(props){
     const i18n = useI18N();
     const appSettings = useAppSettings();
     const ltRef = useRef(null);
+    const prevDate = useRef("[!NULL!]");
     const [detailsList, setDetailsList] = useState([]);
     const [sumInfo, setSumInfo] = useState({
         total: 0, //订单总额
@@ -81,16 +82,13 @@ export default function OrderStatisticsDetails(props){
         queryParams.pageNum = ltRef.current.getPage();
         
         $request("getPosAppOrderList", queryParams).then(res => {
-            let list = (res || []);
-            let prevDate = "[!NULL!]";
+            const list = (res || []);
             
-            for(let item of list){
+            for(const item of list){
                 if(!item.transactionTime){
-                    item.transactionTime = "0000-00-00 00:00:00";
-                }
-                
-                if(!item.transactionTime.startsWith(prevDate)){
-                    item.tstData = prevDate = item.transactionTime.substr(0, 10);
+                    item.tstData = prevDate.current = "0000-00-00";
+                } else if(!item.transactionTime.startsWith(prevDate.current)){
+                    item.tstData = prevDate.current = item.transactionTime.substr(0, 10);
                 }
                 
                 sumInfo.total += (+item.orderAmount || 0);

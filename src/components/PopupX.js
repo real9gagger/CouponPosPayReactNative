@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     },
     popupBottomTips: {//底部小提示
         textAlign: "center",
-        color: "#999",
+        color: "#aaa",
         paddingVertical: 15,
         fontSize: 12,
         borderTopColor: "#ccc",

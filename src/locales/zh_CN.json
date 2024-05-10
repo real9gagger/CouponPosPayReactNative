@@ -203,6 +203,7 @@
     "statistics.details.showbar": "显示柱状趋势图",
     "statistics.details.showdate": "显示交易日期",
     "statistics.details.hlcolumn": "高亮显示的列",
+    "statistics.details.tip": "点击 “选中的项” 可取消选中",
     "receipt.of.customer": "顾客存根",
     "receipt.of.shop": "加盟店存根",
     "receipt.of.sales": "销售单",
@@ -223,7 +224,6 @@
     "receipt.twice.tip": "打印两份，一份顾客存根，另一份加盟店存根！",
     "total.amount": "总金额",
     
-    "nothing": "无",
     "brand": "品牌",
     "amount": "金额",
     "updated": "已更新",

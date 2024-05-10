@@ -6,7 +6,6 @@ import LoadingTip from "@/components/LoadingTip";
 import LinearGradient from "react-native-linear-gradient";
 import PosPayIcon from "@/components/PosPayIcon";
 import PopupX from "@/components/PopupX";
-import RadioBox from "@/components/RadioBox";
 
 const FIRST_CELL_WIDTH = 80;
 const CONTENT_PADDING_TB = 0;
@@ -58,12 +57,14 @@ const styles = StyleSheet.create({
         opacity: 0.6,
         width: 0
     },
-    reviewBox: {
+    reviewBox0: {
         position: "absolute",
         top: 0,
         right: 0,
         zIndex: 8888,
-        width: 150,
+        width: 150
+    },
+    reviewBox1: {
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
@@ -86,8 +87,18 @@ const styles = StyleSheet.create({
         paddingVertical: 10
     },
     selectsItem: {
-        flexBasis: "50%"
+        flexBasis: "33.33333333%",
+        textAlign: "center",
+        paddingHorizontal: 5,
+        lineHeight: 36,
+        borderWidth: 1,
+        borderColor: "#fff",
+        backgroundColor: "#f0f0f0"
     },
+    selectsChecked: {
+        backgroundColor: appMainColor,
+        color: "#fff"
+    }
 });
 
 //销售统计明细
@@ -117,7 +128,7 @@ export default function OrderStatisticsDetails(props){
         days: 0, //天数
     });
     const [activedColumn, setActivedColumn] = useState(0x00); //需要高亮显示的列
-    const [showBar, setShowBar] = useState(0x11); //需要显示的柱状图
+    const [showBar, setShowBar] = useState(0x00); //需要显示的柱状图
     const [isShowDate, setIsShowDate] = useState(true); //是否显示日期
     const [isPopupShow, setIsPopupShow] = useState(false); //是否显示弹窗
     
@@ -206,23 +217,27 @@ export default function OrderStatisticsDetails(props){
     }
     const onACChanged = (code) => {
         return function(){
+            setIsPopupShow(false);
             if(code === activedColumn){
                 setActivedColumn(0x00);
             } else {
                 setActivedColumn(code);
             }
-            setIsPopupShow(false);
         }
     }
     const onSBChanged = (code) => {
         return function(){
-            setShowBar(code);
             setIsPopupShow(false);
+            if(code === showBar){
+                setShowBar(0x00);
+            } else {
+                setShowBar(code);
+            }
         }
     }
     const onSDChanged = () => {
-        setIsShowDate(!isShowDate);
         setIsPopupShow(false);
+        setIsShowDate(!isShowDate);
     }
     const onPopupShow = () => {
         setIsPopupShow(true);
@@ -283,9 +298,9 @@ export default function OrderStatisticsDetails(props){
             </View>
         </View>
         <ScrollView style={pgFF} onScroll={onSVScroll} contentContainerStyle={styles.containerBox}>
-            <TouchableOpacity style={styles.reviewBox} activeOpacity={0.6} onPress={onPopupShow}>
-                <Text style={fs12}>{i18n["statistics.details.displays"]}</Text>
-                <PosPayIcon name="query-params" size={14} offset={5} />
+            <TouchableOpacity style={[isShowDate && styles.reviewBox0, styles.reviewBox1]} activeOpacity={0.6} onPress={onPopupShow}>
+                <Text style={[fs12, tcMC, fwB]}>{i18n["statistics.details.displays"]}</Text>
+                <PosPayIcon name="query-params" color={appMainColor} size={14} offset={5} />
             </TouchableOpacity>
             {detailsList.map(vx => 
                 <Fragment key={vx.orderUID}>
@@ -352,28 +367,26 @@ export default function OrderStatisticsDetails(props){
             <Text style={[styles.cellBox2, fwB, activedColumn===0xCC && styles.cellBox0]} numberOfLines={1}>-{sumInfo.discount}</Text>
             <Text style={[styles.cellBox2, fwB, activedColumn===0xBB && styles.cellBox0]} numberOfLines={1}>{sumInfo.amount}</Text>
         </View>
-        <PopupX showMe={isPopupShow} onClose={onPopupClose} title={i18n["statistics.details.displays"]}>
+        <PopupX showMe={isPopupShow} onClose={onPopupClose} title={i18n["statistics.details.displays"]} tips={i18n["statistics.details.tip"]}>
             <View style={pdHX}>
                 <Text style={styles.titleBox}>{i18n["statistics.details.showbar"]}</Text>
                 <View style={styles.selectsBox}>
-                    <RadioBox size={18} style={styles.selectsItem} checked={showBar===0x00} onPress={onSBChanged(0x00)} label={i18n["nothing"]} />
-                    <RadioBox size={18} style={styles.selectsItem} checked={showBar===0x11} onPress={onSBChanged(0x11)} label={i18n["order.amount"]} />
-                    <RadioBox size={18} style={styles.selectsItem} checked={showBar===0x22} onPress={onSBChanged(0x22)} label={i18n["tax"]} />
-                    <RadioBox size={18} style={styles.selectsItem} checked={showBar===0x33} onPress={onSBChanged(0x33)} label={i18n["coupon.discount"]} />
-                    <RadioBox size={18} style={styles.selectsItem} checked={showBar===0x44} onPress={onSBChanged(0x44)} label={i18n["transaction.amount"]} />
+                    <Text style={[styles.selectsItem, showBar===0x11 && styles.selectsChecked]} numberOfLines={1} onPress={onSBChanged(0x11)}>{i18n["order.amount"]}</Text>
+                    <Text style={[styles.selectsItem, showBar===0x22 && styles.selectsChecked]} numberOfLines={1} onPress={onSBChanged(0x22)}>{i18n["tax"]}</Text>
+                    <Text style={[styles.selectsItem, showBar===0x33 && styles.selectsChecked]} numberOfLines={1} onPress={onSBChanged(0x33)}>{i18n["coupon.discount"]}</Text>
+                    <Text style={[styles.selectsItem, showBar===0x44 && styles.selectsChecked]} numberOfLines={1} onPress={onSBChanged(0x44)}>{i18n["transaction.amount"]}</Text>
                 </View>
                 <View style={styles.selectsBox}>
                     <Text style={[fs14, fxG1]}>{i18n["statistics.details.showdate"]}</Text>
                     <Switch value={isShowDate} thumbColor={isShowDate ? appMainColor : switchTrackColor.thumbColor} trackColor={switchTrackColor} onValueChange={onSDChanged} />
                 </View>
                 <Text style={styles.titleBox}>{i18n["statistics.details.hlcolumn"]}</Text>
-                <View style={styles.selectsBox}>                    
-                    <RadioBox size={18} style={styles.selectsItem} checked={activedColumn===0x00} onPress={onACChanged(0x00)} label={i18n["nothing"]} />
-                    <RadioBox size={18} style={styles.selectsItem} checked={activedColumn===0xFF} onPress={onACChanged(0xFF)} label={i18n["transaction.time"]} />
-                    <RadioBox size={18} style={styles.selectsItem} checked={activedColumn===0xEE} onPress={onACChanged(0xEE)} label={i18n["order.amount"]} />
-                    <RadioBox size={18} style={styles.selectsItem} checked={activedColumn===0xDD} onPress={onACChanged(0xDD)} label={i18n["tax"]} />
-                    <RadioBox size={18} style={styles.selectsItem} checked={activedColumn===0xCC} onPress={onACChanged(0xCC)} label={i18n["coupon.discount"]} />
-                    <RadioBox size={18} style={styles.selectsItem} checked={activedColumn===0xBB} onPress={onACChanged(0xBB)} label={i18n["transaction.amount"]} />
+                <View style={styles.selectsBox}>
+                    <Text style={[styles.selectsItem, activedColumn===0xFF && styles.selectsChecked]} numberOfLines={1} onPress={onACChanged(0xFF)}>{i18n["transaction.time"]}</Text>
+                    <Text style={[styles.selectsItem, activedColumn===0xEE && styles.selectsChecked]} numberOfLines={1} onPress={onACChanged(0xEE)}>{i18n["order.amount"]}</Text>
+                    <Text style={[styles.selectsItem, activedColumn===0xDD && styles.selectsChecked]} numberOfLines={1} onPress={onACChanged(0xDD)}>{i18n["tax"]}</Text>
+                    <Text style={[styles.selectsItem, activedColumn===0xCC && styles.selectsChecked]} numberOfLines={1} onPress={onACChanged(0xCC)}>{i18n["coupon.discount"]}</Text>
+                    <Text style={[styles.selectsItem, activedColumn===0xBB && styles.selectsChecked]} numberOfLines={1} onPress={onACChanged(0xBB)}>{i18n["transaction.amount"]}</Text>
                 </View>
             </View>
         </PopupX>

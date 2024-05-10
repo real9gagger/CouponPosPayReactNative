@@ -2,7 +2,7 @@ import { store } from "./index"; //使用 useDispatch 报错，因此直接使�
 import { changeLanguage, initiLanguage } from "./localesReducer";
 import { updateUserInfo, resetUserInfo, setAccessToken } from "./userReducer";
 import { updateAppSettings, initiAppSettings, updateLanguageSettings } from "./settingsReducer";
-import { setLastUsed, addNewCoupon, deleteAddedCoupon, onInitiCouponData } from "./couponReducer";
+import { setLastUsed, addNewCoupon, deleteAddedCoupon, onInitiCouponData, removeLastInputPromotionCode } from "./couponReducer";
 import { addFailedOrder, removeFailedOrder, updateFailedOrder, synchronousAllOrder, onRefundSuccessful, onInitiOrderData } from "./orderReducer";
 
 //初始化存储仓库
@@ -54,6 +54,9 @@ export function dispatchAddNewCoupon(info){
 }
 export function dispatchDeleteAddedCoupon(code){
     store.dispatch(deleteAddedCoupon(code));
+}
+export function dispatchRemoveLastInputPromotionCode(){
+    store.dispatch(removeLastInputPromotionCode());
 }
 /* ================ 订单相关 ================ */
 export function dispatchAddFailedOrder(api, data, msg){

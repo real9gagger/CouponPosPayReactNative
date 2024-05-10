@@ -1,7 +1,8 @@
-import { SET_LAST_COUPON, ADD_A_COUPON, DELETE_A_COUPON, DELETE_ALL_COUPON, INITI_COUPON_DATA, UNKNOWN_ACTION } from "./types";
+import { SET_LAST_COUPON, ADD_A_COUPON, DELETE_A_COUPON, DELETE_ALL_COUPON, INITI_COUPON_DATA, REMOVE_LAST_IPC, UNKNOWN_ACTION } from "./types";
 
 const initialState = {
     lastUsed: null,//上次使用的优惠券
+    lastInputPromotionCode: "", //上次输入的分销码
     addedList: [], //手动添加的优惠券列表（数据需要保存在缓存了）
 };
 
@@ -63,9 +64,23 @@ export function onInitiCouponData(){
     }
 }
 
+//移除上次输入的分销码
+export function removeLastInputPromotionCode(){
+    return {
+        type: REMOVE_LAST_IPC,
+        payload: null
+    };
+}
+
 export default couponReducer = (state = initialState, action) => {
     switch(action.type){
-        case SET_LAST_COUPON: return {...state, lastUsed: action.payload};
+        case SET_LAST_COUPON: 
+            if(action.payload){
+                return {...state, lastUsed: action.payload, lastInputPromotionCode: action.payload.ptcode };
+            } else {
+                return {...state, lastUsed: null };
+            }
+            break;
         case ADD_A_COUPON: 
             if(action.payload.cpcode){
                 state.addedList = [...state.addedList, action.payload];
@@ -80,6 +95,7 @@ export default couponReducer = (state = initialState, action) => {
             break;
         case DELETE_ALL_COUPON: return {...state, addedList: []};
         case INITI_COUPON_DATA: return {...state, lastUsed: null};
+        case REMOVE_LAST_IPC: return {...state, lastInputPromotionCode: ""};
     }
     
     return state;

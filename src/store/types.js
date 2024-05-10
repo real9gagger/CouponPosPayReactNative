@@ -18,6 +18,7 @@ export const ADD_A_COUPON = "ADD_A_COUPON";
 export const DELETE_A_COUPON = "DELETE_A_COUPON";
 export const DELETE_ALL_COUPON = "DELETE_ALL_COUPON";
 export const INITI_COUPON_DATA = "INITI_COUPON_DATA";
+export const REMOVE_LAST_IPC = "REMOVE_LAST_IPC";
 
 //订单相关
 export const ADD_FAILED_ORDER = "ADD_FAILED_ORDER";

@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { View, Text, TextInput, StyleSheet, Keyboard } from "react-native";
-import { useI18N } from "@/store/getter";
-import { dispatchSetLastUsed } from "@/store/setter";
+import { View, Text, TextInput, StyleSheet, Keyboard, TouchableOpacity } from "react-native";
+import { useI18N, useLastInputPromotionCode } from "@/store/getter";
+import { dispatchSetLastUsed, dispatchRemoveLastInputPromotionCode } from "@/store/setter";
 import { DISCOUNT_TYPE_ZK, DISCOUNT_TYPE_LJ } from "@/common/Statics";
 import GradientButton from "@/components/GradientButton";
+import PosPayIcon from "@/components/PosPayIcon";
 
 const styles = StyleSheet.create({
     codeInput: {
@@ -11,18 +12,29 @@ const styles = StyleSheet.create({
         borderBottomColor: "#ccc",
         borderBottomWidth: 1,
         fontSize: 16,
-        paddingHorizontal: 0,
-        paddingVertical: 5,
         height: 40,
         letterSpacing: 1
     },
     codeActived: {
         borderBottomColor: appMainColor
     },
+    lastPcBox: {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        alignSelf: "flex-start",
+        backgroundColor: "#eee",
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 40,
+        fontSize: 14,
+        marginLeft: 10
+    }
 });
 
 export default function CouponQuery(props){
     const i18n = useI18N();
+    const useLastIPC = useLastInputPromotionCode(); //获取上次输入的分销码
     const [couponCode, setCouponCode] = useState(""); //测试码：JPTDI0001
     const [promotionCode, setPromotionCode] = useState(""); //测试码：66010101
     const [inputNth, setInputNth] = useState(0);
@@ -71,6 +83,12 @@ export default function CouponQuery(props){
             });
         }, 500);
     }
+    const setLastIPC = () => {
+        setPromotionCode(useLastIPC);
+    }
+    const deleteLastIPC = () => {
+        $confirm(i18n["delete.confirm"]).then(dispatchRemoveLastInputPromotionCode);
+    }
     
     return (
         <View style={[pgFF, pdX]}>
@@ -94,7 +112,15 @@ export default function CouponQuery(props){
                 autoFocus={false}
                 defaultValue={promotionCode}
                 keyboardType="number-pad" />
-            <Text style={fxG1} onPress={Keyboard.dismiss}>{/* 占位用 */}</Text>
+            <TouchableOpacity style={[fxR, fxG1, fxJE, pdVS]} onPress={Keyboard.dismiss} activeOpacity={1}>
+                {(!!useLastIPC && promotionCode !== useLastIPC) && 
+                    <View style={styles.lastPcBox}>
+                        <PosPayIcon name="promotion-code" color="#000" size={16} offset={-5} />
+                        <Text style={fs14} onPress={setLastIPC}>{useLastIPC}</Text>
+                        <PosPayIcon name="close-circle" color="#999" size={16} offset={10} onPress={deleteLastIPC} />
+                    </View>
+                }
+            </TouchableOpacity>
             <GradientButton showLoading={isQuerying} disabled={isQuerying} onPress={queryCouponInfo}>{i18n["btn.query"]}</GradientButton>
         </View>
     );

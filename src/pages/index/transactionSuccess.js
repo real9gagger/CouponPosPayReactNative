@@ -121,7 +121,7 @@ export default function IndexTransactionSuccess(props){
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["coupon.promotion.code"]}</Text>
-                    <PosPayIcon visible={!!transactionResult.distributorNumber} name="coupon-code" size={14} color="#f90" offset={-5} />
+                    <PosPayIcon visible={!!transactionResult.distributorNumber} name="promotion-code" size={14} color="#f90" offset={-5} />
                     <Text>{transactionResult.distributorNumber || EMPTY_DEFAULT_TEXT}</Text>
                 </View>
                 <View style={styles.itemBox}>

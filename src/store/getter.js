@@ -86,6 +86,14 @@ export function getCouponInUse(code){
     const lu = store.getState().couponData.lastUsed;
     return (lu && lu.cpcode === code ? lu : null);
 }
+//获取上次输入的分销码
+export function getLastInputPromotionCode(){
+    return (store.getState().couponData.lastInputPromotionCode || "");
+}
+//使用上次输入的分销码
+export function useLastInputPromotionCode(){
+    return useSelector(state => state.couponData.lastInputPromotionCode);
+}
 export function useAddedList(){
     return useSelector(state => state.couponData.addedList);
 }

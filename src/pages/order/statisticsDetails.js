@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, Fragment } from "react";
-import { ScrollView, TouchableOpacity, View, Text, StyleSheet, FlatList } from "react-native";
+import { ScrollView, TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { useI18N, useAppSettings } from "@/store/getter";
 import { getPaymentInfo } from "@/common/Statics";
 import LoadingTip from "@/components/LoadingTip";
@@ -97,7 +97,6 @@ export default function OrderStatisticsDetails(props){
     const appSettings = useAppSettings();
     const ltRef = useRef(null);
     const prevDate = useRef("[!NULL!]");
-    const prevIndex = useRef(-1);
     const [detailsList, setDetailsList] = useState([]);
     const [sumInfo, setSumInfo] = useState({
         total: 0, //订单总额
@@ -136,7 +135,6 @@ export default function OrderStatisticsDetails(props){
                     oo.paymentLogo = pmInfo.logo;
                 }
             }
-            
             props.navigation.navigate("订单详情", oo);
         }
     }
@@ -343,34 +341,6 @@ export default function OrderStatisticsDetails(props){
         }
         return {display: "none"};
     }
-    /* const myRenderItem = (args) => {
-        const vx = args.item;
-        
-        return (
-            <Fragment key={vx.orderUID}>
-                {showData !== 0x99 && vx.tstData && 
-                    <View style={fxHC}>
-                        <Text style={[styles.cellBox1, styles.subtotalBox, activedColumn===0xFF && styles.cellBox0]}>{vx.tstData}</Text>
-                        <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xEE && styles.cellBox0]}>{vx.subtotalData[0]}</Text>
-                        <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xDD && styles.cellBox0]}>{vx.subtotalData[1]}</Text>
-                        <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xCC && styles.cellBox0]}>-{vx.subtotalData[2]}</Text>
-                        <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xBB && styles.cellBox0]}>{vx.subtotalData[3]}</Text>
-                        <LinearGradient style={[styles.barBox, getBarWidthOfDay(vx)]} colors={LG_BAR_COLORS} start={LG_BAR_START} end={LG_BAR_END} />
-                    </View>
-                }
-                {showData !== 0x88 && 
-                    <TouchableOpacity style={fxHC} activeOpacity={0.5} onPress={onItemPress(vx)}>
-                        <Text style={[styles.cellBox1, activedColumn===0xFF && styles.cellBox0]}>{vx.transactionTime.substr(11)}</Text>
-                        <Text style={[styles.cellBox2, activedColumn===0xEE && styles.cellBox0]}>{vx.orderAmount || 0}</Text>
-                        <Text style={[styles.cellBox2, activedColumn===0xDD && styles.cellBox0]}>{vx.tax || 0}</Text>
-                        <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]}>-{vx.discountAmount || 0}</Text>
-                        <Text style={[styles.cellBox2, activedColumn===0xBB && styles.cellBox0]}>{vx.amount || 0}</Text>
-                        <LinearGradient style={[styles.barBox, getBarWidthOfOrder(vx)]} colors={LG_BAR_COLORS} start={LG_BAR_START} end={LG_BAR_END} />
-                    </TouchableOpacity>
-                }
-            </Fragment>
-        );
-    } */
     
     useEffect(getDetailsList, []);
     
@@ -422,7 +392,7 @@ export default function OrderStatisticsDetails(props){
                 noDataText={i18n["nodata"]}
                 retryLabel={i18n["retry"]}
                 errorTitle={i18n["loading.error"]}
-                alwaysShowLoading={true}
+                alwaysShowLoading={false}
                 onRetry={getDetailsList} />
             {!!detailsList.length && <>
                 <View style={styles.containerBox}>

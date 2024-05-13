@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, Fragment } from "react";
-import { ScrollView, TouchableOpacity, View, Text, Switch, StyleSheet } from "react-native";
+import { ScrollView, TouchableOpacity, View, Text, StyleSheet, FlatList } from "react-native";
 import { useI18N, useAppSettings } from "@/store/getter";
 import { getPaymentInfo } from "@/common/Statics";
 import LoadingTip from "@/components/LoadingTip";
@@ -19,15 +19,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: CONTENT_PADDING_TB,
         backgroundColor: "#fff"
     },
-    dateBox: {
-        fontSize: 12,
+    subtotalBox: {
         fontWeight: "bold",
-        padding: 5,
         color: appMainColor
     },
     cellBox0: {
-        backgroundColor: "#A0E9FF",
-        color: "#000"
+        backgroundColor: "#A0E9FF"
     },
     cellBox1: {
         fontSize: 12,
@@ -57,21 +54,14 @@ const styles = StyleSheet.create({
         opacity: 0.6,
         width: 0
     },
-    reviewBox0: {
-        position: "absolute",
-        top: 0,
-        right: 0,
-        zIndex: 8888,
-        width: 150
-    },
-    reviewBox1: {
+    reviewBox: {
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "flex-end",
         backgroundColor: "#fff",
         paddingHorizontal: 5,
-        paddingVertical: 5
+        paddingTop: 10
     },
     titleBox: {
         fontSize: 14,
@@ -107,29 +97,34 @@ export default function OrderStatisticsDetails(props){
     const appSettings = useAppSettings();
     const ltRef = useRef(null);
     const prevDate = useRef("[!NULL!]");
+    const prevIndex = useRef(-1);
     const [detailsList, setDetailsList] = useState([]);
     const [sumInfo, setSumInfo] = useState({
         total: 0, //订单总额
         totmin: 1e16, //最小订单金额
         totmax: 0, //最大订单金额
+        totdaymax: 0, //按天算时的最大值
         
         tax: 0, //税
         taxmin: 1e16, //最小税
         taxmax: 0, //最大税
+        taxdaymax: 0, //按天算时的最大值
         
         discount: 0, //折扣
         dctmin: 1e16, //最小折扣
         dctmax: 0, //最大折扣
+        dctdaymax: 0, //按天算时的最大值
         
         amount: 0, //实际金额
         amtmin: 1e16, //最小实际金额
         amtmax: 0, //最大实际金额
+        amtdaymax: 0, //按天算时的最大值
         
         days: 0, //天数
     });
     const [activedColumn, setActivedColumn] = useState(0x00); //需要高亮显示的列
     const [showBar, setShowBar] = useState(0x00); //需要显示的柱状图
-    const [isShowDate, setIsShowDate] = useState(true); //是否显示日期
+    const [showData, setShowData] = useState(0x00); //是否显示日期
     const [isPopupShow, setIsPopupShow] = useState(false); //是否显示弹窗
     
     const onItemPress = (oo) => {
@@ -161,7 +156,7 @@ export default function OrderStatisticsDetails(props){
         
         $request("getPosAppOrderList", queryParams).then(res => {
             const list = (res || []);
-            const money = [0, 0, 0, 0];
+            const money = [0, 0, 0, 0]; //临时变量
             
             let nth = (Date.now() * 1000) + (queryParams.pageNum - 1) * queryParams.pageSize;
             
@@ -200,7 +195,38 @@ export default function OrderStatisticsDetails(props){
             
             ltRef.current.setNoMore(queryParams.pageSize, list.length);
             
-            setDetailsList([...detailsList, ...list]);
+            const newList = [...detailsList, ...list];
+            
+            //统计每日小计
+            for(let idx = newList.length - 1; idx >= 0; idx--){
+                
+                money[0] += (+newList[idx].orderAmount || 0);
+                money[1] += (+newList[idx].tax || 0);
+                money[2] += (+newList[idx].discountAmount || 0);
+                money[3] += (+newList[idx].amount || 0);
+                
+                if(newList[idx].subtotalData){
+                    newList[idx].subtotalData = money;
+                    
+                    sumInfo.totdaymax = Math.max(sumInfo.totdaymax, money[0]);
+                    sumInfo.taxdaymax = Math.max(sumInfo.taxdaymax, money[1]);
+                    sumInfo.dctdaymax = Math.max(sumInfo.dctdaymax, money[2]);
+                    sumInfo.amtdaymax = Math.max(sumInfo.amtdaymax, money[3]);
+                    
+                    break;
+                } else if(newList[idx].tstData){
+                    newList[idx].subtotalData = [...money];
+                    
+                    sumInfo.totdaymax = Math.max(sumInfo.totdaymax, money[0]);
+                    sumInfo.taxdaymax = Math.max(sumInfo.taxdaymax, money[1]);
+                    sumInfo.dctdaymax = Math.max(sumInfo.dctdaymax, money[2]);
+                    sumInfo.amtdaymax = Math.max(sumInfo.amtdaymax, money[3]);
+                    
+                    money[0] = money[1] = money[2] = money[3] = 0;
+                }
+            }
+            
+            setDetailsList(newList);
             setSumInfo({...sumInfo});
         }).catch(ltRef.current.setErrMsg);
     }
@@ -235,9 +261,15 @@ export default function OrderStatisticsDetails(props){
             }
         }
     }
-    const onSDChanged = () => {
-        setIsPopupShow(false);
-        setIsShowDate(!isShowDate);
+    const onSDChanged = (code) => {
+        return function(){
+            setIsPopupShow(false);
+            if(code === showData){
+                setShowData(0x00);
+            } else {
+                setShowData(code);
+            }
+        }
     }
     const onPopupShow = () => {
         setIsPopupShow(true);
@@ -259,7 +291,7 @@ export default function OrderStatisticsDetails(props){
             return $tofixed(val / detailsList.length);
         }
     }
-    const getBarWidth = (val) => {
+    const getBarWidthOfOrder = (val) => {
         switch(showBar){
             case 0x11: 
                 if(val.orderAmount && sumInfo.totmax){
@@ -284,6 +316,61 @@ export default function OrderStatisticsDetails(props){
         }
         return {display: "none"};
     }
+    const getBarWidthOfDay = (val) => {
+        if(showData === 0x88){ //只有值显示每日小计时才能显示柱状图
+            switch(showBar){
+                case 0x11: 
+                    if(val.subtotalData[0] && sumInfo.totdaymax){
+                        return {width: Math.ceil(val.subtotalData[0] * CONTENT_BOX_WIDTH / sumInfo.totdaymax)}; //每日订单金额
+                    }
+                    break;
+                case 0x22: 
+                    if(val.subtotalData[1] && sumInfo.taxdaymax){
+                        return {width: Math.ceil(val.subtotalData[1] * CONTENT_BOX_WIDTH / sumInfo.taxdaymax)}; //每日税收金额
+                    }
+                    break;
+                case 0x33:
+                    if(val.subtotalData[2] && sumInfo.dctdaymax){
+                        return {width: Math.ceil(val.subtotalData[2] * CONTENT_BOX_WIDTH / sumInfo.dctdaymax)}; //每日优惠金额
+                    }
+                    break;
+                case 0x44:
+                    if(val.subtotalData[3] && sumInfo.amtdaymax){
+                        return {width: Math.ceil(val.subtotalData[3] * CONTENT_BOX_WIDTH / sumInfo.amtdaymax)}; //每日交易金额
+                    }
+                    break;
+            }
+        }
+        return {display: "none"};
+    }
+    /* const myRenderItem = (args) => {
+        const vx = args.item;
+        
+        return (
+            <Fragment key={vx.orderUID}>
+                {showData !== 0x99 && vx.tstData && 
+                    <View style={fxHC}>
+                        <Text style={[styles.cellBox1, styles.subtotalBox, activedColumn===0xFF && styles.cellBox0]}>{vx.tstData}</Text>
+                        <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xEE && styles.cellBox0]}>{vx.subtotalData[0]}</Text>
+                        <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xDD && styles.cellBox0]}>{vx.subtotalData[1]}</Text>
+                        <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xCC && styles.cellBox0]}>-{vx.subtotalData[2]}</Text>
+                        <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xBB && styles.cellBox0]}>{vx.subtotalData[3]}</Text>
+                        <LinearGradient style={[styles.barBox, getBarWidthOfDay(vx)]} colors={LG_BAR_COLORS} start={LG_BAR_START} end={LG_BAR_END} />
+                    </View>
+                }
+                {showData !== 0x88 && 
+                    <TouchableOpacity style={fxHC} activeOpacity={0.5} onPress={onItemPress(vx)}>
+                        <Text style={[styles.cellBox1, activedColumn===0xFF && styles.cellBox0]}>{vx.transactionTime.substr(11)}</Text>
+                        <Text style={[styles.cellBox2, activedColumn===0xEE && styles.cellBox0]}>{vx.orderAmount || 0}</Text>
+                        <Text style={[styles.cellBox2, activedColumn===0xDD && styles.cellBox0]}>{vx.tax || 0}</Text>
+                        <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]}>-{vx.discountAmount || 0}</Text>
+                        <Text style={[styles.cellBox2, activedColumn===0xBB && styles.cellBox0]}>{vx.amount || 0}</Text>
+                        <LinearGradient style={[styles.barBox, getBarWidthOfOrder(vx)]} colors={LG_BAR_COLORS} start={LG_BAR_START} end={LG_BAR_END} />
+                    </TouchableOpacity>
+                }
+            </Fragment>
+        );
+    } */
     
     useEffect(getDetailsList, []);
     
@@ -297,22 +384,36 @@ export default function OrderStatisticsDetails(props){
                 <Text style={[styles.cellBox2, activedColumn===0xBB && styles.cellBox0]} onPress={onACChanged(0xBB)} numberOfLines={1}>{i18n["transaction.amount"]}</Text>
             </View>
         </View>
+        
         <ScrollView style={pgFF} onScroll={onSVScroll} contentContainerStyle={styles.containerBox}>
-            <TouchableOpacity style={[isShowDate && styles.reviewBox0, styles.reviewBox1]} activeOpacity={0.6} onPress={onPopupShow}>
-                <Text style={[fs12, tcMC, fwB]}>{i18n["statistics.details.displays"]}</Text>
-                <PosPayIcon name="query-params" color={appMainColor} size={14} offset={5} />
-            </TouchableOpacity>
+            {!!detailsList.length && 
+                <TouchableOpacity style={styles.reviewBox} activeOpacity={0.6} onPress={onPopupShow}>
+                    <Text style={[fs12, tcMC, fwB]}>{i18n["statistics.details.displays"]}</Text>
+                    <PosPayIcon name="query-params" color={appMainColor} size={14} offset={5} />
+                </TouchableOpacity>
+            }
             {detailsList.map(vx => 
                 <Fragment key={vx.orderUID}>
-                    {isShowDate && vx.tstData && <Text style={styles.dateBox}>{vx.tstData}</Text>}
-                    <TouchableOpacity style={fxHC} activeOpacity={0.5} onPress={onItemPress(vx)}>
-                        <Text style={[styles.cellBox1, activedColumn===0xFF && styles.cellBox0]}>{vx.transactionTime.substr(11)}</Text>
-                        <Text style={[styles.cellBox2, activedColumn===0xEE && styles.cellBox0]}>{vx.orderAmount || 0}</Text>
-                        <Text style={[styles.cellBox2, activedColumn===0xDD && styles.cellBox0]}>{vx.tax || 0}</Text>
-                        <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]}>-{vx.discountAmount || 0}</Text>
-                        <Text style={[styles.cellBox2, activedColumn===0xBB && styles.cellBox0]}>{vx.amount || 0}</Text>
-                        {/* 柱状趋势条 */ !!showBar && <LinearGradient style={[styles.barBox, getBarWidth(vx)]} colors={LG_BAR_COLORS} start={LG_BAR_START} end={LG_BAR_END} />}
-                    </TouchableOpacity>
+                    {showData !== 0x99 && vx.tstData && 
+                        <View style={fxHC}>
+                            <Text style={[styles.cellBox1, styles.subtotalBox, activedColumn===0xFF && styles.cellBox0]}>{vx.tstData}</Text>
+                            <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xEE && styles.cellBox0]}>{vx.subtotalData[0]}</Text>
+                            <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xDD && styles.cellBox0]}>{vx.subtotalData[1]}</Text>
+                            <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xCC && styles.cellBox0]}>-{vx.subtotalData[2]}</Text>
+                            <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xBB && styles.cellBox0]}>{vx.subtotalData[3]}</Text>
+                            <LinearGradient style={[styles.barBox, getBarWidthOfDay(vx)]} colors={LG_BAR_COLORS} start={LG_BAR_START} end={LG_BAR_END} />
+                        </View>
+                    }
+                    {showData !== 0x88 && 
+                        <TouchableOpacity style={fxHC} activeOpacity={0.5} onPress={onItemPress(vx)}>
+                            <Text style={[styles.cellBox1, activedColumn===0xFF && styles.cellBox0]}>{vx.transactionTime.substr(11)}</Text>
+                            <Text style={[styles.cellBox2, activedColumn===0xEE && styles.cellBox0]}>{vx.orderAmount || 0}</Text>
+                            <Text style={[styles.cellBox2, activedColumn===0xDD && styles.cellBox0]}>{vx.tax || 0}</Text>
+                            <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]}>-{vx.discountAmount || 0}</Text>
+                            <Text style={[styles.cellBox2, activedColumn===0xBB && styles.cellBox0]}>{vx.amount || 0}</Text>
+                            <LinearGradient style={[styles.barBox, getBarWidthOfOrder(vx)]} colors={LG_BAR_COLORS} start={LG_BAR_START} end={LG_BAR_END} />
+                        </TouchableOpacity>
+                    }
                 </Fragment>
             )}
             <LoadingTip
@@ -376,9 +477,11 @@ export default function OrderStatisticsDetails(props){
                     <Text style={[styles.selectsItem, showBar===0x33 && styles.selectsChecked]} numberOfLines={1} onPress={onSBChanged(0x33)}>{i18n["coupon.discount"]}</Text>
                     <Text style={[styles.selectsItem, showBar===0x44 && styles.selectsChecked]} numberOfLines={1} onPress={onSBChanged(0x44)}>{i18n["transaction.amount"]}</Text>
                 </View>
+                <Text style={styles.titleBox}>{i18n["statistics.details.showdata"]}</Text>
                 <View style={styles.selectsBox}>
-                    <Text style={[fs14, fxG1]}>{i18n["statistics.details.showdate"]}</Text>
-                    <Switch value={isShowDate} thumbColor={isShowDate ? appMainColor : switchTrackColor.thumbColor} trackColor={switchTrackColor} onValueChange={onSDChanged} />
+                    <Text style={[styles.selectsItem, showData===0x00 && styles.selectsChecked]} numberOfLines={1} onPress={onSDChanged(0x00)}>{i18n["options.any"]}</Text>
+                    <Text style={[styles.selectsItem, showData===0x88 && styles.selectsChecked]} numberOfLines={1} onPress={onSDChanged(0x88)}>{i18n["statistics.details.dailysubtotal"]}</Text>
+                    <Text style={[styles.selectsItem, showData===0x99 && styles.selectsChecked]} numberOfLines={1} onPress={onSDChanged(0x99)}>{i18n["statistics.details.dailysales"]}</Text>
                 </View>
                 <Text style={styles.titleBox}>{i18n["statistics.details.hlcolumn"]}</Text>
                 <View style={styles.selectsBox}>

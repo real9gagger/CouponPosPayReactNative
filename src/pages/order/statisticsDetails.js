@@ -61,7 +61,8 @@ const styles = StyleSheet.create({
         justifyContent: "flex-end",
         backgroundColor: "#fff",
         paddingHorizontal: 5,
-        paddingTop: 10
+        paddingTop: 10,
+        paddingBottom: 0
     },
     titleBox: {
         fontSize: 14,
@@ -153,7 +154,7 @@ export default function OrderStatisticsDetails(props){
         queryParams.pageNum = ltRef.current.getPage();
         
         $request("getPosAppOrderList", queryParams).then(res => {
-            const list = (res || []);
+            const list = (res.rows || []);
             const money = [0, 0, 0, 0]; //临时变量
             
             let nth = (Date.now() * 1000) + (queryParams.pageNum - 1) * queryParams.pageSize;
@@ -191,9 +192,11 @@ export default function OrderStatisticsDetails(props){
                 sumInfo.amtmax = Math.max(sumInfo.amtmax, money[3]);
             }
             
-            ltRef.current.setNoMore(queryParams.pageSize, list.length);
-            
             const newList = [...detailsList, ...list];
+
+            ltRef.current.setNoMore(res.total, newList.length);
+            
+            money[0] = money[1] = money[2] = money[3] = 0; //重置！！！【重要】
             
             //统计每日小计
             for(let idx = newList.length - 1; idx >= 0; idx--){
@@ -238,6 +241,10 @@ export default function OrderStatisticsDetails(props){
             }
         }
         ltRef.current.setScrollTop(contentOffset.y);
+    }
+    const onLoadMore = () => {
+        ltRef.current.nextPage();
+        getDetailsList();
     }
     const onACChanged = (code) => {
         return function(){
@@ -358,8 +365,9 @@ export default function OrderStatisticsDetails(props){
         <ScrollView style={pgFF} onScroll={onSVScroll} contentContainerStyle={styles.containerBox}>
             {!!detailsList.length && 
                 <TouchableOpacity style={styles.reviewBox} activeOpacity={0.6} onPress={onPopupShow}>
-                    <Text style={[fs12, tcMC, fwB]}>{i18n["statistics.details.displays"]}</Text>
-                    <PosPayIcon name="query-params" color={appMainColor} size={14} offset={5} />
+                    <Text style={[fs12, fwB, fxG1]}>{i18n["statistics.details"]}</Text>
+                    <Text style={[fs12, fwB]}>{i18n["statistics.details.displays"]}</Text>
+                    <PosPayIcon name="query-params" color="#000" size={14} offset={5} />
                 </TouchableOpacity>
             }
             {detailsList.map(vx => 
@@ -392,7 +400,9 @@ export default function OrderStatisticsDetails(props){
                 noDataText={i18n["nodata"]}
                 retryLabel={i18n["retry"]}
                 errorTitle={i18n["loading.error"]}
+                readyText={i18n["load.more"]}
                 alwaysShowLoading={false}
+                onReadyTextPress={onLoadMore}
                 onRetry={getDetailsList} />
             {!!detailsList.length && <>
                 <View style={styles.containerBox}>

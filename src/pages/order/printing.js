@@ -38,11 +38,11 @@ const styles = StyleSheet.create({
 
 function getOrderInfoBySN(osn){
     return $request("getPosAppOrderList", { slipNumber: osn, pageNum: 1, pageSize: 1 }).then(res => {
-        if(!res || !res[0]){
+        if(!res.rows || !res.rows[0]){
             return null;
         }
         
-        const odInfo = res[0];
+        const odInfo = res.rows[0];
         const pmInfo = getPaymentInfo(odInfo.paymentType, odInfo.creditCardBrand || odInfo.eMoneyType || odInfo.qrPayType);
         
         odInfo.paymentName = pmInfo.name;
@@ -73,7 +73,7 @@ export default function OrderPrinting(props){
             if(res){
                 ltRef.current.setLoading(false);
             } else {
-                ltRef.current.setNoMore(1, 0);
+                ltRef.current.setNoMore(0, 0);
             }
         }).catch(ltRef.current.setErrMsg);
     }

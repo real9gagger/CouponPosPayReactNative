@@ -76,7 +76,7 @@ const drbUniqueKey = "OrderFilterDRB";
 
 function getOrderListByParams(params){
     return $request("getPosAppOrderList", params).then(res => {
-        const list = (res || []);
+        const list = (res.rows || []);
         const pmap = {};
         
         for(const vx of list){
@@ -95,6 +95,10 @@ function getOrderListByParams(params){
                     pmap[pmKey] = pmInfo;
                 }
             }
+        }
+        
+        if(list.length){
+            list[0].totalRecordsOfOrderTemp = (+res.total || 0); //总条数（临时变量）
         }
         
         return list;
@@ -207,21 +211,22 @@ export default function OrderIndex(props){
         }
         
         getOrderListByParams(params).then(res => {
-            if(!res){
-                res = [];
-            }
-            
-            let nth = (params.pageNum - 1) * params.pageSize;
-            for(const vxo of res){
-                vxo.oid = (nth++); //计算唯一键值！
-            }
-            
-            if(ltRef.current.isFirstPage()){
-                setOrderList(res);
+            if(res.length){
+                let nth = (params.pageNum - 1) * params.pageSize;
+                for(const vxo of res){
+                    vxo.oid = (nth++); //计算唯一键值！
+                }
+                
+                ltRef.current.setNoMore(res[0].totalRecordsOfOrderTemp , orderList.length + res.length);
+                
+                if(ltRef.current.isFirstPage()){
+                    setOrderList(res);
+                } else {
+                    setOrderList([...orderList, ...res]);
+                }
             } else {
-                setOrderList([...orderList, ...res]);
+                ltRef.current.setNoMore(0, 0);
             }
-            ltRef.current.setNoMore(params.pageSize, res.length);
         }).catch(ltRef.current.setErrMsg);
     }
     const onSVScroll = (evt) => {

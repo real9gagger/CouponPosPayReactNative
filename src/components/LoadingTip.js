@@ -67,9 +67,10 @@ class LoadingTip extends Component {
             isLoading: !!bo
         })
     }
-    __setNoMore(pageSize, dataLength){
+    //判断已经加载的条数是否大于总条数
+    __setNoMore(totalCount, dataLength){
         this.setState({ 
-            noMore: (dataLength >= pageSize ? 0 : (this.pageIndex===1 && dataLength===0 ? 2 : 1)), 
+            noMore: (dataLength >= totalCount ? (totalCount===0 ? 2 : 1) : 0), 
             errMsg: "",
             isLoading: false
         })
@@ -126,7 +127,7 @@ class LoadingTip extends Component {
                 if(this.state.isLoading || this.props.alwaysShowLoading){
                     return (<View style={styles.containerBox}><ActivityIndicator color={appMainColor} size={22} /></View>)
                 } else {
-                    return (<View style={styles.containerBox}><Text style={styles.tipText}>{this.props.readyText}</Text></View>)
+                    return (<View style={styles.containerBox}><Text style={styles.tipText} onPress={this.props.onReadyTextPress}>{this.props.readyText}</Text></View>)
                 }
             }
         } else {

@@ -172,6 +172,7 @@
     "tax.disabled.tip": "値が0の場合、税金機能が有効ではありません！",
     "options.any": "すべて",
     "loading.error": "ロードエラー：",
+    "load.more": "追加のロード",
     "search.result": "検索結果",
     "synchronous.success": "アップ成功~",
     "synchronous.ready": "準備完了",

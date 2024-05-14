@@ -23,11 +23,11 @@ instance.interceptors.request.use(function (config) {
 
 //返回拦截处理
 instance.interceptors.response.use(function (response) {
-    //console.log(response.config.url + " 成功响应", response.data)
+    //console.log(response.config.url + " 成功响应", Object.keys(response.data))
     const resData = response.data;
     const resCode = (resData.code || 999);
     if (resCode === 200) {
-        return (resData.data || resData.rows);
+        return (resData.data || resData);
     } else {
         //是否显示错误提示
         const cfgDat = response.config.data || response.config.params;

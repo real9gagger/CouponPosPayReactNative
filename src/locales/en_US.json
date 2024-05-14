@@ -172,6 +172,7 @@
     "tax.disabled.tip": "Value of 0 indicates that the tax function is not available!",
     "options.any": "Any",
     "loading.error": "Loading Fail: ",
+    "load.more": "Load more",
     "search.result": "Search result",
     "synchronous.success": "Synchronous Successful",
     "synchronous.ready": "Ready",

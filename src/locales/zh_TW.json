@@ -173,6 +173,7 @@
     "tax.disabled.tip": "值為0表示不啟用稅收功能！",
     "options.any": "全部",
     "loading.error": "加載出錯：",
+    "load.more": "加載更多",
     "search.result": "搜索結果",
     "synchronous.success": "同步成功~",
     "synchronous.ready": "就緒",

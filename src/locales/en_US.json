@@ -175,6 +175,7 @@
     "load.more": "Load more",
     "search.result": "Search result",
     "synchronous.success": "Synchronous Successful",
+    "synchronous.failed": "Synchronous Failed",
     "synchronous.ready": "Ready",
     "statistics.total.sales": "Total Sales",
     "statistics.total.discount": "Total Discount",

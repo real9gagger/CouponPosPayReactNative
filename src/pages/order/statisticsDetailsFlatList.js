@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, Fragment } from "react";
-import { ScrollView, TouchableOpacity, View, Text, StyleSheet } from "react-native";
+import { ScrollView, TouchableOpacity, View, Text, StyleSheet, FlatList } from "react-native";
 import { useI18N, useAppSettings } from "@/store/getter";
 import { getPaymentInfo } from "@/common/Statics";
 import { getDiscountMoney } from "@/utils/helper";
@@ -62,8 +62,7 @@ const styles = StyleSheet.create({
         justifyContent: "flex-end",
         backgroundColor: "#fff",
         paddingHorizontal: 5,
-        paddingTop: 10,
-        paddingBottom: 0
+        paddingTop: 10
     },
     titleBox: {
         fontSize: 14,
@@ -99,6 +98,7 @@ export default function OrderStatisticsDetails(props){
     const appSettings = useAppSettings();
     const ltRef = useRef(null);
     const prevDate = useRef("[!NULL!]");
+    const prevIndex = useRef(-1);
     const [detailsList, setDetailsList] = useState([]);
     const [sumInfo, setSumInfo] = useState({
         total: 0, //订单总额
@@ -137,6 +137,7 @@ export default function OrderStatisticsDetails(props){
                     oo.paymentLogo = pmInfo.logo;
                 }
             }
+            
             props.navigation.navigate("订单详情", oo);
         }
     }
@@ -194,7 +195,7 @@ export default function OrderStatisticsDetails(props){
             }
             
             const newList = [...detailsList, ...list];
-
+            
             ltRef.current.setNoMore(res.total, newList.length);
             
             money[0] = money[1] = money[2] = money[3] = 0; //重置！！！【重要】
@@ -232,20 +233,15 @@ export default function OrderStatisticsDetails(props){
             setSumInfo({...sumInfo});
         }).catch(ltRef.current.setErrMsg);
     }
-    const onSVScroll = (evt) => {
-        const { layoutMeasurement, contentOffset, contentSize } = evt.nativeEvent;
-        if(ltRef.current.isScrollDown(contentOffset.y) && ltRef.current.canLoadMore()){
-            const isCloseToBottom = (layoutMeasurement.height + contentOffset.y) >= (contentSize.height - 40); // 这里的 40 可以根据需要调整
-            if (isCloseToBottom) {
-                ltRef.current.nextPage();
-                getDetailsList();
-            }
-        }
-        ltRef.current.setScrollTop(contentOffset.y);
-    }
     const onLoadMore = () => {
         ltRef.current.nextPage();
         getDetailsList();
+    }
+    const onSVScroll = () => {
+        if(ltRef.current.canLoadMore()){
+            ltRef.current.nextPage();
+            getDetailsList();
+        }
     }
     const onACChanged = (code) => {
         return function(){
@@ -349,6 +345,94 @@ export default function OrderStatisticsDetails(props){
         }
         return {display: "none"};
     }
+    const myRenderItem = (args) => {
+        const vx = args.item;
+        return (<>
+            {showData !== 0x99 && vx.tstData && 
+                <View style={fxHC}>
+                    <Text style={[styles.cellBox1, styles.subtotalBox, activedColumn===0xFF && styles.cellBox0]}>{vx.tstData}</Text>
+                    <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xEE && styles.cellBox0]}>{vx.subtotalData[0]}</Text>
+                    <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xDD && styles.cellBox0]}>{vx.subtotalData[1]}</Text>
+                    <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xCC && styles.cellBox0]}>{-vx.subtotalData[2]}</Text>
+                    <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xBB && styles.cellBox0]}>{vx.subtotalData[3]}</Text>
+                    <LinearGradient style={[styles.barBox, getBarWidthOfDay(vx)]} colors={LG_BAR_COLORS} start={LG_BAR_START} end={LG_BAR_END} />
+                </View>
+            }
+            {showData !== 0x88 && 
+                <TouchableOpacity style={fxHC} activeOpacity={0.5} onPress={onItemPress(vx)}>
+                    <Text style={[styles.cellBox1, activedColumn===0xFF && styles.cellBox0]}>{vx.transactionTime.substr(11)}</Text>
+                    <Text style={[styles.cellBox2, activedColumn===0xEE && styles.cellBox0]}>{vx.orderAmount || 0}</Text>
+                    <Text style={[styles.cellBox2, activedColumn===0xDD && styles.cellBox0]}>{vx.tax || 0}</Text>
+                    <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]}>{getDiscountMoney(vx.discountAmount)}</Text>
+                    <Text style={[styles.cellBox2, activedColumn===0xBB && styles.cellBox0]}>{vx.amount || 0}</Text>
+                    <LinearGradient style={[styles.barBox, getBarWidthOfOrder(vx)]} colors={LG_BAR_COLORS} start={LG_BAR_START} end={LG_BAR_END} />
+                </TouchableOpacity>
+            }
+        </>);
+    }
+    const myHeaderBox = () => {
+        if(!detailsList.length){
+            return null;
+        }
+        
+        return (
+            <TouchableOpacity style={styles.reviewBox} activeOpacity={0.6} onPress={onPopupShow}>
+                <Text style={[fs12, fwB, fxG1]}>{i18n["statistics.details"]}</Text>
+                <Text style={[fs12, tcMC, fwB]}>{i18n["statistics.details.displays"]}</Text>
+                <PosPayIcon name="query-params" color={appMainColor} size={14} offset={5} />
+            </TouchableOpacity>
+        );
+    }
+    const myFooterBox = () => {
+        console.log(detailsList.length, ltRef)
+        if(!detailsList.length){
+            //return (null);
+        }
+        
+        return (<>
+            <LoadingTip
+                ref={ltRef}
+                noMoreText={i18n["statistics.details.nomore"].cloze(sumInfo.days, detailsList.length)}
+                noDataText={i18n["nodata"]}
+                retryLabel={i18n["retry"]}
+                errorTitle={i18n["loading.error"]}
+                readyText={i18n["load.more"]}
+                alwaysShowLoading={false}
+                onReadyTextPress={onLoadMore}
+                onRetry={getDetailsList} />
+            <View style={styles.containerBox}>
+                <View style={styles.lineBox}></View>
+            </View>
+            <View style={[fxHC, styles.containerBox]}>
+                <Text style={[styles.cellBox1, activedColumn===0xFF && styles.cellBox0]} numberOfLines={1}>{i18n["statistics.details.minval"]}</Text>
+                <Text style={[styles.cellBox2, activedColumn===0xEE && styles.cellBox0]} numberOfLines={1}>{sumInfo.totmin}</Text>
+                <Text style={[styles.cellBox2, activedColumn===0xDD && styles.cellBox0]} numberOfLines={1}>{sumInfo.taxmin}</Text>
+                <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]} numberOfLines={1}>{-sumInfo.dctmin}</Text>
+                <Text style={[styles.cellBox2, activedColumn===0xBB && styles.cellBox0]} numberOfLines={1}>{sumInfo.amtmin}</Text>
+            </View>
+            <View style={[fxHC, styles.containerBox]}>
+                <Text style={[styles.cellBox1, activedColumn===0xFF && styles.cellBox0]} numberOfLines={1}>{i18n["statistics.details.maxval"]}</Text>
+                <Text style={[styles.cellBox2, activedColumn===0xEE && styles.cellBox0]} numberOfLines={1}>{sumInfo.totmax}</Text>
+                <Text style={[styles.cellBox2, activedColumn===0xDD && styles.cellBox0]} numberOfLines={1}>{sumInfo.taxmax}</Text>
+                <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]} numberOfLines={1}>{-sumInfo.dctmax}</Text>
+                <Text style={[styles.cellBox2, activedColumn===0xBB && styles.cellBox0]} numberOfLines={1}>{sumInfo.amtmax}</Text>
+            </View>
+            <View style={[fxHC, styles.containerBox]}>
+                <Text style={[styles.cellBox1, activedColumn===0xFF && styles.cellBox0]} numberOfLines={1}>{i18n["statistics.details.avgoforders"]}</Text>
+                <Text style={[styles.cellBox2, activedColumn===0xEE && styles.cellBox0]} numberOfLines={1}>{avgOfOrders(sumInfo.total)}</Text>
+                <Text style={[styles.cellBox2, activedColumn===0xDD && styles.cellBox0]} numberOfLines={1}>{avgOfOrders(sumInfo.tax)}</Text>
+                <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]} numberOfLines={1}>{avgOfOrders(-sumInfo.discount)}</Text>
+                <Text style={[styles.cellBox2, activedColumn===0xBB && styles.cellBox0]} numberOfLines={1}>{avgOfOrders(sumInfo.amount)}</Text>
+            </View>
+            <View style={[fxHC, styles.containerBox]}>
+                <Text style={[styles.cellBox1, activedColumn===0xFF && styles.cellBox0]} numberOfLines={1}>{i18n["statistics.details.avgofdays"]}</Text>
+                <Text style={[styles.cellBox2, activedColumn===0xEE && styles.cellBox0]} numberOfLines={1}>{avgOfDays(sumInfo.total)}</Text>
+                <Text style={[styles.cellBox2, activedColumn===0xDD && styles.cellBox0]} numberOfLines={1}>{avgOfDays(sumInfo.tax)}</Text>
+                <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]} numberOfLines={1}>{avgOfDays(-sumInfo.discount)}</Text>
+                <Text style={[styles.cellBox2, activedColumn===0xBB && styles.cellBox0]} numberOfLines={1}>{avgOfDays(sumInfo.amount)}</Text>
+            </View>
+        </>);
+    }
     
     useEffect(getDetailsList, []);
     
@@ -362,83 +446,16 @@ export default function OrderStatisticsDetails(props){
                 <Text style={[styles.cellBox2, activedColumn===0xBB && styles.cellBox0]} onPress={onACChanged(0xBB)} numberOfLines={1}>{i18n["transaction.amount"]}</Text>
             </View>
         </View>
-        
-        <ScrollView style={pgFF} onScroll={onSVScroll} contentContainerStyle={styles.containerBox}>
-            {!!detailsList.length && 
-                <TouchableOpacity style={styles.reviewBox} activeOpacity={0.6} onPress={onPopupShow}>
-                    <Text style={[fs12, fwB, fxG1]}>{i18n["statistics.details"]}</Text>
-                    <Text style={[fs12, fwB]}>{i18n["statistics.details.displays"]}</Text>
-                    <PosPayIcon name="query-params" color="#000" size={14} offset={5} />
-                </TouchableOpacity>
-            }
-            {detailsList.map(vx => 
-                <Fragment key={vx.orderUID}>
-                    {showData !== 0x99 && vx.tstData && 
-                        <View style={fxHC}>
-                            <Text style={[styles.cellBox1, styles.subtotalBox, activedColumn===0xFF && styles.cellBox0]}>{vx.tstData}</Text>
-                            <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xEE && styles.cellBox0]}>{vx.subtotalData[0]}</Text>
-                            <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xDD && styles.cellBox0]}>{vx.subtotalData[1]}</Text>
-                            <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xCC && styles.cellBox0]}>{-vx.subtotalData[2]}</Text>
-                            <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xBB && styles.cellBox0]}>{vx.subtotalData[3]}</Text>
-                            <LinearGradient style={[styles.barBox, getBarWidthOfDay(vx)]} colors={LG_BAR_COLORS} start={LG_BAR_START} end={LG_BAR_END} />
-                        </View>
-                    }
-                    {showData !== 0x88 && 
-                        <TouchableOpacity style={fxHC} activeOpacity={0.5} onPress={onItemPress(vx)}>
-                            <Text style={[styles.cellBox1, activedColumn===0xFF && styles.cellBox0]}>{vx.transactionTime.substr(11)}</Text>
-                            <Text style={[styles.cellBox2, activedColumn===0xEE && styles.cellBox0]}>{vx.orderAmount || 0}</Text>
-                            <Text style={[styles.cellBox2, activedColumn===0xDD && styles.cellBox0]}>{vx.tax || 0}</Text>
-                            <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]}>{getDiscountMoney(vx.discountAmount)}</Text>
-                            <Text style={[styles.cellBox2, activedColumn===0xBB && styles.cellBox0]}>{vx.amount || 0}</Text>
-                            <LinearGradient style={[styles.barBox, getBarWidthOfOrder(vx)]} colors={LG_BAR_COLORS} start={LG_BAR_START} end={LG_BAR_END} />
-                        </TouchableOpacity>
-                    }
-                </Fragment>
-            )}
-            <LoadingTip
-                ref={ltRef}
-                noMoreText={i18n["statistics.details.nomore"].cloze(sumInfo.days, detailsList.length)}
-                noDataText={i18n["nodata"]}
-                retryLabel={i18n["retry"]}
-                errorTitle={i18n["loading.error"]}
-                readyText={i18n["load.more"]}
-                alwaysShowLoading={false}
-                onReadyTextPress={onLoadMore}
-                onRetry={getDetailsList} />
-            {!!detailsList.length && <>
-                <View style={styles.containerBox}>
-                    <View style={styles.lineBox}></View>
-                </View>
-                <View style={[fxHC, styles.containerBox]}>
-                    <Text style={[styles.cellBox1, activedColumn===0xFF && styles.cellBox0]} numberOfLines={1}>{i18n["statistics.details.minval"]}</Text>
-                    <Text style={[styles.cellBox2, activedColumn===0xEE && styles.cellBox0]} numberOfLines={1}>{sumInfo.totmin}</Text>
-                    <Text style={[styles.cellBox2, activedColumn===0xDD && styles.cellBox0]} numberOfLines={1}>{sumInfo.taxmin}</Text>
-                    <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]} numberOfLines={1}>{-sumInfo.dctmin}</Text>
-                    <Text style={[styles.cellBox2, activedColumn===0xBB && styles.cellBox0]} numberOfLines={1}>{sumInfo.amtmin}</Text>
-                </View>
-                <View style={[fxHC, styles.containerBox]}>
-                    <Text style={[styles.cellBox1, activedColumn===0xFF && styles.cellBox0]} numberOfLines={1}>{i18n["statistics.details.maxval"]}</Text>
-                    <Text style={[styles.cellBox2, activedColumn===0xEE && styles.cellBox0]} numberOfLines={1}>{sumInfo.totmax}</Text>
-                    <Text style={[styles.cellBox2, activedColumn===0xDD && styles.cellBox0]} numberOfLines={1}>{sumInfo.taxmax}</Text>
-                    <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]} numberOfLines={1}>{-sumInfo.dctmax}</Text>
-                    <Text style={[styles.cellBox2, activedColumn===0xBB && styles.cellBox0]} numberOfLines={1}>{sumInfo.amtmax}</Text>
-                </View>
-                <View style={[fxHC, styles.containerBox]}>
-                    <Text style={[styles.cellBox1, activedColumn===0xFF && styles.cellBox0]} numberOfLines={1}>{i18n["statistics.details.avgoforders"]}</Text>
-                    <Text style={[styles.cellBox2, activedColumn===0xEE && styles.cellBox0]} numberOfLines={1}>{avgOfOrders(sumInfo.total)}</Text>
-                    <Text style={[styles.cellBox2, activedColumn===0xDD && styles.cellBox0]} numberOfLines={1}>{avgOfOrders(sumInfo.tax)}</Text>
-                    <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]} numberOfLines={1}>{avgOfOrders(-sumInfo.discount)}</Text>
-                    <Text style={[styles.cellBox2, activedColumn===0xBB && styles.cellBox0]} numberOfLines={1}>{avgOfOrders(sumInfo.amount)}</Text>
-                </View>
-                <View style={[fxHC, styles.containerBox]}>
-                    <Text style={[styles.cellBox1, activedColumn===0xFF && styles.cellBox0]} numberOfLines={1}>{i18n["statistics.details.avgofdays"]}</Text>
-                    <Text style={[styles.cellBox2, activedColumn===0xEE && styles.cellBox0]} numberOfLines={1}>{avgOfDays(sumInfo.total)}</Text>
-                    <Text style={[styles.cellBox2, activedColumn===0xDD && styles.cellBox0]} numberOfLines={1}>{avgOfDays(sumInfo.tax)}</Text>
-                    <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]} numberOfLines={1}>{avgOfDays(-sumInfo.discount)}</Text>
-                    <Text style={[styles.cellBox2, activedColumn===0xBB && styles.cellBox0]} numberOfLines={1}>{avgOfDays(sumInfo.amount)}</Text>
-                </View>
-            </>}
-        </ScrollView>
+        <FlatList
+            style={pgFF}
+            data={detailsList}
+            contentContainerStyle={styles.containerBox}
+            renderItem={myRenderItem}
+            keyExtractor={vxo => vxo.orderUID}
+            ListHeaderComponent={myHeaderBox}
+            ListFooterComponent={myFooterBox}
+            onEndReached={onSVScroll}
+        />
         <View style={styles.containerBox}>
             <View style={styles.lineBox}></View>
         </View>

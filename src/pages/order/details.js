@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ScrollView, View, Text, Image, StatusBar, StyleSheet } from "react-native";
 import { useI18N, useOnRefundSuccessful } from "@/store/getter";
 import { EMPTY_DEFAULT_TEXT, TRANSACTION_TYPE_REFUND } from "@/common/Statics";
+import { getDiscountMoney } from "@/utils/helper";
 import LocalPictures from "@/common/Pictures";
 import PosPayIcon from "@/components/PosPayIcon";
 import GradientButton from "@/components/GradientButton";
@@ -73,7 +74,7 @@ export default function OrderDetails(props){
                     </View>
                     <View style={styles.itemBox}>
                         <Text style={fxG1}>{i18n["coupon.discount"]}</Text>
-                        <Text><Text style={fwB}>-{orderInfo.discountAmount}</Text> {orderInfo.currencyCode}</Text>
+                        <Text><Text style={fwB}>{getDiscountMoney(orderInfo.discountAmount)}</Text> {orderInfo.currencyCode}</Text>
                     </View>
                     <View style={styles.itemBox}>
                         <Text style={fxG1}>{i18n["transaction.amount"]}</Text>

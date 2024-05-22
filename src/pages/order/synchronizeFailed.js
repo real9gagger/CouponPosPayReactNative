@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ScrollView, TouchableHighlight, Animated, Easing, TouchableOpacity, View, Text, StatusBar, StyleSheet, Modal, ActivityIndicator } from "react-native";
 import { useI18N, useFailedOrders, checkIsSyncingAll, useIsSyncingAll } from "@/store/getter";
 import { dispatchRemoveFailedOrder, dispatchUpdateFailedOrder, dispatchSynchronousAllOrder } from "@/store/setter";
@@ -127,6 +127,7 @@ export default function OrderSynchronizeFailed(props){
     const failedOrders = useFailedOrders();
     const isSyAll = useIsSyncingAll();
     const saBoxStyle = {};
+    const startSyncAllTs = useRef(0); //开始点击同步全部时的时间戳
     const [selOrder, setSelOrder] = useState(null);
     const [activatedIndex, setActivatedIndex] = useState(-1);
     
@@ -171,9 +172,11 @@ export default function OrderSynchronizeFailed(props){
         }).catch(() => setActivatedIndex(-1));
     }
     const onSynchronousOne = () => {
-        if(!isSyAll || selOrder.__isSyncing){
+        if(isSyAll || selOrder.__isSyncing){
             return; //防止重复点同步
         }
+        
+        startSyncAllTs.current = 0; //重置
         
         const fid = selOrder.__fid;
         
@@ -186,15 +189,18 @@ export default function OrderSynchronizeFailed(props){
             $toast(i18n["synchronous.success"]);
         }).catch(err => {
             setTimeout(dispatchUpdateFailedOrder, 500, fid, err, false); //如果还是同步失败，则更新信息
+            $toast(i18n["synchronous.failed"]);
         });
         
         setSelOrder(null);
     }
     const onSynchronousAll = () => {
         if(!isSyAll){
+            startSyncAllTs.current = Date.now();
             dispatchSynchronousAllOrder(true);
             doSynchronousAll(JSON.parse(JSON.stringify(failedOrders))); //深度复制一份
         } else {
+            startSyncAllTs.current = 0; //重置
             dispatchSynchronousAllOrder(false);
         }
     }
@@ -212,7 +218,7 @@ export default function OrderSynchronizeFailed(props){
                         <Text style={styles.text99Box}>{i18n["order.try.times"].cloze(vx.__tryTimes)} / {formatDate(vx.__postTimestamp)}</Text>
                         {vx.__isSyncing ?
                             <View style={fxHC}><ActivityIndicator color={appMainColor} size={14} /><Text style={[fs12, tcMC]}>&nbsp;{i18n["syncing"]}</Text></View>
-                        :(isSyAll ? 
+                        :(isSyAll && vx.__postTimestamp < startSyncAllTs.current ? 
                             <View style={fxHC}><PosPayIcon name="clock-ready" size={14} color={appMainColor} /><Text style={[fs12, tcMC]}>&nbsp;{i18n["synchronous.ready"]}</Text></View>:
                             <Text style={[fs12, tcO0]} numberOfLines={1}>{vx.__errorMessage}</Text> 
                         )}

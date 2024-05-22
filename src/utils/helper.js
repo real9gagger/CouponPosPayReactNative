@@ -127,3 +127,27 @@ export function checkCouponExpiration(exp){
         return (nowDate >= startDate && nowDate <= endDate);
     }
 }
+
+//获取正负值优惠金额
+export function getDiscountMoney(num){
+    if(!num){
+        return "0";
+    }
+    const numType = (typeof num);
+    
+    if(numType === "number"){
+        if(num >= 0){//收款时后台返回为正数
+            return ("-" + num);
+        } else {//退款时后台返回为负数
+            return ("+" + Math.abs(num));
+        }
+    } else if(numType === "string") {
+        if(num.startsWith("-")){//退款时后台返回为负数
+            return ("+" + num.substr(1));
+        } else {//收款时后台返回为正数
+            return ("-" + num);
+        }
+    } else {
+        return "0";
+    }
+}

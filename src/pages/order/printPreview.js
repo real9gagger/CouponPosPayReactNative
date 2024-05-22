@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ScrollView, View, Text, StatusBar, StyleSheet } from "react-native";
 import { useI18N, getUserInfo, getAppSettings } from "@/store/getter";
-import { formatDate } from "@/utils/helper";
+import { formatDate, getDiscountMoney } from "@/utils/helper";
 import { getPaymentInfo, EMPTY_DEFAULT_TEXT } from "@/common/Statics";
 import ImageX from "@/components/ImageX";
 import GradientButton from "@/components/GradientButton";
@@ -148,7 +148,7 @@ export default function OrderPrintPreview(props){
             dat.tax = $tofixed(dat.tax);
             dat.isShowTaxInfo = (+dat.tax ? true : false);
             dat.printTime = formatDate();
-            dat.discountAmount = $tofixed(dat.discountAmount);
+            dat.discountAmount = getDiscountMoney($tofixed(dat.discountAmount));
             dat.orderAmount = $tofixed(dat.orderAmount);
             dat.shopLogo = (appSettings.paymentReceiptPrintShopLogo ? userInfo.shopLogo : null);
             dat.payeeName = userInfo.shopName;
@@ -182,7 +182,7 @@ export default function OrderPrintPreview(props){
             </View>
             <View style={styles.rowBox}>
                 <Text style={styles.textLabel2}>{i18n["coupon.discount"]}</Text>
-                <Text style={styles.textValue2}>-{orderInfo.currencySymbol}{orderInfo.discountAmount}</Text>
+                <Text style={styles.textValue2}>{orderInfo.currencySymbol}{orderInfo.discountAmount}</Text>
             </View>
             <View style={styles.rowBox}>
                 <Text style={styles.textLabel2}>{i18n["transaction.amount"]}</Text>

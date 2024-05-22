@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ScrollView, View, Text, Image, StatusBar, StyleSheet, TouchableOpacity } from "react-native";
 import { useI18N, getUserInfo, getAppSettings } from "@/store/getter";
 import { dispatchAddFailedOrder } from "@/store/setter";
-import { formatDate } from "@/utils/helper";
+import { formatDate, getDiscountMoney } from "@/utils/helper";
 import { getPaymentInfo, EMPTY_DEFAULT_TEXT, CASH_PAYMENT_CODE } from "@/common/Statics";
 import LocalPictures from "@/common/Pictures";
 import CircleTick from "@/components/CircleTick"
@@ -72,7 +72,7 @@ export default function IndexTransactionSuccess(props){
             dat.amount = $tofixed(params.amount);
             dat.tax = $tofixed(params.tax);
             dat.isShowTaxInfo = (+params.tax ? true : false);
-            dat.discountAmount = $tofixed(params.discountAmount);
+            dat.discountAmount = getDiscountMoney($tofixed(params.discountAmount));
             dat.orderAmount = $tofixed(params.orderAmount);
             dat.printTime = formatDate();
             dat.shopLogo = (aps.paymentReceiptPrintShopLogo ? uif.shopLogo : null);
@@ -108,7 +108,7 @@ export default function IndexTransactionSuccess(props){
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["coupon.discount"]}</Text>
-                    <Text><Text style={fwB}>-{transactionResult.discountAmount}</Text> {transactionResult.currencyCode}</Text>
+                    <Text><Text style={fwB}>{transactionResult.discountAmount}</Text> {transactionResult.currencyCode}</Text>
                 </View>
                 <View style={styles.itemBox}>
                     <Text style={fxG1}>{i18n["transaction.amount"]}</Text>

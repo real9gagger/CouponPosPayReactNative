@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { ScrollView, View, Text, TextInput, TouchableOpacity, StatusBar, StyleSheet, ActivityIndicator, Keyboard } from "react-native";
+import { ScrollView, View, Text, Image, TextInput, TouchableOpacity, StatusBar, StyleSheet, ActivityIndicator, Keyboard } from "react-native";
 import { dispatchSetAccessToken, dispatchUpdateUserInfo } from "@/store/setter";
 import { useI18N, getUserInfo } from "@/store/getter";
 import GradientButton from "@/components/GradientButton";
 import PosPayIcon from "@/components/PosPayIcon";
 import AppPackageInfo from "@/modules/AppPackageInfo";
+import LocalPictures from "@/common/Pictures";
 
 const LOGIN_BOX_WIDTH = Math.min(Math.round(deviceDimensions.screenWidth * 0.8), 400);
 const COLOR_GREY = "#aaa";
@@ -13,11 +14,12 @@ const APP_VER = AppPackageInfo.getFullVersion();
 const styles = StyleSheet.create({
     loginBox: {
         width: LOGIN_BOX_WIDTH,
-        marginTop: (deviceDimensions.screenHeight * 0.125), //需要处理横屏的情况
+        marginTop: 30,
         marginLeft: (deviceDimensions.screenWidth - LOGIN_BOX_WIDTH) / 2
     },
     loginTitle: {
         paddingBottom: 40,
+        paddingTop: 5,
         fontSize: 20,
         fontWeight: "bold",
         textAlign: "center"
@@ -62,6 +64,12 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: "#fff"
+    },
+    logoBox: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        backgroundColor: appMainColor
     }
 });
 
@@ -121,7 +129,10 @@ export default function LoginIndex(props){
         <ScrollView style={pgEE} contentContainerStyle={hiF} keyboardShouldPersistTaps="handled">
             <StatusBar backgroundColor={isAutoLogin ? "#FFF" : "#EEE"} barStyle="dark-content" />
             <View style={styles.loginBox}>
-                <Text style={styles.loginTitle}>{i18n["app.alias"]}</Text>
+                <View style={fxVM}>
+                    <Image source={LocalPictures.logoApp} style={styles.logoBox} />
+                    <Text style={styles.loginTitle}>{i18n["app.alias"]}</Text>
+                </View>
                 <View style={[styles.inputWrapper, isAccountFocus && styles.inputFocus]}>
                     <PosPayIcon name="login-account" color={isAccountFocus ? appMainColor: COLOR_GREY} size={20} />
                     <TextInput 

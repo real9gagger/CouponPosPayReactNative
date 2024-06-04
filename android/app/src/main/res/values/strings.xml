@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">JPクーポン</string>
+    <string name="app_name">JP酷鹏</string>
     <string name="launch_screen_pic_content_description">Launch screen cover</string>
     <string name="launch_screen_copyright_content">powered by xcarbon.cc</string>
     <string name="customer_display_connection_failed">Unable to connect to the customer display!</string>

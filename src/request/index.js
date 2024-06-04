@@ -23,7 +23,7 @@ instance.interceptors.request.use(function (config) {
 
 //返回拦截处理
 instance.interceptors.response.use(function (response) {
-    //console.log(response.config.url + " 成功响应", Object.keys(response.data))
+    //console.log(response.config.url + " 成功响应", response.data)
     const resData = response.data;
     const resCode = (resData.code || 999);
     if (resCode === 200) {
@@ -32,11 +32,13 @@ instance.interceptors.response.use(function (response) {
         //是否显示错误提示
         const cfgDat = response.config.data || response.config.params;
         const datType = (typeof cfgDat);
+        const errMsg = (resData.msg || `Unknown Error: ${resCode}`);
+        
         if(!cfgDat || (datType === "object" && !cfgDat.doNotToastErrMsg) || (datType === "string" && !cfgDat.includes("doNotToastErrMsg"))){
-            $toast(resData.msg);
+            $toast(errMsg);
         }
         
-        return Promise.reject("[" + resCode + "] " + resData.msg);
+        return Promise.reject("[" + resCode + "] " + errMsg);
     }
 }, function (err) {
     //console.log("失败响应", err)

@@ -114,6 +114,7 @@
     "refund.confirm": "确认退款",
     "refund.already": "订单已退款",
     "refund.unsupport": "该交易已不支持退款",
+    "transaction.done": "交易完成",
     "transaction.success": "交易成功",
     "transaction.fail": "交易失败",
     "transaction.amount": "交易金额",

@@ -105,6 +105,7 @@
     "refund.confirm": "返金の確認",
     "refund.already": "注文は返金されました",
     "refund.unsupport": "この取引は返金をサポートしていない",
+    "transaction.done": "取引完了",
     "transaction.success": "取引成功",
     "transaction.fail": "取引失敗",
     "transaction.amount": "金額（税込）",

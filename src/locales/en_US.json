@@ -105,6 +105,7 @@
     "refund.confirm": "Confirm Refund",
     "refund.already": "This order has already been refunded",
     "refund.unsupport": "This transaction no longer supports refunds",
+    "transaction.done": "Transaction Done",
     "transaction.success": "Transaction Successful",
     "transaction.fail": "Transaction Failed",
     "transaction.amount": "Transaction amount",

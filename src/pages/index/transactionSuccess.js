@@ -95,7 +95,7 @@ export default function IndexTransactionSuccess(props){
         <ScrollView style={pgFF} contentContainerStyle={[pdX, fxC, fxAC, mhF]}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
             <CircleTick progressing={2} size={80} style={styles.tickBox} color={styles.tickText.color} />
-            <Text style={styles.tickText}>{i18n["transaction.success"]}</Text>
+            <Text style={styles.tickText}>{i18n["transaction.done"]}</Text>
             {transactionResult && <>
                 <Text style={styles.moneyText}>+{transactionResult.amount}</Text>
                 <View style={styles.itemBox}>

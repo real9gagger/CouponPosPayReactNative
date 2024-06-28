@@ -137,10 +137,9 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
         mPaymentApi = new PaymentApi();
         if (MainActivity.isPanasonicJTC60Device()) {
             context.addLifecycleEventListener(this);
-        } else {
-            this.copyCustomerDisplayPics(); //虽然不是 POS 机，但也复制一份
         }
 
+        this.copyCustomerDisplayPics();
         File wsFile = new File(context.getExternalFilesDir(DIRECTORY_CUSTOMER_DISPLAY), "welcome_screen.jpg");
 
         wsPicModifyTime = wsFile.lastModified();
@@ -151,8 +150,8 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
         try {
             if (MainActivity.isPanasonicJTC60Device()) {
                 if (!mPaymentApi.isInit()) {
+                    Log.d(TAG, "正在准备初始化支付服务...");
                     mPaymentApi.init(mContext, mPaymentApiListener);
-                    this.copyCustomerDisplayPics();
                 } else {
                     Log.d(TAG, "支付服务已经初始化过了...");
                 }
@@ -341,16 +340,17 @@ public class PosApiModule extends ReactContextBaseJavaModule implements Lifecycl
     public void onHostPause() {
         Log.d(TAG, "调用了小票打印的 onHostPause...");
         closeCustomerDisplay(false);
-    }
-
-    @Override
-    public void onHostDestroy() {
         try {
-            mPaymentApi.term(mContext);
+            mPaymentApi.term(mContext); //上架时提示没有在APP休息时调用此方法，无法上架！因此移到都此处，不能再退出程序时再调用此方法！
             Log.d(TAG, "销毁了支付/打印接口...");
         } catch (Exception ex) {
             Log.d(TAG, "销毁支付接口出错:::" + ex.getMessage());
         }
+    }
+
+    @Override
+    public void onHostDestroy() {
+        Log.d(TAG, "应用程序退出...");
     }
 
     /* ================================ 打印相关 ================================ */

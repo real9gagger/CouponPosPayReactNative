@@ -78,6 +78,7 @@ export default function IndexTransactionSuccess(props){
             dat.shopLogo = (aps.paymentReceiptPrintShopLogo ? uif.shopLogo : null);
             dat.operatorName = uif.loginAccount;
             dat.bottomText = aps.paymentReceiptBottomText;
+            dat.posTerminationId = ReceiptsPlus.getTerminationID(); //设备终端ID
             
             setTransactionResult(dat);
             

@@ -511,10 +511,20 @@ function getInstalledInfos(){
     return InstalledInfos;
 }
 
+//获取POS设备终端ID
+function getTerminationID(){
+    if(!InstalledInfos.tid){
+        getInstalledInfos();
+    }
+    
+    return (InstalledInfos.tid === "--" ? "0" : InstalledInfos.tid);
+}
+
 export default {
     printPaymentReceipts,
     printPaymentReceipts4SC,
     clearPrintCaches,
     getAppCacheSize,
-    getInstalledInfos
+    getInstalledInfos,
+    getTerminationID
 }

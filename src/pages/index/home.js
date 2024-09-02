@@ -13,6 +13,7 @@ import ImageButton from "@/components/ImageButton";
 import PayKeyboard from "@/components/PayKeyboard";
 import PosPayIcon from "@/components/PosPayIcon";
 import GradientButton from "@/components/GradientButton";
+import AppPackageInfo from "@/modules/AppPackageInfo";
 
 const styles = StyleSheet.create({
     headerBox: {
@@ -881,6 +882,16 @@ function customTabLabel(args){
     )
 }
 
+//自定义标签项（仅有一项标签页时调用）
+function oneTabLabel(args){
+    return (
+        <View style={fxHC}>
+            <PosPayIcon name={allPayTypeMap[args.route.key]?.pticon} color={styles.tabInactived.color} size={18} />
+            <Text style={styles.tabInactived} numberOfLines={1}>{args.route.title}</Text>
+        </View>
+    )
+}
+
 //自定义顶部标签页
 function customTabBar(props) {
     const tabCount = props.navigationState.routes.length;
@@ -889,13 +900,14 @@ function customTabBar(props) {
         (tabCount <= 2 ? styles.tabItemEq2 :
         (tabCount <= 3 ? styles.tabItemEq3 : styles.tabItemEgt4)));
     const isehh = (tabCount ? props.navigationState.routes[0].isehh : true); //is enable home header
-
+    const isPD = AppPackageInfo.isPosDevice(); //为了美观手机端就不要显示底部横条了！
+    
     return (
         <TabBar
             {...props}
             scrollEnabled={true}
-            renderLabel={customTabLabel}
-            indicatorStyle={styles.tabIndicator}
+            renderLabel={tabCount > 1 ? customTabLabel : oneTabLabel}
+            indicatorStyle={tabCount > 1 && isPD ? styles.tabIndicator : bgTP}
             tabStyle={tabItemStyle}
             style={isehh ? styles.tabBar1 : styles.tabBar2}
         />

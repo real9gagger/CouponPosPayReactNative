@@ -108,6 +108,7 @@ const FastCss = StyleSheet.create({
     bgFF: { backgroundColor: "#fff" },
     bgF0: { backgroundColor: "#f0f0f0" },
     bgB0: { backgroundColor: "#1ba4f0" },
+    bgTP: { backgroundColor: "transparent" },
     
     hiS: { height: deviceDimensions.screenHeight }, /* stretch */
     hiF: { height: "100%" }, /* full */

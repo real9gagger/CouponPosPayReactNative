@@ -11,9 +11,9 @@
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 20240719,
-      "versionName": "1.0.1",
-      "outputFile": "PosPay_1.0.1.20240719_any-cpu.apk"
+      "versionCode": 20240902,
+      "versionName": "1.1.1",
+      "outputFile": "PosPay_1.1.1.20240902_any-cpu.apk"
     }
   ],
   "elementType": "File"

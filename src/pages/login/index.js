@@ -10,11 +10,12 @@ import LocalPictures from "@/common/Pictures";
 const LOGIN_BOX_WIDTH = Math.min(Math.round(deviceDimensions.screenWidth * 0.8), 400);
 const COLOR_GREY = "#aaa";
 const APP_VER = AppPackageInfo.getFullVersion();
+const LB_MG_TOP = (AppPackageInfo.isPosDevice() ? 30 : 90); /* 2024年9月2日：如果是手机端，那上侧的外边距在大一点！ */
 
 const styles = StyleSheet.create({
     loginBox: {
         width: LOGIN_BOX_WIDTH,
-        marginTop: 30,
+        marginTop: LB_MG_TOP,
         marginLeft: (deviceDimensions.screenWidth - LOGIN_BOX_WIDTH) / 2
     },
     loginTitle: {

@@ -1,5 +1,7 @@
 package com.couponpospayreactnative.appinfo;
 
+import static com.couponpospayreactnative.MainActivity.isPanasonicJTC60Device;
+
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -83,6 +85,12 @@ public class AppPackageInfoModule extends ReactContextBaseJavaModule {
     @ReactMethod(isBlockingSynchronousMethod = true)
     public String getLocaleLanguage() {
         return (Locale.getDefault().getLanguage() + "_" + Locale.getDefault().getCountry());
+    }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public boolean isPosDevice(){
+        //是否是 POS 机设备
+        return isPanasonicJTC60Device();
     }
 
     //2024年4月1日 转到开机自启设置页面（第三方设置页面）

@@ -18,4 +18,5 @@ export default {
     posAppRefund: '/order/order/posAppRefund', //订单退款
     getOrderStatistics: '/order/order/getPosAppStatisticalDetail', //订单统计接口
     getPosDiscountDetail: '/mgr/paltformDiscount/getPosDiscountDetail?__RM__=POST', //POS机优惠券明细查询
+    getDiscountDetailByDiscountCode: '/mgr/paltformDiscount/getDiscountDetailByDiscountCode?__RM__=POST', //优惠券明细通用查询
 }

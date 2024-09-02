@@ -138,7 +138,7 @@ android {
         applicationId "com.couponpospayreactnative"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 20240719
+        versionCode 20240902
         versionName "1.0.1"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
         vectorDrawables.useSupportLibrary = true
@@ -289,6 +289,9 @@ dependencies {
     //2024年1月29日 二维码扫描库 https://github.com/journeyapps/zxing-android-embedded
     implementation "com.google.zxing:core:3.4.1"
     implementation "com.journeyapps:zxing-android-embedded:4.3.0"
+
+    //2024年9月2日 处理 react-native 版本小于 0.73 时，安卓13、14打开闪退问题。参见：https://github.com/facebook/react-native/issues/41288
+    implementation "org.jetbrains:annotations:16.0.2"
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'

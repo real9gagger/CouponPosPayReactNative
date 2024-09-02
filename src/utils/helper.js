@@ -106,6 +106,22 @@ export function parseCouponScanResult(cc){
     }
 }
 
+//扫描结束后去服务器查询优惠券信息
+export function queryCouponScanResult(cc){
+    return $request("getDiscountDetailByDiscountCode", { discountCode: cc }).then(res => ({
+        picurl: $ossimage(res.spuImageUrl), //优惠券图片
+        title: res.discountName, //优惠券名称
+        cpcode: res.discountCode, //优惠码
+        ptcode: res.tourPromotionCode, //分销码
+        distype: (+res.discountTypeValue || 0), //1-折扣，2-立减，其他值-未知
+        discount: (+res.attrValue || 0), //折扣率，或者立减金额
+        condition: (+res.startAmount || 0), //满免条件
+        expiration: (res.startTime && res.endTime ? res.startTime.substr(0, 10) + " ~ " + res.endTime.substr(0, 10) : "2099-12-31"), //有效日期范围
+        taxfreerate: (+res.taxRate || 0), //免税比例 tax free rate，百分数，有多少比例是免税的。比如 5%，总金额是 100，那么有 20 块是免税的，剩下80元需要计算税收
+        createtime: Date.now() //创建时间的时间戳
+    }));
+}
+
 //检查优惠券是否已过期
 export function checkCouponExpiration(exp){
     if(!exp){

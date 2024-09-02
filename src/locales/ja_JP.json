@@ -85,6 +85,7 @@
     "coupon.promotion.tip": "プロモーションコードを入力してください",
     "coupon.inuse": "使用中のクーポン：",
     "coupon.identified": "認識されたクーポン：",
+    "coupon.querying": "クーポンを検索中…",
     "coupon.errmsg0": "\\\\$[0]は空にできません！",
     "coupon.errmsg1": "開始日は終了日より大きくすることはできません！",
     "coupon.errmsg2": "クーポン券は期限切れ",

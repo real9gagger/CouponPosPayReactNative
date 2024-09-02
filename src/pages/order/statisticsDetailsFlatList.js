@@ -92,8 +92,8 @@ const styles = StyleSheet.create({
     }
 });
 
-//销售统计明细
-export default function OrderStatisticsDetails(props){
+//销售统计明细（【！2024年9月2日 功能未完成！】）
+export default function OrderStatisticsDetailsFlatList(props){
     const i18n = useI18N();
     const appSettings = useAppSettings();
     const ltRef = useRef(null);

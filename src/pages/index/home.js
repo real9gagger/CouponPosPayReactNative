@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from "react";
-import { ScrollView, View, Text, Pressable, Image, StatusBar, StyleSheet, TouchableOpacity, DeviceEventEmitter } from "react-native";
+import { ScrollView, View, Text, Pressable, Image, StatusBar, StyleSheet, ActivityIndicator, TouchableOpacity, DeviceEventEmitter } from "react-native";
 import { useI18N, getI18N, useAppSettings } from "@/store/getter";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
 import { eWalletList, allPayTypeMap, CASH_PAYMENT_CODE, CREDIT_CARD_PAYMENT_CODE, QR_CODE_PAYMENT_CODE, DISCOUNT_TYPE_LJ, TRANSACTION_TYPE_RECEIVE } from "@/common/Statics";
-import { parseCouponScanResult, checkCouponExpiration } from "@/utils/helper";
+import { parseCouponScanResult, queryCouponScanResult, checkCouponExpiration } from "@/utils/helper";
 import { dispatchSetLastUsed } from "@/store/setter";
 import CustomerDisplay from "@/modules/CustomerDisplay";
 import LocalPictures from "@/common/Pictures";
@@ -144,6 +144,15 @@ const styles = StyleSheet.create({
         marginHorizontal: 15, 
         marginBottom: -5, 
         borderRadius: 10
+    },
+    queryingCouponBox: {
+        position: "absolute",
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 9999,
+        backgroundColor: "rgba(255,255,255,0.6)"
     }
 });
 const renderScene = SceneMap({ tabBankCard, tabEWallet, tabQRCode, tabCashPay });
@@ -154,6 +163,7 @@ const onTransactionSuccess = "ON_TRANSACTION_SUCCESS"; //建议成功时触发
 const onSeePayments = "ON_SEE_PAYMENTS"; //查看支持的支付方式
 const onCouponInfo = "ON_COUPON_INFO"; //接收到优惠券信息
 const onViewCalcRule = "ON_VIEW_CALC_RULE"; //查看计算规则
+const onQueryingCoupon = "ON_QUERYING_COUPON"; //正在查询优惠券
 const iNthNone = 0;
 const iNthAmount = 1;
 const iNthCoupon = 2;
@@ -180,7 +190,34 @@ function onScanFinish(dat){
             
             dispatchSetLastUsed(theCoupon); //设置为正在使用的优惠券
         } else {
-            return !$notify.error(getI18N("qrcode.failed")); //识别二维码失败
+            //一秒钟还没找到优惠券？赶紧显示加载提示框！
+            const timerID = setTimeout(() => {
+                DeviceEventEmitter.emit(eventEmitterName, {
+                    action: onQueryingCoupon,
+                    querying: true
+                });
+            }, 1000);
+            
+            //2024年9月2日 如果格式不对，就到后台查吧！
+            queryCouponScanResult(dat.scanResult).then(res => {
+                clearTimeout(timerID);
+                DeviceEventEmitter.emit(eventEmitterName, {
+                    action: onQueryingCoupon,
+                    querying: false
+                });
+                DeviceEventEmitter.emit(eventEmitterName, {
+                    cpinfo: res, 
+                    action: onCouponInfo,
+                });
+                dispatchSetLastUsed(res); //设置为正在使用的优惠券
+            }).catch(err => {
+                clearTimeout(timerID);
+                DeviceEventEmitter.emit(eventEmitterName, {
+                    action: onQueryingCoupon,
+                    querying: false
+                });
+                $notify.error(getI18N("qrcode.failed")); //识别二维码失败
+            });
         }
     } else {
         //取消扫码了
@@ -776,7 +813,7 @@ function tabCashPay(props){
         setMoneyInfo(mi);
     }, [payAmounts, appSettings, cpInfos]);
     
-    //二维码支付界面
+    //现金支付界面
     return (
         <ScrollView style={fxG1} contentContainerStyle={mhF}>
             <View style={[fxHC, styles.moneyLabel]}>
@@ -872,6 +909,7 @@ export default function IndexHome(props){
     const [tabList, setTabList] = useState([]);
     const [tabIndex, setTabIndex] = useState(0);
     const [inputIndex, setInputIndex] = useState(0);
+    const [isQuerying, setIsQuerying] = useState(false);
     
     const openDrawer = () => {
         props.navigation.openDrawer();
@@ -921,6 +959,9 @@ export default function IndexHome(props){
                     break;
                 case onViewCalcRule:
                     props.navigation.navigate("金额计算规则");
+                    break;
+                case onQueryingCoupon:
+                    setIsQuerying(infos.querying);
                     break;
             }
         });
@@ -991,6 +1032,12 @@ export default function IndexHome(props){
                 onClose={togglePKHidden} 
                 onConfirm={togglePKHidden}
             />
+            {isQuerying && 
+                <View style={[styles.queryingCouponBox, fxVM]}>
+                    <ActivityIndicator size={50} color={appMainColor} />
+                    <Text style={[mgTX, fs14, tcMC, fwB]}>{i18n["coupon.querying"]}</Text>
+                </View>
+            }
         </View>
     );
 }

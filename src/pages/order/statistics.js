@@ -275,7 +275,7 @@ export default function OrderStatistics(props){
                 <View style={styles.itemBox}>
                     <View style={fxHM}>
                         <Text style={styles.valueUnitHidden}>{appSettings.regionalCurrencyUnit}</Text>
-                        <Text style={styles.valueBox}>{statisData?.totalOrderAmount || EMPTY_DEFAULT_TEXT}</Text>
+                        <Text style={styles.valueBox}>{statisData ? $tofixed(statisData.totalOrderAmount) : EMPTY_DEFAULT_TEXT}</Text>
                         <Text style={styles.valueUnit}>{appSettings.regionalCurrencyUnit}</Text>
                     </View>
                     <Text style={styles.titleBox}>{i18n["statistics.total.sales"]}</Text>
@@ -283,7 +283,7 @@ export default function OrderStatistics(props){
                 <View style={[styles.itemBox, styles.itemRight]}>
                     <View style={fxHM}>
                         <Text style={styles.valueUnitHidden}>{appSettings.regionalCurrencyUnit}</Text>
-                        <Text style={styles.valueBox}>{statisData?.totalDiscountAmount || EMPTY_DEFAULT_TEXT}</Text>
+                        <Text style={styles.valueBox}>{statisData ? $tofixed(statisData.totalDiscountAmount) : EMPTY_DEFAULT_TEXT}</Text>
                         <Text style={styles.valueUnit}>{appSettings.regionalCurrencyUnit}</Text>
                     </View>
                     <Text style={styles.titleBox}>{i18n["statistics.total.discount"]}</Text>
@@ -293,7 +293,7 @@ export default function OrderStatistics(props){
                 <View style={styles.itemBox}>
                     <View style={fxHM}>
                         <Text style={styles.valueUnitHidden}>{appSettings.regionalCurrencyUnit}</Text>
-                        <Text style={styles.valueBox}>{statisData?.totalTaxAmount || EMPTY_DEFAULT_TEXT}</Text>
+                        <Text style={styles.valueBox}>{statisData ? $tofixed(statisData.totalTaxAmount) : EMPTY_DEFAULT_TEXT}</Text>
                         <Text style={styles.valueUnit}>{appSettings.regionalCurrencyUnit}</Text>
                     </View>
                     <Text style={styles.titleBox}>{i18n["statistics.total.tax"]}</Text>
@@ -301,7 +301,7 @@ export default function OrderStatistics(props){
                 <View style={[styles.itemBox, styles.itemRight]}>
                     <View style={fxHM}>
                         <Text style={styles.valueUnitHidden}>{appSettings.regionalCurrencyUnit}</Text>
-                        <Text style={styles.valueBox}>{statisData?.totalAmount || EMPTY_DEFAULT_TEXT}</Text>
+                        <Text style={styles.valueBox}>{statisData ? $tofixed(statisData.totalAmount) : EMPTY_DEFAULT_TEXT}</Text>
                         <Text style={styles.valueUnit}>{appSettings.regionalCurrencyUnit}</Text>
                     </View>
                     <Text style={styles.titleBox}>{i18n["statistics.total.income"]}</Text>

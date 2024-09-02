@@ -64,6 +64,18 @@ global.$osspath = (path) => {
         return null;
     }
 }
+
+//获取图片服务器地址
+global.$ossimage = (url) => {
+    if(!url){
+        return null;
+    } else if(!url.startsWith("https://")){
+        return ("https://minio.jpcoupon.net/" + url);
+    } else {
+        return url;
+    }
+}
+
 // Toast消息提示
 global.$toast = (msg, number) => {
     if(msg){

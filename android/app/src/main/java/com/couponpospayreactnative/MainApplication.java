@@ -1,7 +1,11 @@
 package com.couponpospayreactnative;
 
 import android.app.Application;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Build;
 
 import com.couponpospayreactnative.cardreader.CardReaderPackage;
 import com.couponpospayreactnative.posapi.PosApiPackage;
@@ -19,6 +23,7 @@ import com.facebook.soloader.SoLoader;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import org.jetbrains.annotations.Nullable;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -57,6 +62,17 @@ public class MainApplication extends Application implements ReactApplication {
     } else {
       return mReactNativeHost;
     }
+  }
+
+  //2024年9月2日 处理 react-native 版本小于 0.73 时，安卓13、14打开闪退问题。参见：https://github.com/facebook/react-native/issues/41288
+  // Put this above "public void onCreate(){...}"
+  @Override
+  public Intent registerReceiver(@Nullable BroadcastReceiver receiver, IntentFilter filter) {
+      if (Build.VERSION.SDK_INT >= 34 && getApplicationInfo().targetSdkVersion >= 34) {
+          return super.registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED);
+      } else {
+          return super.registerReceiver(receiver, filter);
+      }
   }
 
   @Override

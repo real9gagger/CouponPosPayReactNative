@@ -3,7 +3,7 @@ import { changeLanguage, initiLanguage } from "./localesReducer";
 import { updateUserInfo, resetUserInfo, setAccessToken } from "./userReducer";
 import { updateAppSettings, initiAppSettings, updateLanguageSettings } from "./settingsReducer";
 import { setLastUsed, addNewCoupon, deleteAddedCoupon, onInitiCouponData, removeLastInputPromotionCode } from "./couponReducer";
-import { addFailedOrder, removeFailedOrder, updateFailedOrder, synchronousAllOrder, onRefundSuccessful, onInitiOrderData } from "./orderReducer";
+import { addFailedOrder, removeFailedOrder, updateFailedOrder, updateFailedField, synchronousAllOrder, onRefundSuccessful, onInitiOrderData } from "./orderReducer";
 
 //初始化存储仓库
 export function dispatchInitiStore(){
@@ -67,6 +67,9 @@ export function dispatchRemoveFailedOrder(fid){
 }
 export function dispatchUpdateFailedOrder(fid, msg, syncing){
     store.dispatch(updateFailedOrder(fid, msg, syncing));
+}
+export function dispatchUpdateFailedField(fid, field, newval){
+    store.dispatch(updateFailedField(fid, field, newval));
 }
 export function dispatchSynchronousAllOrder(bo){
     store.dispatch(synchronousAllOrder(bo));

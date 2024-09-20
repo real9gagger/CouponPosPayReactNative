@@ -1,10 +1,11 @@
 import { useRef, useState } from "react";
-import { ScrollView, TouchableHighlight, Animated, Easing, TouchableOpacity, View, Text, StatusBar, StyleSheet, Modal, ActivityIndicator } from "react-native";
+import { ScrollView, TouchableHighlight, Animated, Easing, TouchableOpacity, View, Text, StatusBar, StyleSheet, Modal, ActivityIndicator, Clipboard } from "react-native";
 import { useI18N, useFailedOrders, checkIsSyncingAll, useIsSyncingAll } from "@/store/getter";
 import { dispatchRemoveFailedOrder, dispatchUpdateFailedOrder, dispatchSynchronousAllOrder } from "@/store/setter";
 import { formatDate } from "@/utils/helper";
 import GradientButton from "@/components/GradientButton";
 import PosPayIcon from "@/components/PosPayIcon";
+import TextualButton from "@/components/TextualButton";
 
 const styles = StyleSheet.create({
     itemBox: {
@@ -48,16 +49,22 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center"
     },
-    delete1Box: {
-        width: "33%",
-        marginHorizontal: 20,
-        color: "#333",
+    cancelBtn: {
+        width: "22%",
+        marginHorizontal: 8,
+        color: "#666",
         elevation: 2
     },
-    delete2Box: {
-        width: "33%",
-        marginHorizontal: 20,
+    deleteBtn: {
+        width: "22%",
+        marginHorizontal: 8,
         color: "#f00",
+        elevation: 2
+    },
+    modifyBtn: {
+        width: "22%",
+        marginHorizontal: 8,
+        color: "#09f",
         elevation: 2
     },
     text99Box: {
@@ -161,6 +168,9 @@ export default function OrderSynchronizeFailed(props){
             setActivatedIndex(nth);
         }
     }
+    const onItemModify = () => {
+        props.navigation.navigate("修改订单数据", { index : activatedIndex });
+    }
     const onItemDelete = () => {
         $confirm(i18n["order.failed.delete.tip"]).then(() => {
             $attention(i18n["delete.confirm"], i18n["btn.delete"]).then(() => {
@@ -204,6 +214,15 @@ export default function OrderSynchronizeFailed(props){
             dispatchSynchronousAllOrder(false);
         }
     }
+    const onCopyData = () => {
+        try{
+            Clipboard.setString(JSON.stringify(failedOrders[activatedIndex]));
+            $toast(i18n["copy.succesful"]);
+        } catch(ex){
+            $toast(i18n["copy.failed"]);
+            $notify.error(ex.message);
+        }
+    }
     
     return (<>
         <ScrollView style={pgFF} contentContainerStyle={{padding: 5}}>
@@ -224,8 +243,9 @@ export default function OrderSynchronizeFailed(props){
                         )}
                         {activatedIndex===ix &&
                             <View style={styles.activatedBox}>
-                                <GradientButton style={styles.delete2Box} lgColors={whiteBtnLg} onPress={onItemDelete}>{i18n["btn.delete"]}</GradientButton>
-                                <GradientButton style={styles.delete1Box} lgColors={whiteBtnLg} onPress={onItemLongPress(-1)}>{i18n["btn.cancel"]}</GradientButton>
+                                <GradientButton style={styles.deleteBtn} lgColors={whiteBtnLg} onPress={onItemDelete}>{i18n["btn.delete"]}</GradientButton>
+                                <GradientButton style={styles.modifyBtn} lgColors={whiteBtnLg} onPress={onItemModify}>{i18n["btn.modify"]}</GradientButton>
+                                <GradientButton style={styles.cancelBtn} lgColors={whiteBtnLg} onPress={onItemLongPress(-1)}>{i18n["btn.cancel"]}</GradientButton>
                             </View>
                         }
                     </View>
@@ -259,6 +279,7 @@ export default function OrderSynchronizeFailed(props){
                             <Text style={[fs12, fxG1, pdLS, taR]}>{tryToString(selOrder[vx])}</Text>
                         </View>
                     )}
+                    <TextualButton activeOpacity={0.5} style={[pdVX, tcB0]} onPress={onCopyData}>{i18n["btn.copy"]}</TextualButton>
                 </ScrollView>
                 <View style={[fxHC, mgTS]}>
                     <GradientButton style={fxG1} onPress={hideModalBox}>{i18n["btn.cancel"]}</GradientButton>

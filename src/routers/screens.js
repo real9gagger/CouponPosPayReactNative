@@ -34,6 +34,7 @@ import OrderPrinting from "@/pages/order/printing";
 import OrderRefund from "@/pages/order/refund";
 import OrderRefundConfirm from "@/pages/order/refundConfirm";
 import OrderSynchronizeFailed from "@/pages/order/synchronizeFailed";
+import OrderSynchronizeEditing from "@/pages/order/synchronizeEditing";
 import OrderStatisticsDetails from "@/pages/order/statisticsDetails";
 
 //非Tabs页面的顶部导航栏全局配置
@@ -228,6 +229,12 @@ const PosPayRouterList = [
         name: "问题订单",
         component: OrderSynchronizeFailed,
         i18nTitle: "order.failed.manifest",
+        options: {...defaultScreenOptions}
+    },
+    {
+        name: "修改订单数据",
+        component: OrderSynchronizeEditing,
+        i18nTitle: "order.failed.editing",
         options: {...defaultScreenOptions}
     },
     {

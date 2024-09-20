@@ -2,7 +2,8 @@ import {
     ADD_FAILED_ORDER, 
     REMOVE_FAILED_ORDER, 
     UPDATE_FAILED_ORDER, 
-    SYNCHRONOUS_ALL_ORDER,  
+    UPDATE_FAILED_FIELD, 
+    SYNCHRONOUS_ALL_ORDER, 
     ON_REFUND_SUCCESSFUL, 
     INITI_ORDER_DATA, 
     UNKNOWN_ACTION
@@ -63,6 +64,20 @@ export function updateFailedOrder(fid, errmsg, syncing){
     }
 }
 
+export function updateFailedField(fid, field, newval){
+    if(fid && typeof(fid) === "number" && fid > 0){
+        return {
+            type: UPDATE_FAILED_FIELD,
+            payload: [fid, field, newval]
+        }
+    } else {
+        return {
+            type: UNKNOWN_ACTION,
+            payload: 0
+        } 
+    }
+}
+
 export function synchronousAllOrder(bo){
     return {
         type: SYNCHRONOUS_ALL_ORDER,
@@ -105,6 +120,14 @@ export default orderReducer = (state = initialState, action) => {
                 pfc.__postTimestamp = Date.now();
                 pfc.__errorMessage = (action.payload[1] || "");
                 pfc.__isSyncing = !!action.payload[2];
+                state.postFailedCache = [...state.postFailedCache];
+                return {...state};
+            }
+            break;
+        case UPDATE_FAILED_FIELD: //更新某条缓存数据的某个字段的值
+            const tmp = state.postFailedCache.find(vxo => vxo.__fid === action.payload[0]);
+            if(tmp && tmp[action.payload[1]]){//如果再次提交失败，则更新相关信息
+                tmp[action.payload[1]] = action.payload[2];
                 state.postFailedCache = [...state.postFailedCache];
                 return {...state};
             }

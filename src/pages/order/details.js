@@ -125,7 +125,7 @@ export default function OrderDetails(props){
             }
         </ScrollView>
         <View style={[fxR, pdS, bgEE]}>
-            <GradientButton disabled={!orderInfo || orderInfo.transactionType===TRANSACTION_TYPE_BACKUP} style={fxG1} onPress={printOrder}>{i18n["reprint"]}</GradientButton>
+            <GradientButton disabled={!orderInfo} style={fxG1} onPress={printOrder}>{i18n["reprint"]}</GradientButton>
             <GradientButton disabled={!orderInfo || orderInfo.transactionType!==TRANSACTION_TYPE_RECEIVE} style={[fxG1, mgLX]} onPress={refundMoney}>{i18n["transaction.refund"]}</GradientButton>
         </View>
     </>);

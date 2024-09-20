@@ -727,7 +727,9 @@ function tabQRCode(props){
                     <Text style={[fxG1, fs12, tcR0, taR]}><Text style={fwB}>{moneyInfo.F_A}</Text> {appSettings.regionalCurrencyUnit}</Text>
                 </TouchableOpacity>
             </View>}
-            <View style={{height: 20}}>{/* 占位用 */}</View>
+            <View style={pdX}>
+                <GradientButton onPress={startPayMoney}>{i18n["btn.collect"]}</GradientButton>
+            </View>
         </ScrollView>
     );
 }
@@ -842,6 +844,12 @@ function tabCashPay(props){
             <View style={[fxHC, styles.rowBox]}>
                 <Text style={[fxG1, styles.paymentLabel]}>{i18n["payment.method"]}</Text>
                 <Text style={styles.paymentLabel} onPress={gotoSupportPayment}>{i18n["cash.pay"]}</Text>
+            </View>
+            <View style={[fxR, fxWP, pdHX]}>
+                <View style={[styles.paymentBox, styles.paymentSelected]}>
+                    <Image style={whF} source={LocalPictures.logoCashPay} />
+                    <PosPayIcon name="check-fill" color={appMainColor} size={20} style={styles.paymentChecked} />
+                </View>
             </View>
             <View style={fxG1}>{/* 占位专用 */}</View>
             {!!payAmounts && <View style={styles.paymentDetails}>

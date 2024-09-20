@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { ScrollView, View, Text, Pressable, Image, StatusBar, StyleSheet, ActivityIndicator, TouchableOpacity, DeviceEventEmitter } from "react-native";
 import { useI18N, getI18N, useAppSettings } from "@/store/getter";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
-import { eWalletList, allPayTypeMap, CASH_PAYMENT_CODE, CREDIT_CARD_PAYMENT_CODE, QR_CODE_PAYMENT_CODE, DISCOUNT_TYPE_LJ, TRANSACTION_TYPE_RECEIVE } from "@/common/Statics";
+import { eWalletList, creditCardList, qrPayList, allPayTypeMap, CASH_PAYMENT_CODE, CREDIT_CARD_PAYMENT_CODE, QR_CODE_PAYMENT_CODE, DISCOUNT_TYPE_LJ, TRANSACTION_TYPE_RECEIVE } from "@/common/Statics";
 import { parseCouponScanResult, queryCouponScanResult, checkCouponExpiration } from "@/utils/helper";
 import { dispatchSetLastUsed } from "@/store/setter";
 import CustomerDisplay from "@/modules/CustomerDisplay";
@@ -131,11 +131,6 @@ const styles = StyleSheet.create({
         top: 2,
         right: 2,
         zIndex: 1
-    },
-    paymentScaning: {
-        marginTop: 25,
-        width: 60,
-        height: 60
     },
     paymentDetails: {
         paddingVertical: 10, 
@@ -323,6 +318,7 @@ function tabBankCard(props){
     const [payAmounts, setPayAmounts] = useState("");
     const [moneyInfo, setMoneyInfo] = useState({}); //收款信息
     const [cpInfos, setCpInfos] = useState(null);
+    const [paymentIndex, setPaymentIndex] = useState(0);
     const [currentInputBox, setCurrentInputBox] = useState(0);
     
     const toggleAmountInput = () => {
@@ -338,6 +334,12 @@ function tabBankCard(props){
             txt: (cpInfos?.cpcode || ""),
             action: onInputToggle
         });
+    }
+    const togglePayment = (idx) => {
+        return function() {
+            setPaymentIndex(idx);
+            togglePKHidden(currentInputBox);
+        }
     }
     const scanCouponCode = () => {
         togglePKHidden(currentInputBox);
@@ -417,13 +419,15 @@ function tabBankCard(props){
             </TouchableOpacity>
             <View style={[fxHC, styles.rowBox]}>
                 <Text style={[fxG1, styles.paymentLabel]}>{i18n["payment.method"]}</Text>
-                <Text style={styles.paymentLabel} onPress={gotoSupportPayment}>{i18n["credit.card"]}</Text>
+                <Text style={styles.paymentLabel} onPress={gotoSupportPayment}>{creditCardList[paymentIndex].name}</Text>
             </View>
             <View style={[fxR, fxWP, pdHX]}>
-                <TouchableOpacity activeOpacity={0.5} style={[styles.paymentBox, styles.paymentSelected]}>
-                    <Image style={whF} source={LocalPictures.creditCardList} />
-                    <PosPayIcon name="check-fill" color={appMainColor} size={20} style={styles.paymentChecked} />
-                </TouchableOpacity>
+                {creditCardList.map((vx, ix) => (
+                    <TouchableOpacity key={vx.name} activeOpacity={0.5} onPress={togglePayment(ix)} style={[styles.paymentBox, paymentIndex===ix&&styles.paymentSelected]}>
+                        <Image style={whF} source={LocalPictures[vx.logo]} />
+                        <PosPayIcon visible={paymentIndex===ix} name="check-fill" color={appMainColor} size={20} style={styles.paymentChecked} />
+                    </TouchableOpacity>
+                ))}
             </View>
             <Text style={fxG1} onPress={togglePKHidden}>{/* 点我关闭键盘 */}</Text>
             {!!payAmounts && <View style={styles.paymentDetails}>
@@ -606,6 +610,7 @@ function tabQRCode(props){
     const [payAmounts, setPayAmounts] = useState("");
     const [moneyInfo, setMoneyInfo] = useState({}); //收款信息
     const [cpInfos, setCpInfos] = useState(null);
+    const [paymentIndex, setPaymentIndex] = useState(0);
     const [currentInputBox, setCurrentInputBox] = useState(0);
     
     const toggleAmountInput = () => {
@@ -621,6 +626,12 @@ function tabQRCode(props){
             txt: (cpInfos?.cpcode || ""),
             action: onInputToggle
         });
+    }
+    const togglePayment = (idx) => {
+        return function() {
+            setPaymentIndex(idx);
+            togglePKHidden(currentInputBox);
+        }
     }
     const scanCouponCode = () => {
         togglePKHidden(currentInputBox);
@@ -700,12 +711,16 @@ function tabQRCode(props){
             </TouchableOpacity>
             <View style={[fxHC, styles.rowBox]}>
                 <Text style={[fxG1, styles.paymentLabel]}>{i18n["payment.method"]}</Text>
-                <Text style={styles.paymentLabel} onPress={gotoSupportPayment}>{i18n["qrcode.pay"]}</Text>
+                <Text style={styles.paymentLabel} onPress={gotoSupportPayment}>{qrPayList[paymentIndex].name}</Text>
             </View>
-            <TouchableOpacity style={fxVM} onPress={startPayMoney} activeOpacity={0.5}>
-                <Image style={styles.paymentScaning} source={LocalPictures.scanQRcode} />
-                <Text style={[tcMC, mgTX]}>{i18n["qrcode.collect"]}</Text>
-            </TouchableOpacity>
+            <View style={[fxR, fxWP, pdHX]}>
+                {qrPayList.map((vx, ix) => (
+                    <TouchableOpacity key={vx.name} activeOpacity={0.5} onPress={togglePayment(ix)} style={[styles.paymentBox, paymentIndex===ix&&styles.paymentSelected]}>
+                        <Image style={whF} source={LocalPictures[vx.logo]} />
+                        <PosPayIcon visible={paymentIndex===ix} name="check-fill" color={appMainColor} size={20} style={styles.paymentChecked} />
+                    </TouchableOpacity>
+                ))}
+            </View>
             <View style={fxG1}>{/* 占位专用 */}</View>
             {!!payAmounts && <View style={styles.paymentDetails}>
                 <View style={fxHC}>
@@ -727,7 +742,9 @@ function tabQRCode(props){
                     <Text style={[fxG1, fs12, tcR0, taR]}><Text style={fwB}>{moneyInfo.F_A}</Text> {appSettings.regionalCurrencyUnit}</Text>
                 </TouchableOpacity>
             </View>}
-            <View style={{height: 20}}>{/* 占位用 */}</View>
+            <View style={pdX}>
+                <GradientButton onPress={startPayMoney}>{i18n["btn.collect"]}</GradientButton>
+            </View>
         </ScrollView>
     );
 }
@@ -842,6 +859,12 @@ function tabCashPay(props){
             <View style={[fxHC, styles.rowBox]}>
                 <Text style={[fxG1, styles.paymentLabel]}>{i18n["payment.method"]}</Text>
                 <Text style={styles.paymentLabel} onPress={gotoSupportPayment}>{i18n["cash.pay"]}</Text>
+            </View>
+            <View style={[fxR, fxWP, pdHX]}>
+                <View style={[styles.paymentBox, styles.paymentSelected]}>
+                    <Image style={whF} source={LocalPictures.logoCashPay} />
+                    <PosPayIcon name="check-fill" color={appMainColor} size={20} style={styles.paymentChecked} />
+                </View>
             </View>
             <View style={fxG1}>{/* 占位专用 */}</View>
             {!!payAmounts && <View style={styles.paymentDetails}>

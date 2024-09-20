@@ -11,6 +11,7 @@ export const QR_CODE_PAYMENT_CODE = "03";//二维码
 export const EMPTY_DEFAULT_TEXT = "--"; // 空数据时的替代文本
 export const DISCOUNT_TYPE_ZK = 1; //优惠类型：折扣
 export const DISCOUNT_TYPE_LJ = 2; //优惠类型：立减
+export const TRANSACTION_TYPE_BACKUP = "0"; //退款时后台生成的副本订单
 export const TRANSACTION_TYPE_RECEIVE = "1"; //收款
 export const TRANSACTION_TYPE_CANCEL = "2"; //取消收款
 export const TRANSACTION_TYPE_REFUND = "3"; //退款

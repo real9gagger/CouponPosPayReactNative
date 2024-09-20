@@ -163,6 +163,7 @@
     "order.status": "Order status",
     "order.status.refunded": "Refunded",
     "order.status.received": "Received",
+    "order.status.finished": "Refund completed",
     "how.many.items": "\\\\$[0] items",
     "delete.confirm": "Confirm Delete",
     "cleaning.completed.tip": "Cleaning completed",

@@ -164,6 +164,7 @@
     "order.status": "訂單狀態",
     "order.status.refunded": "已退款",
     "order.status.received": "已收款",
+    "order.status.finished": "退款完成",
     "how.many.items": "\\\\$[0] 項",
     "delete.confirm": "確認刪除",
     "cleaning.completed.tip": "清理完成",

@@ -163,6 +163,7 @@
     "order.status": "取引状態",
     "order.status.refunded": "返金済",
     "order.status.received": "入金済",
+    "order.status.finished": "返金完了",
     "how.many.items": "\\\\$[0]アイテム",
     "delete.confirm": "削除の確認",
     "cleaning.completed.tip": "クリーンアップ完了",

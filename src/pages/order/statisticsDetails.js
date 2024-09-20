@@ -378,7 +378,7 @@ export default function OrderStatisticsDetails(props){
                             <Text style={[styles.cellBox1, styles.subtotalBox, activedColumn===0xFF && styles.cellBox0]}>{vx.tstData}</Text>
                             <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xEE && styles.cellBox0]}>{vx.subtotalData[0]}</Text>
                             <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xDD && styles.cellBox0]}>{vx.subtotalData[1]}</Text>
-                            <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xCC && styles.cellBox0]}>{-vx.subtotalData[2]}</Text>
+                            <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xCC && styles.cellBox0]}>{vx.subtotalData[2]}</Text>
                             <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xBB && styles.cellBox0]}>{vx.subtotalData[3]}</Text>
                             <LinearGradient style={[styles.barBox, getBarWidthOfDay(vx)]} colors={LG_BAR_COLORS} start={LG_BAR_START} end={LG_BAR_END} />
                         </View>
@@ -413,28 +413,28 @@ export default function OrderStatisticsDetails(props){
                     <Text style={[styles.cellBox1, activedColumn===0xFF && styles.cellBox0]} numberOfLines={1}>{i18n["statistics.details.minval"]}</Text>
                     <Text style={[styles.cellBox2, activedColumn===0xEE && styles.cellBox0]} numberOfLines={1}>{sumInfo.totmin}</Text>
                     <Text style={[styles.cellBox2, activedColumn===0xDD && styles.cellBox0]} numberOfLines={1}>{sumInfo.taxmin}</Text>
-                    <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]} numberOfLines={1}>{-sumInfo.dctmin}</Text>
+                    <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]} numberOfLines={1}>{sumInfo.dctmin}</Text>
                     <Text style={[styles.cellBox2, activedColumn===0xBB && styles.cellBox0]} numberOfLines={1}>{sumInfo.amtmin}</Text>
                 </View>
                 <View style={[fxHC, styles.containerBox]}>
                     <Text style={[styles.cellBox1, activedColumn===0xFF && styles.cellBox0]} numberOfLines={1}>{i18n["statistics.details.maxval"]}</Text>
                     <Text style={[styles.cellBox2, activedColumn===0xEE && styles.cellBox0]} numberOfLines={1}>{sumInfo.totmax}</Text>
                     <Text style={[styles.cellBox2, activedColumn===0xDD && styles.cellBox0]} numberOfLines={1}>{sumInfo.taxmax}</Text>
-                    <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]} numberOfLines={1}>{-sumInfo.dctmax}</Text>
+                    <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]} numberOfLines={1}>{sumInfo.dctmax}</Text>
                     <Text style={[styles.cellBox2, activedColumn===0xBB && styles.cellBox0]} numberOfLines={1}>{sumInfo.amtmax}</Text>
                 </View>
                 <View style={[fxHC, styles.containerBox]}>
                     <Text style={[styles.cellBox1, activedColumn===0xFF && styles.cellBox0]} numberOfLines={1}>{i18n["statistics.details.avgoforders"]}</Text>
                     <Text style={[styles.cellBox2, activedColumn===0xEE && styles.cellBox0]} numberOfLines={1}>{avgOfOrders(sumInfo.total)}</Text>
                     <Text style={[styles.cellBox2, activedColumn===0xDD && styles.cellBox0]} numberOfLines={1}>{avgOfOrders(sumInfo.tax)}</Text>
-                    <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]} numberOfLines={1}>{avgOfOrders(-sumInfo.discount)}</Text>
+                    <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]} numberOfLines={1}>{avgOfOrders(sumInfo.discount)}</Text>
                     <Text style={[styles.cellBox2, activedColumn===0xBB && styles.cellBox0]} numberOfLines={1}>{avgOfOrders(sumInfo.amount)}</Text>
                 </View>
                 <View style={[fxHC, styles.containerBox]}>
                     <Text style={[styles.cellBox1, activedColumn===0xFF && styles.cellBox0]} numberOfLines={1}>{i18n["statistics.details.avgofdays"]}</Text>
                     <Text style={[styles.cellBox2, activedColumn===0xEE && styles.cellBox0]} numberOfLines={1}>{avgOfDays(sumInfo.total)}</Text>
                     <Text style={[styles.cellBox2, activedColumn===0xDD && styles.cellBox0]} numberOfLines={1}>{avgOfDays(sumInfo.tax)}</Text>
-                    <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]} numberOfLines={1}>{avgOfDays(-sumInfo.discount)}</Text>
+                    <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]} numberOfLines={1}>{avgOfDays(sumInfo.discount)}</Text>
                     <Text style={[styles.cellBox2, activedColumn===0xBB && styles.cellBox0]} numberOfLines={1}>{avgOfDays(sumInfo.amount)}</Text>
                 </View>
             </>}
@@ -446,7 +446,7 @@ export default function OrderStatisticsDetails(props){
             <Text style={[styles.cellBox1, fwB, activedColumn===0xFF && styles.cellBox0]} numberOfLines={1}>{i18n["summation"]}({appSettings.regionalCurrencyUnit})</Text>
             <Text style={[styles.cellBox2, fwB, activedColumn===0xEE && styles.cellBox0]} numberOfLines={1}>{sumInfo.total}</Text>
             <Text style={[styles.cellBox2, fwB, activedColumn===0xDD && styles.cellBox0]} numberOfLines={1}>{sumInfo.tax}</Text>
-            <Text style={[styles.cellBox2, fwB, activedColumn===0xCC && styles.cellBox0]} numberOfLines={1}>{-sumInfo.discount}</Text>
+            <Text style={[styles.cellBox2, fwB, activedColumn===0xCC && styles.cellBox0]} numberOfLines={1}>{sumInfo.discount}</Text>
             <Text style={[styles.cellBox2, fwB, activedColumn===0xBB && styles.cellBox0]} numberOfLines={1}>{sumInfo.amount}</Text>
         </View>
         <PopupX showMe={isPopupShow} onClose={onPopupClose} title={i18n["statistics.details.displays"]} tips={i18n["statistics.details.tip"]}>

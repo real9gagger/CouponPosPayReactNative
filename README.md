@@ -1,15 +1,13 @@
 ## 项目名称
 > POS机付款APP -- 2024年1月4日
+* 【NodeJS 版本：14.17.6】
 * logo艺术字体生成（字体大小：150px，保存到本地后用PS调整画布大小为1000x1000即可）：https://font.chinaz.com/diy/971022.html
 * android APP logo 制作网站：https://icon.wuruihong.com。圆角比例：ic_launcher.png 为 16%，ic_launcher_round.png 为 50%。
 * ！！！！>>>>>>>>
 * ---------------------------------------------------------------
 * ---------------------------------------------------------------
-* ---------------------------------------------------------------
-* ---------------------------------------------------------------
 * 【2024年5月29日：要支持安卓14，请更新 react native 到最新版本，当前项目使用的版本 0.68】
-* ---------------------------------------------------------------
-* ---------------------------------------------------------------
+* 【2024年9月7日：这个问题已通过其他方式解决！参见：https://github.com/facebook/react-native/issues/41288】
 * ---------------------------------------------------------------
 * ---------------------------------------------------------------
 * <<<<<<<< ！！！！
@@ -40,7 +38,8 @@
 * 3、安装 APK 时，必须使用 adb install -r xxx.apk 命令行安装，直接复制 APK 文件到设备将无法安装！
 * 4、显示POS机调试设置界面：安装 Debug 版 APK 后，打开出行红字错误。运行 adb shell input keyevent KEYCODE_MENU 即可显示调试设置页面，设置 debug host 后，重启APP即可。
 > 【>> 经测试发现，第 2 步只需要执行首次就行，后续可以直接跳过这步，执行第 3 步 <<】
-
+> 在 Mac 上构建已有 RN 项目
+* 参见：[Build the iOS app](https://kadikraman.github.io/react-native-beyond-basics/docs/new-project/run-ios/)
 ## 打包条件
 > 列出打包该项目所必须的条件和相关依赖 
 * 先运行在项目根目录下命令行 react-native bundle --entry-file index.js --bundle-output ./android/app/src/main/assets/index.android.bundle --platform android --assets-dest ./android/app/src/main/res/ --dev false
@@ -89,5 +88,7 @@ else {
 > 使用的技术框架或系统架构图等相关说明，请填写在这里  
 * React Native
 
-## 协作者
-> 高效的协作会激发无尽的创造力，将他们的名字记录在这里吧
+## 遇到的坑
+> 一号坑
+* 问题描述：在 Mac 上 npm install 后会下载 3.x.x 版本的。导致 pod install 时报 RN 版本需要 0.71+ 的相关错误！
+* 解决方式：因为我们使用的是 react-native 0.68.2 版本，因此建议 react-native-reanimated 使用 3.6.1 版本。【其他依赖项也是一样】

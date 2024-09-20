@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ScrollView, View, Text, Image, StatusBar, StyleSheet } from "react-native";
 import { useI18N, useOnRefundSuccessful } from "@/store/getter";
-import { EMPTY_DEFAULT_TEXT, TRANSACTION_TYPE_REFUND } from "@/common/Statics";
+import { EMPTY_DEFAULT_TEXT, TRANSACTION_TYPE_BACKUP, TRANSACTION_TYPE_REFUND, TRANSACTION_TYPE_RECEIVE } from "@/common/Statics";
 import { getDiscountMoney } from "@/utils/helper";
 import LocalPictures from "@/common/Pictures";
 import PosPayIcon from "@/components/PosPayIcon";
@@ -59,10 +59,12 @@ export default function OrderDetails(props){
                 <View style={[bgFF, brX, pdHX]}>
                     <View style={styles.itemBox}>
                         <Text style={fxG1}>{i18n["order.status"]}</Text>
-                        {orderInfo.transactionType!==TRANSACTION_TYPE_REFUND
-                        ? <Text style={tcG0}>{i18n["order.status.received"]}</Text>
-                        : <Text style={tcR0}>{i18n["order.status.refunded"]}</Text>
-                        }
+                        {orderInfo.transactionType===TRANSACTION_TYPE_RECEIVE ? 
+                        <Text style={tcG0}>{i18n["order.status.received"]}</Text> : 
+                        (orderInfo.transactionType === TRANSACTION_TYPE_BACKUP ? 
+                        <Text style={tc66}>{i18n["order.status.finished"]}</Text> :
+                        <Text style={tcR0}>{i18n["order.status.refunded"]}</Text>
+                        )}
                     </View>
                     <View style={styles.itemBox}>
                         <Text style={fxG1}>{i18n["order.amount"]}</Text>
@@ -123,8 +125,8 @@ export default function OrderDetails(props){
             }
         </ScrollView>
         <View style={[fxR, pdS, bgEE]}>
-            <GradientButton disabled={!orderInfo} style={fxG1} onPress={printOrder}>{i18n["reprint"]}</GradientButton>
-            <GradientButton disabled={!orderInfo || orderInfo.transactionType===TRANSACTION_TYPE_REFUND} style={[fxG1, mgLX]} onPress={refundMoney}>{i18n["transaction.refund"]}</GradientButton>
+            <GradientButton disabled={!orderInfo || orderInfo.transactionType===TRANSACTION_TYPE_BACKUP} style={fxG1} onPress={printOrder}>{i18n["reprint"]}</GradientButton>
+            <GradientButton disabled={!orderInfo || orderInfo.transactionType!==TRANSACTION_TYPE_RECEIVE} style={[fxG1, mgLX]} onPress={refundMoney}>{i18n["transaction.refund"]}</GradientButton>
         </View>
     </>);
 }

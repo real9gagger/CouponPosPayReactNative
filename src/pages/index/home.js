@@ -232,7 +232,7 @@ function callPayment(payMoney, disMoney, taxMoney, couponCode, paymentCode, prom
         return !$notify.info(getI18N("input.amount.tip"));
     }
     
-    const finalAmount = (payMoney - disMoney); //Number 类型
+    const finalAmount = (payMoney - disMoney); //Number 类型（此处的 disMoney 大于等于 0）
     
     //以下属性数据类型都是字符串！
     PaymentHelper.startPay({
@@ -252,7 +252,7 @@ function callPayment(payMoney, disMoney, taxMoney, couponCode, paymentCode, prom
             }
             
             payRes.action = onTransactionSuccess;
-            payRes.discountAmount = disMoney; //优惠总金额
+            payRes.discountAmount = disMoney; //优惠总金额（此处的 disMoney 大于等于 0）
             payRes.orderAmount = payMoney; //订单总金额
             payRes.amount = (runtimeEnvironment.isProduction ? payRes.amount : finalAmount); //练习模式返回的交易金额不对，因此需要特殊处理！
             payRes.couponCode = (disMoney && couponCode ? couponCode : ""); //有折扣才有优惠码
@@ -297,7 +297,7 @@ function calcPaymentInfo(tl, dc, dt, cd, rt){
         return {
             T_X: $tofixed(temp), //税
             F_A: $tofixed(+tl + temp - dddd), //实际收款金额
-            D_C: $tofixed(dddd), //优惠
+            D_C: $tofixed(dddd), //优惠金额（正数！）
             D_A: !!dddd //是否有优惠
         };
     }

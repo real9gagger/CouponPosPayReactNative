@@ -172,6 +172,7 @@
     "order.status": "订单状态",
     "order.status.refunded": "已退款",
     "order.status.received": "已收款",
+    "order.status.finished": "退款完成",
     "how.many.items": "\\\\$[0] 项",
     "delete.confirm": "确认删除",
     "cleaning.completed.tip": "清理完成",

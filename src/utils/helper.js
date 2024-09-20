@@ -144,7 +144,7 @@ export function checkCouponExpiration(exp){
     }
 }
 
-//获取正负值优惠金额
+//获取正负值优惠金额，用于显示（收款时小于等于 0，退款时大于等于 0）
 export function getDiscountMoney(num){
     if(!num){
         return "0";
@@ -153,15 +153,15 @@ export function getDiscountMoney(num){
     
     if(numType === "number"){
         if(num >= 0){//收款时后台返回为正数
-            return ("-" + num);
+            return ("+" + num);
         } else {//退款时后台返回为负数
-            return ("+" + Math.abs(num));
+            return ("-" + Math.abs(num));
         }
     } else if(numType === "string") {
         if(num.startsWith("-")){//退款时后台返回为负数
-            return ("+" + num.substr(1));
+            return num;
         } else {//收款时后台返回为正数
-            return ("-" + num);
+            return ("+" + num);
         }
     } else {
         return "0";

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { ScrollView, View, Text, TextInput, TouchableOpacity, Image, RefreshControl, StatusBar, StyleSheet } from "react-native";
 import { useI18N, useOnRefundSuccessful } from "@/store/getter";
 import { getPaymentInfo } from "@/common/Statics";
-import { CASH_PAYMENT_CODE, CREDIT_CARD_PAYMENT_CODE, E_MONEY_PAYMENT_CODE, QR_CODE_PAYMENT_CODE, TRANSACTION_TYPE_RECEIVE, TRANSACTION_TYPE_REFUND } from "@/common/Statics";
+import { CASH_PAYMENT_CODE, CREDIT_CARD_PAYMENT_CODE, E_MONEY_PAYMENT_CODE, QR_CODE_PAYMENT_CODE, TRANSACTION_TYPE_BACKUP, TRANSACTION_TYPE_RECEIVE, TRANSACTION_TYPE_REFUND } from "@/common/Statics";
 import DateRangeBox, { clearDateRangeCache, getBeginDateString, getEndDateString } from "@/components/DateRangeBox";
 import LocalPictures from "@/common/Pictures";
 import PosPayIcon from "@/components/PosPayIcon";
@@ -282,10 +282,12 @@ export default function OrderIndex(props){
                         </View>
                         <View style={fxHC}>
                             <Text style={[fs12, fxG1]}>{i18n["order.status"]}</Text>
-                            {vx.transactionType===TRANSACTION_TYPE_RECEIVE
-                            ? <Text style={[fs12, tcG0, taC]}>{i18n["order.status.received"]}</Text>
-                            : <Text style={[fs12, tcR0, taC]}>{i18n["order.status.refunded"]}</Text>
-                            }
+                            {vx.transactionType===TRANSACTION_TYPE_RECEIVE ? 
+                            <Text style={[fs12, tcG0, taC]}>{i18n["order.status.received"]}</Text> : 
+                            (vx.transactionType === TRANSACTION_TYPE_BACKUP ? 
+                            <Text style={[fs12, tc66, taC]}>{i18n["order.status.finished"]}</Text> : 
+                            <Text style={[fs12, tcR0, taC]}>{i18n["order.status.refunded"]}</Text>
+                            )}
                         </View>
                         <View style={fxHC}>
                             <Text style={[fs12, fxG1]}>{i18n["transaction.number"]}</Text>

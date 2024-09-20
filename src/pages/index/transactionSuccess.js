@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ScrollView, View, Text, Image, StatusBar, StyleSheet, TouchableOpacity } from "react-native";
 import { useI18N, getUserInfo, getAppSettings } from "@/store/getter";
 import { dispatchAddFailedOrder } from "@/store/setter";
-import { formatDate, getDiscountMoney } from "@/utils/helper";
+import { formatDate } from "@/utils/helper";
 import { getPaymentInfo, EMPTY_DEFAULT_TEXT, CASH_PAYMENT_CODE } from "@/common/Statics";
 import LocalPictures from "@/common/Pictures";
 import CircleTick from "@/components/CircleTick"
@@ -72,7 +72,7 @@ export default function IndexTransactionSuccess(props){
             dat.amount = $tofixed(params.amount);
             dat.tax = $tofixed(params.tax);
             dat.isShowTaxInfo = (+params.tax ? true : false);
-            dat.discountAmount = getDiscountMoney($tofixed(params.discountAmount));
+            dat.discountAmount = -params.discountAmount; //提交到后台时需要保存为负数！（收款时为负数）
             dat.orderAmount = $tofixed(params.orderAmount);
             dat.printTime = formatDate();
             dat.shopLogo = (aps.paymentReceiptPrintShopLogo ? uif.shopLogo : null);

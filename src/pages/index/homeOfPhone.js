@@ -905,14 +905,14 @@ function customTabBar(props) {
             {...props}
             scrollEnabled={true}
             renderLabel={tabCount > 1 ? customTabLabel : oneTabLabel}
-            indicatorStyle={tabCount > 1 ? styles.tabIndicator : bgTP}
+            indicatorStyle={bgTP}
             tabStyle={tabItemStyle}
             style={isehh ? styles.tabBar1 : styles.tabBar2}
         />
     );
 }
 
-export default function IndexHome(props){
+export default function IndexHomeOfPhone(props){
     const i18n = useI18N();
     const pkRef = useRef();
     const appSettings = useAppSettings();

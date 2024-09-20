@@ -216,7 +216,7 @@ export default function OrderSynchronizeFailed(props){
     }
     const onCopyData = () => {
         try{
-            Clipboard.setString(JSON.stringify(failedOrders[activatedIndex]));
+            Clipboard.setString(JSON.stringify(selOrder));
             $toast(i18n["copy.succesful"]);
         } catch(ex){
             $toast(i18n["copy.failed"]);

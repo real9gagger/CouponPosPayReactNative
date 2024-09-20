@@ -4,8 +4,10 @@ import { createDrawerNavigator, DrawerContentScrollView } from "@react-navigatio
 import { createPosPayNavigator } from "@/routers/tabsCreater";
 import { useI18N, useAppSettings } from "@/store/getter";
 import { dispatchResetUserInfo } from "@/store/setter";
+import AppPackageInfo from "@/modules/AppPackageInfo";
 import PosPayIcon from "@/components/PosPayIcon";
 import IndexHome from "@/pages/index/home";
+import IndexHomeOfPhone from "@/pages/index/homeOfPhone"; //2024年9月20日：非POS机端专用主页
 import MineIndex from "@/pages/mine/index";
 
 const DRAWER_ROUTE_NAME = "抽屉栏"; //路由名称，不需要翻译！
@@ -14,6 +16,7 @@ const DRAWER_ROUTE_NAME = "抽屉栏"; //路由名称，不需要翻译！
 const PosPayTab = createPosPayNavigator();
 const PosPayDrawer = createDrawerNavigator();
 
+const isPOS = AppPackageInfo.isPosDevice();
 const styles = StyleSheet.create({
     titleBox: {
         paddingHorizontal: 15
@@ -59,7 +62,7 @@ const noHeaderOptions = {
 const posPayTabList = [
     {
         name: "主页",
-        component: IndexHome,
+        component: (isPOS ? IndexHome : IndexHomeOfPhone),
         options: noHeaderOptions
     },
     {
@@ -241,8 +244,10 @@ export default function IndexIndex(props){
     } else {
         if(appSettings.isEnableTabbar){
             return MyTabs();
-        } else {//如果不启用底部标签栏
+        } else if(isPOS){//如果不启用底部标签栏
             return <IndexHome {...props} />;
+        } else {
+            return <IndexHomeOfPhone {...props} />;
         }
     }
 }

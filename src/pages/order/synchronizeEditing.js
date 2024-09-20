@@ -20,14 +20,14 @@ const editableFields = [
     "posId",
     "shopId",
     "amount",
-    "orderAmount",
-    "discountAmount",
     "tax",
+    "discountAmount",
+    "orderAmount",
     "couponCode",
     "distributorNumber",
-    "paymentType",
-    "remark"
+    "paymentType"
 ];
+const editFlag = "（手工修改过数据）";
 
 export default function OrderSynchronizeEditing(props){
     const i18n = useI18N();
@@ -39,8 +39,14 @@ export default function OrderSynchronizeEditing(props){
         oldValue: ""
     };
     
-    const onEditDone = (newVal) => {
+    const onEditDone = (newVal) => {        
         if(newVal != editInfo.oldValue){
+            if(!herData.remark){
+                herData.remark = editFlag;
+            } else if(herData.remark.indexOf(editFlag) < 0){
+                herData.remark += editFlag;
+            }
+            
             if(editInfo.isNumber){
                 dispatchUpdateFailedField(herData.__fid, editInfo.valueKey, (+newVal || editInfo.oldValue));
             } else {
@@ -59,7 +65,6 @@ export default function OrderSynchronizeEditing(props){
             editInfo.valueKey = key;
             editInfo.isNumber = (typeof herData[key] === "number");
             editInfo.oldValue = (herData[key] || "");
-            
             props.navigation.navigate("文本输入器", {
                 defaultText: editInfo.oldValue.toString(),
                 onGoBack: onEditDone,
@@ -74,12 +79,12 @@ export default function OrderSynchronizeEditing(props){
     
     return (<ScrollView style={pgFF}>
         {!herData ? <Text style={[pdX, taC, fs16, tc99]}>{i18n["nodata"]}</Text> : <>
-            {Object.keys(herData).map(vx => editableFields.indexOf(vx) >= 0 && 
+            {editableFields.map(vx =>
                 <TouchableHighlight key={vx} style={pdHX} underlayColor="#eee" onPress={onGotoEdit(vx)}>
                     <View style={styles.fieldBox}>
                         <Text style={[fs14, fwB]}>{vx}</Text>
                         <Text style={[fs14, fxG1, pdLS, taR, tcR0, fwB]}>{herData[vx]}</Text>
-                        <PosPayIcon name="edit-pen" offset={5} />
+                        <PosPayIcon name="edit-pen" color="#09f" offset={5} />
                     </View>
                 </TouchableHighlight>
             )}

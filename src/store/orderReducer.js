@@ -125,8 +125,8 @@ export default orderReducer = (state = initialState, action) => {
             }
             break;
         case UPDATE_FAILED_FIELD: //更新某条缓存数据的某个字段的值
-            const tmp = state.postFailedCache.find(vxo => vxo.__fid === action.payload[0]);
-            if(tmp && tmp[action.payload[1]]){//如果再次提交失败，则更新相关信息
+            const tmp = (action.payload[1] ? state.postFailedCache.find(vxo => vxo.__fid === action.payload[0]) : null);
+            if(tmp){//如果再次提交失败，则更新相关信息
                 tmp[action.payload[1]] = action.payload[2];
                 state.postFailedCache = [...state.postFailedCache];
                 return {...state};

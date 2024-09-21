@@ -13,6 +13,7 @@ import ImageButton from "@/components/ImageButton";
 import PayKeyboard from "@/components/PayKeyboard";
 import PosPayIcon from "@/components/PosPayIcon";
 import GradientButton from "@/components/GradientButton";
+import CollectInfoPanel from "@/components/CollectInfoPanel";
 
 const styles = StyleSheet.create({
     headerBox: {
@@ -137,14 +138,6 @@ const styles = StyleSheet.create({
         width: 60,
         height: 60
     },
-    paymentDetails: {
-        paddingVertical: 10, 
-        paddingHorizontal: 15,
-        backgroundColor: "#eee", 
-        marginHorizontal: 15, 
-        marginBottom: -5, 
-        borderRadius: 10
-    },
     queryingCouponBox: {
         position: "absolute",
         top: 0,
@@ -226,19 +219,17 @@ function onScanFinish(dat){
 }
 
 //调用支付功能
-function callPayment(payMoney, disMoney, taxMoney, couponCode, paymentCode, promotionCode){
+function callPayment(payMoney, disMoney, taxMoney, finalMoney, paymentCode, couponCode, promotionCode){
     if(/^0*$/.test(payMoney)){
         return !$notify.info(getI18N("input.amount.tip"));
     }
-    
-    const finalAmount = (payMoney - disMoney); //Number 类型（此处的 disMoney 大于等于 0）
     
     //以下属性数据类型都是字符串！
     PaymentHelper.startPay({
         transactionType: TRANSACTION_TYPE_RECEIVE, //1-付款，2-取消付款，3-退款
         transactionMode: (runtimeEnvironment.isProduction ? "1" : "2"), //1-正常，2-练习
         paymentType: paymentCode,
-        amount: $tofixed(finalAmount), //至少一块钱，否则报错
+        amount: finalMoney, //至少一块钱，否则报错
         tax: taxMoney, //税费
         slipNumber: "" //单据号码，取消付款或者退款时才用到！
     }, function(payRes){
@@ -246,15 +237,15 @@ function callPayment(payMoney, disMoney, taxMoney, couponCode, paymentCode, prom
             $alert(getI18N("payment.errmsg1")); //不支持支付功能
         } else if(payRes.activityResultCode === 0 && payRes.transactionTime){//用户支付已成功
         
-            if(payRes.amount != finalAmount){
-                console.log(`POS机的交易金额（${payRes.amount}）和本APP的实际收款（${finalAmount}）不一致，交易金额已改为本APP的实际收款金额！`);
+            if(payRes.amount != finalMoney){
+                console.log(`POS机的交易金额（${payRes.amount}）和本APP的实际收款（${finalMoney}）不一致，交易金额已改为本APP的实际收款金额！`);
             }
             
             payRes.action = onTransactionSuccess;
-            payRes.discountAmount = disMoney; //优惠总金额（此处的 disMoney 大于等于 0）
+            payRes.discountAmount = -disMoney; //优惠总金额（此处的 disMoney 大于等于 0，因此要改成负数）
             payRes.orderAmount = payMoney; //订单总金额
-            payRes.amount = (runtimeEnvironment.isProduction ? payRes.amount : finalAmount); //练习模式返回的交易金额不对，因此需要特殊处理！
-            payRes.couponCode = (disMoney && couponCode ? couponCode : ""); //有折扣才有优惠码
+            payRes.amount = (runtimeEnvironment.isProduction ? payRes.amount : finalMoney); //练习模式返回的交易金额不对，因此需要特殊处理！
+            payRes.couponCode = couponCode; //优惠码
             payRes.remark = (runtimeEnvironment.isProduction ? "" : "开发测试的数据");
             payRes.tax = (payRes.tax || taxMoney);
             payRes.distributorNumber = promotionCode; //分销码。历史原因导致命名为 “distributorNumber”（分销员编号）
@@ -344,7 +335,15 @@ function tabBankCard(props){
         QRcodeScanner.openScanner(onScanFinish);
     }
     const startPayMoney = () => {
-        callPayment(payAmounts, moneyInfo.D_C, moneyInfo.T_X, cpInfos?.cpcode, CREDIT_CARD_PAYMENT_CODE, cpInfos?.ptcode);
+        callPayment(
+            payAmounts, 
+            moneyInfo.D_C, 
+            moneyInfo.T_X, 
+            moneyInfo.F_A,
+            CREDIT_CARD_PAYMENT_CODE,
+            cpInfos?.cpcode, 
+            cpInfos?.ptcode
+        );
     }
     
     useEffect(() => {
@@ -426,26 +425,20 @@ function tabBankCard(props){
                 </TouchableOpacity>
             </View>
             <Text style={fxG1} onPress={togglePKHidden}>{/* 点我关闭键盘 */}</Text>
-            {!!payAmounts && <View style={styles.paymentDetails}>
-                <View style={fxHC}>
-                    <Text style={[fs12, fxG1]}>{i18n["input.amount"]}</Text>
-                    <Text style={fs12}><Text style={fwB}>{$tofixed(payAmounts)}</Text> {appSettings.regionalCurrencyUnit}</Text>
-                </View>
-                <View style={appSettings.generalTaxRate > 0 ? fxHC : dpN}>{/* 小于等于0，表示不使用税收功能！ */}
-                    <Text style={fs12}>{i18n["tax"]}</Text>
-                    <Text style={[fs12, tc99, fxG1]}>&nbsp;({appSettings.generalTaxRate}%)</Text>
-                    <Text style={fs12}><Text style={fwB}>{moneyInfo.T_X}</Text> {appSettings.regionalCurrencyUnit}</Text>
-                </View>
-                <View style={fxHC}>
-                    <Text style={[fs12, fxG1]}>{i18n["coupon.discount"]}</Text>
-                    <Text style={[fs12, tcG0]}><Text style={fwB}>-{moneyInfo.D_C}</Text> {appSettings.regionalCurrencyUnit}</Text>
-                </View>
-                <TouchableOpacity style={fxHC} activeOpacity={0.5} onPress={showAmountCalcRule}>
-                    <Text style={fs12}>{i18n["final.amount"]}</Text>
-                    <PosPayIcon name="help-stroke" size={12} color={appMainColor} offset={5} />
-                    <Text style={[fxG1, fs12, tcR0, taR]}><Text style={fwB}>{moneyInfo.F_A}</Text> {appSettings.regionalCurrencyUnit}</Text>
-                </TouchableOpacity>
-            </View>}
+            <CollectInfoPanel
+                visiable={!!payAmounts}
+                currencyUnit={appSettings.regionalCurrencyUnit}
+                taxRate={appSettings.generalTaxRate}
+                labelOrderAmout={i18n["input.amount"]}
+                labelTax={i18n["tax"]}
+                labelDiscount={i18n["coupon.discount"]}
+                labelFinalAmount={i18n["final.amount"]}
+                orderAmout={$tofixed(payAmounts)}
+                finalTax={moneyInfo.T_X}
+                finalDiscount={moneyInfo.D_C}
+                finalAmount={moneyInfo.F_A}
+                onQuestion={showAmountCalcRule}
+            />
             <View style={pdX}>
                 <GradientButton onPress={startPayMoney}>{i18n["btn.collect"]}</GradientButton>
             </View>
@@ -488,7 +481,15 @@ function tabEWallet(props){
         QRcodeScanner.openScanner(onScanFinish);
     }
     const startPayMoney = () => {
-        callPayment(payAmounts, moneyInfo.D_C, moneyInfo.T_X, cpInfos?.cpcode, eWalletList[paymentIndex].pmcode, cpInfos?.ptcode);
+        callPayment(
+            payAmounts, 
+            moneyInfo.D_C, 
+            moneyInfo.T_X, 
+            moneyInfo.F_A,
+            eWalletList[paymentIndex].pmcode, 
+            cpInfos?.cpcode, 
+            cpInfos?.ptcode
+        );
     }
     
     useEffect(() => {
@@ -572,26 +573,20 @@ function tabEWallet(props){
                 ))}
             </View>
             <Text style={fxG1} onPress={togglePKHidden}>{/* 点我关闭键盘 */}</Text>
-            {!!payAmounts && <View style={styles.paymentDetails}>
-                <View style={fxHC}>
-                    <Text style={[fs12, fxG1]}>{i18n["input.amount"]}</Text>
-                    <Text style={fs12}><Text style={fwB}>{$tofixed(payAmounts)}</Text> {appSettings.regionalCurrencyUnit}</Text>
-                </View>
-                <View style={appSettings.generalTaxRate > 0 ? fxHC : dpN}>{/* 小于等于0，表示不使用税收功能！ */}
-                    <Text style={fs12}>{i18n["tax"]}</Text>
-                    <Text style={[fs12, tc99, fxG1]}>&nbsp;({appSettings.generalTaxRate}%)</Text>
-                    <Text style={fs12}><Text style={fwB}>{moneyInfo.T_X}</Text> {appSettings.regionalCurrencyUnit}</Text>
-                </View>
-                <View style={fxHC}>
-                    <Text style={[fs12, fxG1]}>{i18n["coupon.discount"]}</Text>
-                    <Text style={[fs12, tcG0]}><Text style={fwB}>-{moneyInfo.D_C}</Text> {appSettings.regionalCurrencyUnit}</Text>
-                </View>
-                <TouchableOpacity style={fxHC} activeOpacity={0.5} onPress={showAmountCalcRule}>
-                    <Text style={fs12}>{i18n["final.amount"]}</Text>
-                    <PosPayIcon name="help-stroke" size={12} color={appMainColor} offset={5} />
-                    <Text style={[fxG1, fs12, tcR0, taR]}><Text style={fwB}>{moneyInfo.F_A}</Text> {appSettings.regionalCurrencyUnit}</Text>
-                </TouchableOpacity>
-            </View>}
+            <CollectInfoPanel
+                visiable={!!payAmounts}
+                currencyUnit={appSettings.regionalCurrencyUnit}
+                taxRate={appSettings.generalTaxRate}
+                labelOrderAmout={i18n["input.amount"]}
+                labelTax={i18n["tax"]}
+                labelDiscount={i18n["coupon.discount"]}
+                labelFinalAmount={i18n["final.amount"]}
+                orderAmout={$tofixed(payAmounts)}
+                finalTax={moneyInfo.T_X}
+                finalDiscount={moneyInfo.D_C}
+                finalAmount={moneyInfo.F_A}
+                onQuestion={showAmountCalcRule}
+            />
             <View style={pdX}>
                 <GradientButton onPress={startPayMoney}>{i18n["btn.collect"]}</GradientButton>
             </View>
@@ -627,7 +622,15 @@ function tabQRCode(props){
         QRcodeScanner.openScanner(onScanFinish);
     }
     const startPayMoney = () => {
-        callPayment(payAmounts, moneyInfo.D_C, moneyInfo.T_X, cpInfos?.cpcode, QR_CODE_PAYMENT_CODE, cpInfos?.ptcode);
+        callPayment(
+            payAmounts, 
+            moneyInfo.D_C, 
+            moneyInfo.T_X, 
+            moneyInfo.F_A,
+            QR_CODE_PAYMENT_CODE, 
+            cpInfos?.cpcode, 
+            cpInfos?.ptcode
+        );
     }
     
     useEffect(() => {
@@ -707,26 +710,20 @@ function tabQRCode(props){
                 <Text style={[tcMC, mgTX]}>{i18n["qrcode.collect"]}</Text>
             </TouchableOpacity>
             <View style={fxG1}>{/* 占位专用 */}</View>
-            {!!payAmounts && <View style={styles.paymentDetails}>
-                <View style={fxHC}>
-                    <Text style={[fs12, fxG1]}>{i18n["input.amount"]}</Text>
-                    <Text style={fs12}><Text style={fwB}>{$tofixed(payAmounts)}</Text> {appSettings.regionalCurrencyUnit}</Text>
-                </View>
-                <View style={appSettings.generalTaxRate > 0 ? fxHC : dpN}>{/* 小于等于0，表示不使用税收功能！ */}
-                    <Text style={fs12}>{i18n["tax"]}</Text>
-                    <Text style={[fs12, tc99, fxG1]}>&nbsp;({appSettings.generalTaxRate}%)</Text>
-                    <Text style={fs12}><Text style={fwB}>{moneyInfo.T_X}</Text> {appSettings.regionalCurrencyUnit}</Text>
-                </View>
-                <View style={fxHC}>
-                    <Text style={[fs12, fxG1]}>{i18n["coupon.discount"]}</Text>
-                    <Text style={[fs12, tcG0]}><Text style={fwB}>-{moneyInfo.D_C}</Text> {appSettings.regionalCurrencyUnit}</Text>
-                </View>
-                <TouchableOpacity style={fxHC} activeOpacity={0.5} onPress={showAmountCalcRule}>
-                    <Text style={fs12}>{i18n["final.amount"]}</Text>
-                    <PosPayIcon name="help-stroke" size={12} color={appMainColor} offset={5} />
-                    <Text style={[fxG1, fs12, tcR0, taR]}><Text style={fwB}>{moneyInfo.F_A}</Text> {appSettings.regionalCurrencyUnit}</Text>
-                </TouchableOpacity>
-            </View>}
+            <CollectInfoPanel
+                visiable={!!payAmounts}
+                currencyUnit={appSettings.regionalCurrencyUnit}
+                taxRate={appSettings.generalTaxRate}
+                labelOrderAmout={i18n["input.amount"]}
+                labelTax={i18n["tax"]}
+                labelDiscount={i18n["coupon.discount"]}
+                labelFinalAmount={i18n["final.amount"]}
+                orderAmout={$tofixed(payAmounts)}
+                finalTax={moneyInfo.T_X}
+                finalDiscount={moneyInfo.D_C}
+                finalAmount={moneyInfo.F_A}
+                onQuestion={showAmountCalcRule}
+            />
             <View style={pdX}>
                 <GradientButton onPress={startPayMoney}>{i18n["btn.collect"]}</GradientButton>
             </View>
@@ -762,12 +759,16 @@ function tabCashPay(props){
         QRcodeScanner.openScanner(onScanFinish);
     }
     const startPayMoney = () => {
-        if(!payAmounts){
-            return !$notify.info(i18n["input.amount.tip"]);
-        }
-        
         $confirm(i18n["cash.receive.tip"], i18n["alert.title"]).then(res => {
-            callPayment(payAmounts, moneyInfo.D_C, moneyInfo.T_X, cpInfos?.cpcode, CASH_PAYMENT_CODE, cpInfos?.ptcode);
+            callPayment(
+                payAmounts, 
+                moneyInfo.D_C, 
+                moneyInfo.T_X, 
+                moneyInfo.F_A,
+                CASH_PAYMENT_CODE, 
+                cpInfos?.cpcode, 
+                cpInfos?.ptcode
+            );
         }).catch(err => {
            console.log("收银员未收到现金...");
         });
@@ -852,26 +853,20 @@ function tabCashPay(props){
                 </View>
             </View>
             <View style={fxG1}>{/* 占位专用 */}</View>
-            {!!payAmounts && <View style={styles.paymentDetails}>
-                <View style={fxHC}>
-                    <Text style={[fs12, fxG1]}>{i18n["input.amount"]}</Text>
-                    <Text style={fs12}><Text style={fwB}>{$tofixed(payAmounts)}</Text> {appSettings.regionalCurrencyUnit}</Text>
-                </View>
-                <View style={appSettings.generalTaxRate > 0 ? fxHC : dpN}>{/* 小于等于0，表示不使用税收功能！ */}
-                    <Text style={fs12}>{i18n["tax"]}</Text>
-                    <Text style={[fs12, tc99, fxG1]}>&nbsp;({appSettings.generalTaxRate}%)</Text>
-                    <Text style={fs12}><Text style={fwB}>{moneyInfo.T_X}</Text> {appSettings.regionalCurrencyUnit}</Text>
-                </View>
-                <View style={fxHC}>
-                    <Text style={[fs12, fxG1]}>{i18n["coupon.discount"]}</Text>
-                    <Text style={[fs12, tcG0]}><Text style={fwB}>-{moneyInfo.D_C}</Text> {appSettings.regionalCurrencyUnit}</Text>
-                </View>
-                <TouchableOpacity style={fxHC} activeOpacity={0.5} onPress={showAmountCalcRule}>
-                    <Text style={fs12}>{i18n["final.amount"]}</Text>
-                    <PosPayIcon name="help-stroke" size={12} color={appMainColor} offset={5} />
-                    <Text style={[fxG1, fs12, tcR0, taR]}><Text style={fwB}>{moneyInfo.F_A}</Text> {appSettings.regionalCurrencyUnit}</Text>
-                </TouchableOpacity>
-            </View>}
+            <CollectInfoPanel
+                visiable={!!payAmounts}
+                currencyUnit={appSettings.regionalCurrencyUnit}
+                taxRate={appSettings.generalTaxRate}
+                labelOrderAmout={i18n["input.amount"]}
+                labelTax={i18n["tax"]}
+                labelDiscount={i18n["coupon.discount"]}
+                labelFinalAmount={i18n["final.amount"]}
+                orderAmout={$tofixed(payAmounts)}
+                finalTax={moneyInfo.T_X}
+                finalDiscount={moneyInfo.D_C}
+                finalAmount={moneyInfo.F_A}
+                onQuestion={showAmountCalcRule}
+            />
             <View style={pdX}>
                 <GradientButton onPress={startPayMoney}>{i18n["btn.collect"]}</GradientButton>
             </View>
@@ -953,7 +948,7 @@ export default function IndexHome(props){
         const eventer9000 = DeviceEventEmitter.addListener(eventEmitterName, function(infos){
             switch(infos.action){
                 case onInputToggle:
-                    if(infos.nth === iNthAmount){
+                    if(infos.nth !== iNthNone){
                         setInputIndex(infos.nth);
                         pkRef.current.initiText(infos.txt);
                     } else {

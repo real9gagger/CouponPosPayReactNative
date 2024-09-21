@@ -21,7 +21,8 @@ export const cashPayList = [
     {
         logo: "logoCashPay", //LOGO 图片键名！请参考本目录下的 ./Pictures 文件
         name: "現金/Cash",
-        pmcode: "00-00" //Payment Code
+        pmcode: "00-00", //Payment Code
+        subcode: "00"
     }
 ];
 
@@ -30,32 +31,38 @@ export const creditCardList = [
     {
         logo: "logoVisa", //LOGO 图片键名！请参考本目录下的 ./Pictures 文件
         name: "VISA",
-        pmcode: "01-01" //Payment Code
+        pmcode: "01-01", //Payment Code
+        subcode: "01"
     },
     {
         logo: "logoMastercard",
         name: "Mastercard",
-        pmcode: "01-02"
+        pmcode: "01-02",
+        subcode: "02"
     },
     {
         logo: "logoJcb",
         name: "JCB",
-        pmcode: "01-03"
+        pmcode: "01-03",
+        subcode: "03"
     },
     {
         logo: "logoAmericanExpress",
         name: "American Express",
-        pmcode: "01-04"
+        pmcode: "01-04",
+        subcode: "04"
     },
     {
         logo: "logoDinersClub",
         name: "Diners Club",
-        pmcode: "01-05"
+        pmcode: "01-05",
+        subcode: "05"
     },
     {
         logo: "logoChinaUnionpay",
         name: "銀聯",
-        pmcode: "01-06"
+        pmcode: "01-06",
+        subcode: "06"
     }
 ];
 
@@ -64,37 +71,44 @@ export const eWalletList = [
     {
         logo: "logoIdCredit", //LOGO 图片键名！请参考本目录下的 ./Pictures 文件
         name: "iD",
-        pmcode: "02-01" //Payment Code
+        pmcode: "02-01", //Payment Code
+        subcode: "01"
     },
     {
         logo: "logoJiaotongxiIC",
         name: "交通系IC",
-        pmcode: "02-02"
+        pmcode: "02-02",
+        subcode: "02"
     },
     {
         logo: "logoLetianEdy",
         name: "楽天Edy",
-        pmcode: "02-03"
+        pmcode: "02-03",
+        subcode: "03"
     },
     {
         logo: "logoWaon",
         name: "WAON",
-        pmcode: "02-04"
+        pmcode: "02-04",
+        subcode: "04"
     },
     {
         logo: "logoNanaco",
         name: "nanaco",
-        pmcode: "02-05"
+        pmcode: "02-05",
+        subcode: "05"
     },
     {
         logo: "logoQuicPay",
         name: "QUICPay",
-        pmcode: "02-06"
+        pmcode: "02-06",
+        subcode: "06"
     },
     {
         logo: "logoPitapa",
         name: "PiTaPa",
-        pmcode: "02-07"
+        pmcode: "02-07",
+        subcode: "07"
     }
 ];
 
@@ -103,57 +117,68 @@ export const qrPayList = [
     {
         logo: "logoRakutenPay", //LOGO 图片键名！请参考本目录下的 ./Pictures 文件
         name: "楽天ペイ",
-        pmcode: "03-11" //Payment Code
+        pmcode: "03-11", //Payment Code
+        subcode: "11"
     },
     {
         logo: "logoLinePay",
         name: "LINEPay",
-        pmcode: "03-12"
+        pmcode: "03-12",
+        subcode: "12"
     },
     {
         logo: "logoPaypay",
         name: "PayPay",
-        pmcode: "03-13"
+        pmcode: "03-13",
+        subcode: "13"
     },
     {
         logo: "logoDbarai",
         name: "d払い",
-        pmcode: "03-14"
+        pmcode: "03-14",
+        subcode: "14"
     },
     {
         logo: "logoAupay",
         name: "auPay",
-        pmcode: "03-15"
+        pmcode: "03-15",
+        subcode: "15"
     },
     {
         logo: "logoMerpay",
         name: "メルペイ",
-        pmcode: "03-16"
+        pmcode: "03-16",
+        subcode: "16"
     },
     {
         logo: "logoTaiwanpay",
         name: "銀行Pay",
-        pmcode: "03-19"
+        pmcode: "03-19",
+        subcode: "19"
     },
     {
         logo: "logoWechatPay",
         name: "WeChatPay",
-        pmcode: "03-21"
+        pmcode: "03-21",
+        subcode: "21"
     },
     {
         logo: "logoAlipay",
         name: "Alipay",
-        pmcode: "03-22" 
+        pmcode: "03-22",
+        subcode: "22"
     },
     {
         logo: "logoYunshanfu",
         name: "云闪付",
-        pmcode: "03-23"
+        pmcode: "03-23",
+        subcode: "23"
     },
     {
         logo: "logoBankpay",
         name: "BankPay",
-        pmcode: "03-35"
+        pmcode: "03-35",
+        subcode: "35"
     }
 ];
 

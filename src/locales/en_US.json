@@ -65,6 +65,8 @@
     "input.amount": "Amount",
     "input.amount.tip": "Please enter the amount",
     "input.text.tip": "Please enter the content",
+    "input.ordnum.tip": "Please enter the order number",
+    "receive.confirm": "Confirm collect",
     "coupon.name": "Coupon name",
     "coupon.code": "Coupon code",
     "coupon.enter.tip": "Please enter the coupon code",

@@ -72,7 +72,6 @@ export default function IndexTransactionSuccess(props){
             dat.amount = $tofixed(params.amount);
             dat.tax = $tofixed(params.tax);
             dat.isShowTaxInfo = (+params.tax ? true : false);
-            dat.discountAmount = -params.discountAmount; //提交到后台时需要保存为负数！（收款时为负数）
             dat.orderAmount = $tofixed(params.orderAmount);
             dat.printTime = formatDate();
             dat.shopLogo = (aps.paymentReceiptPrintShopLogo ? uif.shopLogo : null);

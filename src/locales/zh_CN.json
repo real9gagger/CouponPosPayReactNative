@@ -74,6 +74,8 @@
     "input.amount": "收款金额",
     "input.amount.tip": "请输入收款金额",
     "input.text.tip": "请输入内容",
+    "input.ordnum.tip": "请输入单据号",
+    "receive.confirm": "确认收款",
     "coupon.name": "优惠券名称",
     "coupon.code": "优惠码",
     "coupon.enter.tip": "请输入优惠码",

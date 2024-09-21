@@ -65,6 +65,8 @@
     "input.amount": "取引金額",
     "input.amount.tip": "取引金額を入力してください",
     "input.text.tip": "内容を入力してください",
+    "input.ordnum.tip": "番号を入力してください",
+    "receive.confirm": "入金確認",
     "coupon.name": "クーポン券名",
     "coupon.code": "クーポンコード",
     "coupon.enter.tip": "割引コードを入力してください",

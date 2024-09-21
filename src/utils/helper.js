@@ -152,13 +152,15 @@ export function getDiscountMoney(num){
     const numType = (typeof num);
     
     if(numType === "number"){
-        if(num >= 0){//收款时后台返回为正数
+        if(num > 0){//收款时后台返回为正数
             return ("+" + num);
         } else {//退款时后台返回为负数
             return ("-" + Math.abs(num));
         }
     } else if(numType === "string") {
-        if(num.startsWith("-")){//退款时后台返回为负数
+        if(num === "0"){
+            return "0";
+        } else if(num[0] === "-"){//退款时后台返回为负数
             return num;
         } else {//收款时后台返回为正数
             return ("+" + num);

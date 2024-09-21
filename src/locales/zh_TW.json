@@ -66,6 +66,8 @@
     "input.amount": "收款金額",
     "input.amount.tip": "請輸入收款金額",
     "input.text.tip": "請輸入內容",
+    "input.ordnum.tip": "請輸入單據號",
+    "receive.confirm": "確認收款",
     "coupon.name": "優惠券名稱",
     "coupon.code": "優惠碼",
     "coupon.enter.tip": "請輸入優惠碼",

@@ -4,16 +4,13 @@ import { useI18N, useAppSettings } from "@/store/getter";
 import { getPaymentInfo } from "@/common/Statics";
 import { getDiscountMoney } from "@/utils/helper";
 import LoadingTip from "@/components/LoadingTip";
-import LinearGradient from "react-native-linear-gradient";
+import MyHistogramBar from "@/components/MyHistogramBar";
 import PosPayIcon from "@/components/PosPayIcon";
 import PopupX from "@/components/PopupX";
 
 const FIRST_CELL_WIDTH = 80;
 const CONTENT_PADDING_TB = 0;
 const CONTENT_BOX_WIDTH = (deviceDimensions.screenWidth - CONTENT_PADDING_TB * 2);
-const LG_BAR_COLORS = ["#DCF2F1", "#5AB2FF"];
-const LG_BAR_START = {x:0, y:0.5};
-const LG_BAR_END = {x:1, y:0.5};
 
 const styles = StyleSheet.create({
     containerBox: {
@@ -45,15 +42,6 @@ const styles = StyleSheet.create({
     lineBox: {
         borderTopColor: "#ccc", 
         borderTopWidth: StyleSheet.hairlineWidth
-    },
-    barBox: {
-        position: "absolute",
-        top: 0,
-        left: 0,
-        bottom: 0,
-        zIndex: 0,
-        opacity: 0.6,
-        width: 0
     },
     reviewBox: {
         display: "flex",
@@ -98,7 +86,6 @@ export default function OrderStatisticsDetailsFlatList(props){
     const appSettings = useAppSettings();
     const ltRef = useRef(null);
     const prevDate = useRef("[!NULL!]");
-    const prevIndex = useRef(-1);
     const [detailsList, setDetailsList] = useState([]);
     const [sumInfo, setSumInfo] = useState({
         total: 0, //订单总额
@@ -297,53 +284,53 @@ export default function OrderStatisticsDetailsFlatList(props){
         switch(showBar){
             case 0x11: 
                 if(val.orderAmount && sumInfo.totmax){
-                    return {width: Math.ceil(val.orderAmount * CONTENT_BOX_WIDTH / sumInfo.totmax)}; //订单金额
+                    return Math.ceil(val.orderAmount * CONTENT_BOX_WIDTH / sumInfo.totmax); //订单金额
                 }
                 break;
             case 0x22: 
                 if(val.tax && sumInfo.taxmax){
-                    return {width: Math.ceil(val.tax * CONTENT_BOX_WIDTH / sumInfo.taxmax)}; //税
+                    return Math.ceil(val.tax * CONTENT_BOX_WIDTH / sumInfo.taxmax); //税
                 }
                 break;
             case 0x33:
                 if(val.discountAmount && sumInfo.dctmax){
-                    return {width: Math.ceil(val.discountAmount * CONTENT_BOX_WIDTH / sumInfo.dctmax)}; //优惠金额
+                    return Math.ceil(val.discountAmount * CONTENT_BOX_WIDTH / sumInfo.dctmax); //优惠金额
                 }
                 break;
             case 0x44:
                 if(val.amount && sumInfo.amtmax){
-                    return {width: Math.ceil(val.amount * CONTENT_BOX_WIDTH / sumInfo.amtmax)}; //交易金额
+                    return Math.ceil(val.amount * CONTENT_BOX_WIDTH / sumInfo.amtmax); //交易金额
                 }
                 break;
         }
-        return {display: "none"};
+        return 0;
     }
     const getBarWidthOfDay = (val) => {
         if(showData === 0x88){ //只有值显示每日小计时才能显示柱状图
             switch(showBar){
                 case 0x11: 
                     if(val.subtotalData[0] && sumInfo.totdaymax){
-                        return {width: Math.ceil(val.subtotalData[0] * CONTENT_BOX_WIDTH / sumInfo.totdaymax)}; //每日订单金额
+                        return Math.ceil(val.subtotalData[0] * CONTENT_BOX_WIDTH / sumInfo.totdaymax); //每日订单金额
                     }
                     break;
                 case 0x22: 
                     if(val.subtotalData[1] && sumInfo.taxdaymax){
-                        return {width: Math.ceil(val.subtotalData[1] * CONTENT_BOX_WIDTH / sumInfo.taxdaymax)}; //每日税收金额
+                        return Math.ceil(val.subtotalData[1] * CONTENT_BOX_WIDTH / sumInfo.taxdaymax); //每日税收金额
                     }
                     break;
                 case 0x33:
                     if(val.subtotalData[2] && sumInfo.dctdaymax){
-                        return {width: Math.ceil(val.subtotalData[2] * CONTENT_BOX_WIDTH / sumInfo.dctdaymax)}; //每日优惠金额
+                        return Math.ceil(val.subtotalData[2] * CONTENT_BOX_WIDTH / sumInfo.dctdaymax); //每日优惠金额
                     }
                     break;
                 case 0x44:
                     if(val.subtotalData[3] && sumInfo.amtdaymax){
-                        return {width: Math.ceil(val.subtotalData[3] * CONTENT_BOX_WIDTH / sumInfo.amtdaymax)}; //每日交易金额
+                        return Math.ceil(val.subtotalData[3] * CONTENT_BOX_WIDTH / sumInfo.amtdaymax); //每日交易金额
                     }
                     break;
             }
         }
-        return {display: "none"};
+        return 0;
     }
     const myRenderItem = (args) => {
         const vx = args.item;
@@ -355,7 +342,7 @@ export default function OrderStatisticsDetailsFlatList(props){
                     <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xDD && styles.cellBox0]}>{vx.subtotalData[1]}</Text>
                     <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xCC && styles.cellBox0]}>{vx.subtotalData[2]}</Text>
                     <Text style={[styles.cellBox2, styles.subtotalBox, activedColumn===0xBB && styles.cellBox0]}>{vx.subtotalData[3]}</Text>
-                    <LinearGradient style={[styles.barBox, getBarWidthOfDay(vx)]} colors={LG_BAR_COLORS} start={LG_BAR_START} end={LG_BAR_END} />
+                    <MyHistogramBar barWidth={getBarWidthOfDay(vx)} />
                 </View>
             }
             {showData !== 0x88 && 
@@ -365,7 +352,7 @@ export default function OrderStatisticsDetailsFlatList(props){
                     <Text style={[styles.cellBox2, activedColumn===0xDD && styles.cellBox0]}>{vx.tax || 0}</Text>
                     <Text style={[styles.cellBox2, activedColumn===0xCC && styles.cellBox0]}>{getDiscountMoney(vx.discountAmount)}</Text>
                     <Text style={[styles.cellBox2, activedColumn===0xBB && styles.cellBox0]}>{vx.amount || 0}</Text>
-                    <LinearGradient style={[styles.barBox, getBarWidthOfOrder(vx)]} colors={LG_BAR_COLORS} start={LG_BAR_START} end={LG_BAR_END} />
+                    <MyHistogramBar barWidth={getBarWidthOfOrder(vx)} />
                 </TouchableOpacity>
             }
         </>);

@@ -85,7 +85,7 @@ export default function IndexTransactionSuccess(props){
             $request("savePosAppOrder", dat).catch(err => dispatchAddFailedOrder("savePosAppOrder", dat, err));
             
             //2024年4月26日 现金支付不经过 POS 机内置交易APP，因此需要在此处自行打印
-            if(dat.paymentType === CASH_PAYMENT_CODE){
+            if(!dat.isDoNotPrint && dat.paymentType === CASH_PAYMENT_CODE){
                 ReceiptsPlus.printPaymentReceipts(dat).catch($alert);
             }
         }

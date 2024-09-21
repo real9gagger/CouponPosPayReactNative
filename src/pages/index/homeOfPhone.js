@@ -233,16 +233,18 @@ function callPayment(payMoney, disMoney, taxMoney, finalMoney, slipNumber, payme
             transactionType:        TRANSACTION_TYPE_RECEIVE, //交易类型
             creditCardBrand:        (paymentCode === CREDIT_CARD_PAYMENT_CODE ? paymentBrand : ""), //信用卡品牌类型，如 11,12,13...
             creditCardMaskedPan:    "", //信用卡号
-            currencyCode:           currencyCode, //货币符号（JPY）
             eMoneyType:             (paymentCode === E_MONEY_PAYMENT_CODE ? paymentBrand : ""), //电子钱包类型，如 01,02,03...
             eMoneyNumber:           "", //电子钱包会员编号
             qrPayType:              (paymentCode === QR_CODE_PAYMENT_CODE ? paymentBrand : ""), //二维码支付方式，如支付宝、微信等
+            qrPayCode:              "", //支付码（也就是二维码包含的内容，自己加上去的字段，后台暂时没有对应的字段）
+            currencyCode:           currencyCode, //货币符号（JPY）
             remark:                 "", //备注
             errorCode:              "", //错误码，空字符串为交易成功
             transactionTime:        Date.now(), //交易完成时间
             couponCode:             couponCode, //优惠码
             distributorNumber:      promotionCode, //分销码。历史原因导致命名为 “distributorNumber”（分销员编号）
             action:                 onTransactionSuccess, //（服务器不需要这个字段，仅当前页面使用）
+            isDoNotPrint:           true //是否不打印小票（服务器不需要这个字段，仅当前程序使用）
         };
         
         DeviceEventEmitter.emit(eventEmitterName, payRes);

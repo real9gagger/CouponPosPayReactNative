@@ -759,6 +759,10 @@ function tabCashPay(props){
         QRcodeScanner.openScanner(onScanFinish);
     }
     const startPayMoney = () => {
+        if(!payAmounts){
+            return !$notify.info(i18n["input.amount.tip"]);
+        }
+        
         $confirm(i18n["cash.receive.tip"], i18n["alert.title"]).then(res => {
             callPayment(
                 payAmounts, 

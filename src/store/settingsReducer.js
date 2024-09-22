@@ -1,6 +1,7 @@
 import { UPDATE_SETTINGS, INITI_SETTINGS, UNKNOWN_ACTION } from "./types";
 import { CASH_PAYMENT_CODE, CREDIT_CARD_PAYMENT_CODE, E_MONEY_PAYMENT_CODE, QR_CODE_PAYMENT_CODE } from "@/common/Statics";
 import { getSupportPaymentMap, isSupportPayType } from "@/modules/PaymentHelper";
+import AppPackageInfo from "@/modules/AppPackageInfo";
 
 const initialState = {
     generalTaxRate: 0, //通用税率（%）
@@ -23,6 +24,7 @@ const initialState = {
         { tabkey: "tabCashPay", disabled: false, pmtype: CASH_PAYMENT_CODE },
     ], //首页支付类型显示哪些标签页，以及标签页的排序顺序。【空数组表示全部显示（默认）！】
     isAppFirstLaunch: true, //是否是软件安装之后首次启动！
+    isUsePosMode: true, //是否使用POS模式，功能和界面上和手机不一样
 };
 
 //单个更新本地设置
@@ -76,6 +78,7 @@ export default settingsReducer = (state = initialState, action) => {
                     tab.disabled = !isSupportPayType(tab.pmtype);
                 }
                 state.isAppFirstLaunch = false;
+                state.isUsePosMode = AppPackageInfo.isPosDevice();
                 return {...state};
             }
             break;

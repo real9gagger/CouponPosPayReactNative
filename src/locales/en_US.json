@@ -229,6 +229,8 @@
     "receipt.clerk.name": "Clerk：",
     "receipt.twice.tip": "Print two copies, one for customer and other for franchise store!",
     "total.amount": "Total amount",
+    "posmode.yes.tip": "Toggled to POS mode, will take effect after restart the APP",
+    "posmode.no.tip": "Toggled to non POS mode, will take effect after restart the APP",
     
     "brand": "Brand",
     "amount": "Amount",

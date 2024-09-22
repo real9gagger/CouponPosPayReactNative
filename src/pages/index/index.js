@@ -4,7 +4,6 @@ import { createDrawerNavigator, DrawerContentScrollView } from "@react-navigatio
 import { createPosPayNavigator } from "@/routers/tabsCreater";
 import { useI18N, useAppSettings } from "@/store/getter";
 import { dispatchResetUserInfo } from "@/store/setter";
-import AppPackageInfo from "@/modules/AppPackageInfo";
 import PosPayIcon from "@/components/PosPayIcon";
 import IndexHome from "@/pages/index/home";
 import IndexHomeOfPhone from "@/pages/index/homeOfPhone"; //2024年9月20日：非POS机端专用主页
@@ -16,7 +15,6 @@ const DRAWER_ROUTE_NAME = "抽屉栏"; //路由名称，不需要翻译！
 const PosPayTab = createPosPayNavigator();
 const PosPayDrawer = createDrawerNavigator();
 
-const isPOS = AppPackageInfo.isPosDevice();
 const styles = StyleSheet.create({
     titleBox: {
         paddingHorizontal: 15
@@ -59,7 +57,7 @@ const noHeaderOptions = {
 };
 
 //首页底部标签栏列表
-const posPayTabList = [
+const posPayTabList = (isPOS) => ([
     {
         name: "主页",
         component: (isPOS ? IndexHome : IndexHomeOfPhone),
@@ -75,7 +73,7 @@ const posPayTabList = [
         component: null,
         options: noHeaderOptions
     } */
-];
+]);
 
 //抽屉列表
 const drawerItemList = [
@@ -147,10 +145,11 @@ const drawerItemList = [
 ];
 
 //我的标签栏
-function MyTabs(){
+function MyTabs(props){
+    const pptl = posPayTabList(props.route.params?.isUsePosMode);
     return (
         <PosPayTab.Navigator initialRouteName="主页" screenOptions={noHeaderOptions}>
-            {posPayTabList.map(item =>
+            {pptl.map(item =>
                 <PosPayTab.Screen
                     key={item.name}
                     name={item.name}
@@ -224,29 +223,37 @@ function CustomDrawerContent(props) {
 //首页标签栏组件
 export default function IndexIndex(props){
     const appSettings = useAppSettings();
+    const customParams = { isUsePosMode: appSettings.isUsePosMode }; //需要【强制】重启APP才能生效！！！
     
     useEffect(() => {
+        //由于 setParams 仅对 <MyTabs /> 有效，因此下面需要用 initialParams 再次赋值
+        //此处加个条件判断，避免无意义设置参数
+        if(!appSettings.isEnableDrawer && appSettings.isEnableTabbar){
+            props.navigation.setParams(customParams);
+        }
         StatusBar.setBackgroundColor("#FFF", false);
         StatusBar.setHidden(false, "none");
     }, []);
     
     if(appSettings.isEnableDrawer){//如果启用抽屉
         //如果不启用底部标签栏（默认显示首页）
+        const pptl = (appSettings.isEnableTabbar ? null : posPayTabList(appSettings.isUsePosMode));
         return (
             <PosPayDrawer.Navigator screenOptions={noHeaderOptions} drawerContent={CustomDrawerContent}>
                 <PosPayDrawer.Screen 
-                    name={appSettings.isEnableTabbar ? DRAWER_ROUTE_NAME : posPayTabList[0].name}
-                    component={appSettings.isEnableTabbar ? MyTabs : posPayTabList[0].component}
-                    options={appSettings.isEnableTabbar ? noHeaderOptions : posPayTabList[0].options}
+                    name={appSettings.isEnableTabbar ? DRAWER_ROUTE_NAME : pptl[0].name}
+                    component={appSettings.isEnableTabbar ? MyTabs : pptl[0].component}
+                    options={appSettings.isEnableTabbar ? noHeaderOptions : pptl[0].options}
+                    initialParams={customParams}
                 />
             </PosPayDrawer.Navigator>
         );
     } else {
         if(appSettings.isEnableTabbar){
-            return MyTabs();
-        } else if(isPOS){//如果不启用底部标签栏
+            return <MyTabs {...props} />;
+        } else if(appSettings.isUsePosMode){//如果不启用底部标签栏
             return <IndexHome {...props} />;
-        } else {
+        } else { //如果不启用底部标签栏
             return <IndexHomeOfPhone {...props} />;
         }
     }

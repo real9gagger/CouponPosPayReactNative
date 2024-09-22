@@ -229,6 +229,8 @@
     "receipt.clerk.name": "係員：",
     "receipt.twice.tip": "2部印刷して、1部のお客様控え、もう1部の加盟店控え！",
     "total.amount": "合計金額",
+    "posmode.yes.tip": "POS機モードに切り替え、APPを再起動してから有効になる",
+    "posmode.no.tip": "非POS機モードに切り替え、APPを再起動してから有効になる",
     
     "brand": "ブランド",
     "amount": "金額",

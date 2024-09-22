@@ -238,6 +238,8 @@
     "receipt.clerk.name": "店员：",
     "receipt.twice.tip": "打印两份，一份顾客存根，另一份加盟店存根！",
     "total.amount": "总金额",
+    "posmode.yes.tip": "已切换到POS机模式，重启APP后生效",
+    "posmode.no.tip": "已切换到非POS机模式，重启APP后生效",
     
     "brand": "品牌",
     "amount": "金额",

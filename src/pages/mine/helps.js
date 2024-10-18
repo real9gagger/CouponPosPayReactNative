@@ -22,9 +22,13 @@ const styles = StyleSheet.create({
         alignItems: "center",
         padding: 15
     },
+    itemLine: {
+        borderTopColor: "#ddd",
+        borderTopWidth: StyleSheet.hairlineWidth,
+        marginHorizontal: 15,
+    },
     itemContainer: {
-        marginHorizontal: 10,
-        marginTop: 5,
+        margin: 10,
         borderRadius: 10,
         overflow: "hidden",
         backgroundColor: "#fff",
@@ -62,15 +66,13 @@ export default function MineHelps(props){
     return (
         <ScrollView style={pgEE} contentContainerStyle={mhF}>
             <StatusBar backgroundColor="#FFF" barStyle="dark-content" />
-            <View style={{height: 5}}></View>
             <View style={styles.itemContainer}>
                 <TouchableOpacity style={styles.itemBox} activeOpacity={0.5} onPress={gotoSyncFailed}>
                     <Text style={[fxG1, fs16]}>{i18n["order.failed.sync"]}</Text>
                     <Text style={hasFO ? styles.redDot : dpN}>●</Text>
                     <PosPayIcon name="right-arrow" color="#aaa" size={20} />
                 </TouchableOpacity>
-            </View>
-            <View style={styles.itemContainer}>
+                <View style={styles.itemLine}></View>
                 <TouchableOpacity style={styles.itemBox} activeOpacity={0.5} onPress={gotoErrorLog}>
                     <Text style={[fxG1, fs16]}>{i18n["error.view"]}</Text>
                     <Text style={hasEI ? styles.redDot : dpN}>●</Text>

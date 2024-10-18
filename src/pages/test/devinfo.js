@@ -92,7 +92,7 @@ export default function TestDevinfo(props){
         
         infos.push({
             itemKey: "app.isPOSMode",
-            itemValue: appSettings.isUsePosMode.toString()
+            itemValue: (appSettings.isUsePosMode ? "true" : "false")
         });
         
         infos.push({

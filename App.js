@@ -16,7 +16,7 @@ const defaultErrorHandler = global.ErrorUtils.getGlobalHandler();
 
 // Define the custom function
 function customErrorHandler(error, isFatal) {
-    dispatchAddAppErrorInfo(error.message, isFatal);
+    dispatchAddAppErrorInfo(error.toString(), isFatal);
     defaultErrorHandler(error, isFatal);
 }
 

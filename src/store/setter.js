@@ -1,7 +1,7 @@
 import { store } from "./index"; //使用 useDispatch 报错，因此直接使用 store.dispatch，但官方不推荐：https://github.com/reduxjs/react-redux/discussions/1789
 import { changeLanguage, initiLanguage } from "./localesReducer";
 import { updateUserInfo, resetUserInfo, setAccessToken } from "./userReducer";
-import { updateAppSettings, initiAppSettings, updateLanguageSettings } from "./settingsReducer";
+import { updateAppSettings, initiAppSettings, checkAppSettings, updateLanguageSettings, addAppErrorInfo, clearAppErrorInfo } from "./settingsReducer";
 import { setLastUsed, addNewCoupon, deleteAddedCoupon, onInitiCouponData, removeLastInputPromotionCode } from "./couponReducer";
 import { addFailedOrder, removeFailedOrder, updateFailedOrder, updateFailedField, synchronousAllOrder, onRefundSuccessful, onInitiOrderData } from "./orderReducer";
 
@@ -44,7 +44,15 @@ export function dispatchSetAccessToken(token, expin, account, password){
 export function dispatchUpdateAppSettings(key, value){
     store.dispatch(updateAppSettings(key, value));
 }
-
+export function dispatchCheckAppSettings(){
+    store.dispatch(checkAppSettings());
+}
+export function dispatchAddAppErrorInfo(errMsg, isFatal){
+    store.dispatch(addAppErrorInfo(errMsg, isFatal));
+}
+export function dispatchClearAppErrorInfo(){
+    store.dispatch(clearAppErrorInfo());
+}
 /* ================ 优惠券相关 ================ */
 export function dispatchSetLastUsed(info){
     store.dispatch(setLastUsed(info));

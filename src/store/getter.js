@@ -67,7 +67,12 @@ export function getNumbersDecimalOfMoney(key){
 export function getGeneralTaxRate(){
     return (+store.getState().appSettings.generalTaxRate || 0);
 }
-
+export function getAppErrorList(){
+    return (store.getState().appSettings.appErrorList || []);
+}
+export function hasAppErrorInfo(){
+    return useSelector(state => !!state.appSettings.appErrorList?.length);
+}
 /* ================ 优惠券相关 ================ */
 export function isCouponInUse(code){
     if(!code){

@@ -109,4 +109,15 @@ public class AppPackageInfoModule extends ReactContextBaseJavaModule {
             promise.reject(ex.getMessage());
         }
     }
+
+    //2024年10月18日 测试函数
+    @ReactMethod(isBlockingSynchronousMethod = true)
+    public String appTestFunction() {
+        String temp = null;
+        if (temp.isEmpty()) {
+            return "测试成功";
+        } else {
+            return "测试通过";
+        }
+    }
 }

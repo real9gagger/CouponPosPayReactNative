@@ -1,4 +1,4 @@
-import { UPDATE_SETTINGS, INITI_SETTINGS, UNKNOWN_ACTION } from "./types";
+import { UPDATE_SETTINGS, INITI_SETTINGS, CHECK_SETTINGS, ADD_APP_ERROR_INFO, CLEAR_APP_ERROR_INFO, UNKNOWN_ACTION } from "./types";
 import { CASH_PAYMENT_CODE, CREDIT_CARD_PAYMENT_CODE, E_MONEY_PAYMENT_CODE, QR_CODE_PAYMENT_CODE } from "@/common/Statics";
 import { getSupportPaymentMap, isSupportPayType } from "@/modules/PaymentHelper";
 import AppPackageInfo from "@/modules/AppPackageInfo";
@@ -25,6 +25,8 @@ const initialState = {
     ], //首页支付类型显示哪些标签页，以及标签页的排序顺序。【空数组表示全部显示（默认）！】
     isAppFirstLaunch: true, //是否是软件安装之后首次启动！
     isUsePosMode: true, //是否使用POS模式，功能和界面上和手机不一样
+    appErrorList: [], //APP全局错误列表
+    lastErrorMessage: "", //最后的错误信息（【英文】一般用于记录APP设置时的错误信息）
 };
 
 //单个更新本地设置
@@ -68,6 +70,41 @@ export function initiAppSettings(){
     }
 }
 
+//检查配置项
+export function checkAppSettings(){
+    return {
+        type: CHECK_SETTINGS,
+        payload: 0x8888
+    }
+}
+
+//添加应用错误
+export function addAppErrorInfo(errMsg, isFatal){
+    if(errMsg){
+        return {
+            type: ADD_APP_ERROR_INFO,
+            payload: {
+                createTime: Date.now(),
+                errorMsg: errMsg.toString(),
+                isFatal: !!isFatal
+            }
+        };
+    } else {
+        return {
+            type: UNKNOWN_ACTION,
+            payload: null
+        };
+    }
+}
+
+//清除应用错误
+export function clearAppErrorInfo(){
+    return {
+        type: CLEAR_APP_ERROR_INFO,
+        payload: null
+    };
+}
+
 export default settingsReducer = (state = initialState, action) => {
     switch(action.type){
         case UPDATE_SETTINGS: return {...state, ...action.payload};
@@ -79,6 +116,44 @@ export default settingsReducer = (state = initialState, action) => {
                 }
                 state.isAppFirstLaunch = false;
                 state.isUsePosMode = AppPackageInfo.isPosDevice();
+                return {...state};
+            }
+            break;
+        case ADD_APP_ERROR_INFO:
+            if(state.appErrorList){
+                if(state.appErrorList.length > 100){//数量限制
+                    state.appErrorList.splice(0, 50); //删除大约一半的项
+                }
+                state.appErrorList.push(action.payload);
+            } else {
+                state.appErrorList = [action.payload];
+            }
+            return {...state};
+        case CLEAR_APP_ERROR_INFO: 
+            if(state.appErrorList){
+                state.appErrorList.splice(0);
+            } else {
+                state.appErrorList = [];
+            }
+            return {...state};
+        case CHECK_SETTINGS:
+            if(action.payload === 0x8888){
+                let count = 0;
+                //双向检查！！！先检查没有的
+                for(const key in initialState){
+                    if(state[key] === undefined){
+                        state[key] = initialState[key];
+                        count++;
+                    }
+                }
+                //再检查有的
+                for(const key in state){
+                    if(initialState[key] === undefined){
+                        delete state[key];
+                        count++;
+                    }
+                }
+                state.lastErrorMessage = (`Detected ${count} configuration items with issues!`);
                 return {...state};
             }
             break;

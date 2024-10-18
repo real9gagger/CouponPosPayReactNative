@@ -11,6 +11,9 @@ export const SET_ACCESSTOKEN = "SET_ACCESSTOKEN";//set access token
 //本地设置
 export const UPDATE_SETTINGS = "UPDATE_SETTINGS";
 export const INITI_SETTINGS = "INITI_SETTINGS";
+export const CHECK_SETTINGS = "CHECK_SETTINGS";
+export const ADD_APP_ERROR_INFO = "ADD_APP_ERROR_INFO";
+export const CLEAR_APP_ERROR_INFO = "CLEAR_APP_ERROR_INFO";
 
 //优惠券相关
 export const SET_LAST_COUPON = "SET_LAST_COUPON";

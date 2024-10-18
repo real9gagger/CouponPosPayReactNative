@@ -88,7 +88,27 @@ else {
 > 使用的技术框架或系统架构图等相关说明，请填写在这里  
 * React Native
 
-## 遇到的坑
+## iOS版打包遇到的坑（我的 Xcode 版本 15.4）
 > 一号坑
-* 问题描述：在 Mac 上 npm install 后会下载 3.x.x 版本的。导致 pod install 时报 RN 版本需要 0.71+ 的相关错误！
-* 解决方式：因为我们使用的是 react-native 0.68.2 版本，因此建议 react-native-reanimated 使用 3.6.1 版本。【其他依赖项也是一样】
+* 问题描述：在 Mac 上 npm install 后 react-native-reanimated 会下载 3.x.x 版本的。导致 pod install 时报 RN 版本需要 0.71+ 的相关错误！
+* 解决方式：因为我们使用的是 react-native 0.68.2 版本，因此建议 react-native-reanimated 使用 3.6.1 版本。【其他依赖项也是一样，把 package.json 中的 “^” 去掉后再 npm install】
+
+> 二号坑
+* 问题描述：Communication with Apple failed. Your team has no devices from which to generate a provisioning profile. Connect a device to use or manually add device IDs in Certificates, Identifiers & Profiles. https://developer.apple.com/account
+* 解决方式：就算不是开发者账户也能在模拟器上运行 iOS APP：Xcode顶部菜单栏 >> Product >> Desitnation >> 勾选模拟器。上述红色错误将变成黄色警示！
+
+> 三号坑
+* 问题描述：xxxxxx-eledvqvkmfcsbydancsgqxgqaesd/Build/Products/Debug-iphonesimulator/YogaKit/YogaKit.modulemap' not found
+* 解决方式：打开项目文件应该是 xxxxxx.xcworkspace，而不是 xxxxxx.xcodeproj
+
+> 四号坑 
+* 问题描述：use of bitwise '|' with boolean operands
+* 解决方式：一款名叫 “Yoga” 的依赖项搞的鬼，把单竖杠“|”改成双竖杠“||”就可以了
+
+> 五号坑 
+* 问题描述：No template named 'unary_function' in namespace 'std'; did you mean
+* 解决方式：参见：[鼠标移到红色错误上，点击 “Fix” 即可](https://stackoverflow.com/questions/77133361/no-template-named-unary-function-in-namespace-std-did-you-mean-unary-fun)
+
+> 六号坑 
+* 问题描述：No template named 'function' in namespace 'std'
+* 解决方式：参见：[找到文件 项目根目录/ios/Pods/Flipper/xplat/Flipper/FlipperTransportTypes.h。#include <string> 上方新增一行：#include <functional>](https://github.com/facebook/react-native/issues/43335)

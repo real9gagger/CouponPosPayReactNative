@@ -238,7 +238,7 @@ function callPayment(payMoney, disMoney, taxMoney, finalMoney, slipNumber, payme
             qrPayType:              (paymentCode === QR_CODE_PAYMENT_CODE ? paymentBrand : ""), //二维码支付方式，如支付宝、微信等
             qrPayCode:              "", //支付码（也就是二维码包含的内容，自己加上去的字段，后台暂时没有对应的字段）
             currencyCode:           currencyCode, //货币符号（JPY）
-            remark:                 "", //备注
+            remark:                 "[手工录入的订单]", //备注
             errorCode:              "", //错误码，空字符串为交易成功
             transactionTime:        Date.now(), //交易完成时间
             couponCode:             couponCode, //优惠码

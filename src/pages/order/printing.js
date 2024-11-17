@@ -94,7 +94,7 @@ export default function OrderPrinting(props){
                     autoFocus={true}
                     onChangeText={setOrderSN}
                     maxLength={30} 
-                    keyboardType="number-pad"
+                    keyboardType="default"
                     placeholder={i18n["transaction.number"]} />
                 <PosPayIcon name="search" color={isFocus ? appMainColor : "#aaa"} size={16} style={styles.searchIcon} />
             </View>

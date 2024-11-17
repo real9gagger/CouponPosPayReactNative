@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { ScrollView, View, Text, Pressable, Image, StatusBar, StyleSheet, ActivityIndicator, TouchableOpacity, DeviceEventEmitter } from "react-native";
+import { ScrollView, View, Text, Keyboard, TextInput, Pressable, Image, StatusBar, StyleSheet, ActivityIndicator, TouchableOpacity, DeviceEventEmitter } from "react-native";
 import { useI18N, getI18N, useAppSettings } from "@/store/getter";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
 import { eWalletList, creditCardList, qrPayList, allPayTypeMap, CASH_PAYMENT_CODE, CREDIT_CARD_PAYMENT_CODE, E_MONEY_PAYMENT_CODE, QR_CODE_PAYMENT_CODE, DISCOUNT_TYPE_LJ, TRANSACTION_TYPE_RECEIVE } from "@/common/Statics";
@@ -75,11 +75,14 @@ const styles = StyleSheet.create({
     },
     moneyInput: {
         textAlign: "right",
+        color: "#000",
         borderBottomColor: "#999",
         borderBottomWidth: StyleSheet.hairlineWidth,
         fontSize: 30,
         paddingHorizontal: 10,
-        lineHeight: 45
+        paddingVertical: 0,
+        lineHeight: 45,
+        height: 45
     },
     couponLabel: {
         paddingHorizontal: 15,
@@ -321,9 +324,16 @@ function tabBankCard(props){
     }
     const toggleOrdnumInput = () => {
         DeviceEventEmitter.emit(eventEmitterName, { 
-            nth: (currentInputBox !== iNthNumber ? iNthNumber : iNthNone), 
+            nth: iNthNumber, 
             txt: orderNumber,
             action: onInputToggle
+        });
+    }
+    const onOrderNumberChange = () => {
+        DeviceEventEmitter.emit(eventEmitterName, { 
+            nth: iNthNumber, 
+            txt: orderNumber,
+            action: onInputChange
         });
     }
     const toggleCouponInput = () => {
@@ -395,7 +405,7 @@ function tabBankCard(props){
     
     //银行卡支付界面
     return (
-        <ScrollView style={fxG1} contentContainerStyle={mhF}>
+        <ScrollView style={fxG1} contentContainerStyle={mhF} keyboardShouldPersistTaps="handled">
             {/*==== 输入收款金额 ====*/}
             <View style={[fxHC, styles.moneyLabel]}>
                 <Text style={[fxG1, fs16]}>{i18n["input.amount"]}</Text>
@@ -427,7 +437,17 @@ function tabBankCard(props){
                 <Text style={fs16}>{i18n["transaction.number"]}</Text>
             </View>
             <View style={styles.rowBox}>
-                <Text style={[styles.moneyInput, !orderNumber && styles.couponEmpty, currentInputBox===iNthNumber&&styles.InputActived]} onPress={toggleOrdnumInput}>{orderNumber || i18n["input.ordnum.tip"]}</Text>
+                <TextInput
+                    style={[styles.moneyInput, !orderNumber&&styles.couponEmpty, currentInputBox===iNthNumber&&styles.InputActived]} 
+                    maxLength={100}
+                    numberOfLines={1}
+                    keyboardType="default"
+                    placeholderTextColor="#aaa"
+                    onFocus={toggleOrdnumInput}
+                    onBlur={onOrderNumberChange}
+                    onChangeText={setOrderNumber}
+                    value={orderNumber}
+                    placeholder={i18n["input.ordnum.tip"]} />
             </View>
             {/*==== 支付方式列表 ====*/}
             <View style={[fxHC, styles.rowBox]}>
@@ -485,9 +505,16 @@ function tabEWallet(props){
     }
     const toggleOrdnumInput = () => {
         DeviceEventEmitter.emit(eventEmitterName, { 
-            nth: (currentInputBox !== iNthNumber ? iNthNumber : iNthNone), 
+            nth: iNthNumber, 
             txt: orderNumber,
             action: onInputToggle
+        });
+    }
+    const onOrderNumberChange = () => {
+        DeviceEventEmitter.emit(eventEmitterName, { 
+            nth: iNthNumber, 
+            txt: orderNumber,
+            action: onInputChange
         });
     }
     const toggleCouponInput = () => {
@@ -559,7 +586,7 @@ function tabEWallet(props){
     
     //电子钱包支付界面
     return (
-        <ScrollView style={fxG1} contentContainerStyle={mhF}>
+        <ScrollView style={fxG1} contentContainerStyle={mhF} keyboardShouldPersistTaps="handled">
             {/*==== 输入收款金额 ====*/}
             <View style={[fxHC, styles.moneyLabel]}>
                 <Text style={[fxG1, fs16]}>{i18n["input.amount"]}</Text>
@@ -591,7 +618,17 @@ function tabEWallet(props){
                 <Text style={fs16}>{i18n["transaction.number"]}</Text>
             </View>
             <View style={styles.rowBox}>
-                <Text style={[styles.moneyInput, !orderNumber && styles.couponEmpty, currentInputBox===iNthNumber&&styles.InputActived]} onPress={toggleOrdnumInput}>{orderNumber || i18n["input.ordnum.tip"]}</Text>
+                <TextInput
+                    style={[styles.moneyInput, !orderNumber&&styles.couponEmpty, currentInputBox===iNthNumber&&styles.InputActived]} 
+                    maxLength={100}
+                    numberOfLines={1}
+                    keyboardType="default"
+                    placeholderTextColor="#aaa"
+                    onFocus={toggleOrdnumInput}
+                    onBlur={onOrderNumberChange}
+                    onChangeText={setOrderNumber}
+                    value={orderNumber}
+                    placeholder={i18n["input.ordnum.tip"]} />
             </View>
             {/*==== 支付方式列表 ====*/}
             <View style={[fxHC, styles.rowBox]}>
@@ -649,9 +686,16 @@ function tabQRCode(props){
     }
     const toggleOrdnumInput = () => {
         DeviceEventEmitter.emit(eventEmitterName, { 
-            nth: (currentInputBox !== iNthNumber ? iNthNumber : iNthNone), 
+            nth: iNthNumber, 
             txt: orderNumber,
             action: onInputToggle
+        });
+    }
+    const onOrderNumberChange = () => {
+        DeviceEventEmitter.emit(eventEmitterName, { 
+            nth: iNthNumber, 
+            txt: orderNumber,
+            action: onInputChange
         });
     }
     const toggleCouponInput = () => {
@@ -723,7 +767,7 @@ function tabQRCode(props){
     
     //二维码支付界面
     return (
-        <ScrollView style={fxG1} contentContainerStyle={mhF}>
+        <ScrollView style={fxG1} contentContainerStyle={mhF} keyboardShouldPersistTaps="handled">
             {/*==== 输入收款金额 ====*/}
             <View style={[fxHC, styles.moneyLabel]}>
                 <Text style={[fxG1, fs16]}>{i18n["input.amount"]}</Text>
@@ -755,7 +799,17 @@ function tabQRCode(props){
                 <Text style={fs16}>{i18n["transaction.number"]}</Text>
             </View>
             <View style={styles.rowBox}>
-                <Text style={[styles.moneyInput, !orderNumber && styles.couponEmpty, currentInputBox===iNthNumber&&styles.InputActived]} onPress={toggleOrdnumInput}>{orderNumber || i18n["input.ordnum.tip"]}</Text>
+                <TextInput
+                    style={[styles.moneyInput, !orderNumber&&styles.couponEmpty, currentInputBox===iNthNumber&&styles.InputActived]} 
+                    maxLength={100}
+                    numberOfLines={1}
+                    keyboardType="default"
+                    placeholderTextColor="#aaa"
+                    onFocus={toggleOrdnumInput}
+                    onBlur={onOrderNumberChange}
+                    onChangeText={setOrderNumber}
+                    value={orderNumber}
+                    placeholder={i18n["input.ordnum.tip"]} />
             </View>
             {/*==== 支付方式列表 ====*/}
             <View style={[fxHC, styles.rowBox]}>
@@ -770,7 +824,7 @@ function tabQRCode(props){
                     </TouchableOpacity>
                 ))}
             </View>
-            <View style={fxG1}>{/* 占位专用 */}</View>
+            <Text style={fxG1} onPress={togglePKHidden}>{/* 点我关闭键盘 */}</Text>
             {/* 收款详情框 */}
             <CollectInfoPanel
                 visiable={!!payAmounts}
@@ -812,9 +866,16 @@ function tabCashPay(props){
     }
     const toggleOrdnumInput = () => {
         DeviceEventEmitter.emit(eventEmitterName, { 
-            nth: (currentInputBox !== iNthNumber ? iNthNumber : iNthNone), 
+            nth: iNthNumber, 
             txt: orderNumber,
             action: onInputToggle
+        });
+    }
+    const onOrderNumberChange = () => {
+        DeviceEventEmitter.emit(eventEmitterName, { 
+            nth: iNthNumber, 
+            txt: orderNumber,
+            action: onInputChange
         });
     }
     const toggleCouponInput = () => {
@@ -880,7 +941,7 @@ function tabCashPay(props){
     
     //现金支付界面
     return (
-        <ScrollView style={fxG1} contentContainerStyle={mhF}>
+        <ScrollView style={fxG1} contentContainerStyle={mhF} keyboardShouldPersistTaps="handled">
             {/*==== 输入收款金额 ====*/}
             <View style={[fxHC, styles.moneyLabel]}>
                 <Text style={[fxG1, fs16]}>{i18n["input.amount"]}</Text>
@@ -912,7 +973,17 @@ function tabCashPay(props){
                 <Text style={fs16}>{i18n["transaction.number"]}</Text>
             </View>
             <View style={styles.rowBox}>
-                <Text style={[styles.moneyInput, !orderNumber && styles.couponEmpty, currentInputBox===iNthNumber&&styles.InputActived]} onPress={toggleOrdnumInput}>{orderNumber || i18n["input.ordnum.tip"]}</Text>
+                <TextInput
+                    style={[styles.moneyInput, !orderNumber&&styles.couponEmpty, currentInputBox===iNthNumber&&styles.InputActived]} 
+                    maxLength={100}
+                    numberOfLines={1}
+                    keyboardType="default"
+                    placeholderTextColor="#aaa"
+                    onFocus={toggleOrdnumInput}
+                    onBlur={onOrderNumberChange}
+                    onChangeText={setOrderNumber}
+                    value={orderNumber}
+                    placeholder={i18n["input.ordnum.tip"]} />
             </View>
             {/*==== 支付方式列表 ====*/}
             <View style={[fxHC, styles.rowBox]}>
@@ -925,7 +996,7 @@ function tabCashPay(props){
                     <PosPayIcon name="check-fill" color={appMainColor} size={20} style={styles.paymentChecked} />
                 </View>
             </View>
-            <View style={fxG1}>{/* 占位专用 */}</View>
+            <Text style={fxG1} onPress={togglePKHidden}>{/* 点我关闭键盘 */}</Text>
             {/* 收款详情框 */}
             <CollectInfoPanel
                 visiable={!!payAmounts}
@@ -1022,7 +1093,8 @@ export default function IndexHomeOfPhone(props){
         const eventer9000 = DeviceEventEmitter.addListener(eventEmitterName, function(infos){
             switch(infos.action){
                 case onInputToggle:
-                    if(infos.nth !== iNthNone){
+                    if(infos.nth !== iNthNone && infos.nth !== iNthNumber){
+                        Keyboard.dismiss();
                         setInputIndex(infos.nth);
                         pkRef.current.initiText(infos.txt);
                     } else {

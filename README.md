@@ -1,16 +1,18 @@
 ## 项目名称
 > POS机付款APP -- 2024年1月4日
+* [APP（安卓平台）下载链接](https://github.com/real9gagger/CouponPosPayReactNative/releases/tag/v1.1.3)
+* 如果跑不起来请下载此 [node_modules.zip](https://github.com/real9gagger/CouponPosPayReactNative/releases/tag/v1.1.3) 覆盖您本地的 node_modules 目录
 * 【NodeJS 版本：14.17.6】
 * logo艺术字体生成（字体大小：150px，保存到本地后用PS调整画布大小为1000x1000即可）：https://font.chinaz.com/diy/971022.html
 * android APP logo 制作网站：https://icon.wuruihong.com。圆角比例：ic_launcher.png 为 16%，ic_launcher_round.png 为 50%。
-* ！！！！>>>>>>>>
+* >>>>>>>>
 * ---------------------------------------------------------------
 * ---------------------------------------------------------------
 * 【2024年5月29日：要支持安卓14，请更新 react native 到最新版本，当前项目使用的版本 0.68】
 * 【2024年9月7日：这个问题已通过其他方式解决！参见：https://github.com/facebook/react-native/issues/41288】
 * ---------------------------------------------------------------
 * ---------------------------------------------------------------
-* <<<<<<<< ！！！！
+* <<<<<<<< 
 ## 运行条件
 > 列出运行该项目所必须的条件和相关依赖  
 * npm install
@@ -65,7 +67,7 @@ else {
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         dialog.getWindow().getDecorView().setSystemUiVisibility(uiFlags);
     }
-} //！！！需要 import android.view.View;
+} //需要 import android.view.View;
 ```
 * 【日期选择控件中的“日”对应的框宽度太小】打开 /node_modules/react-native-date-picker/android/src/main/res/values/styles.xml 将样式 “android_native_small” 中的 “android:layout_width” 改为 64dp
 
